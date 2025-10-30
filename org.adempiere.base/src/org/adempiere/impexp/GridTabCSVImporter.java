@@ -635,6 +635,7 @@ public class GridTabCSVImporter implements IGridTabImporter
 		String logMsg = null;
 		GridTab currentGridTab = null;
 		int currentColumn = 0;
+		int cntErr = 0; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 
 		try {
 
@@ -685,10 +686,12 @@ public class GridTabCSVImporter implements IGridTabImporter
 							logMsg = "";
 							continue;
 						}else 
+							cntErr++; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 							setError(true);
 					}
 
 				}else {
+					cntErr++; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 					setError(true);
 					currentColumn = j + 1;
 				}
@@ -736,6 +739,7 @@ public class GridTabCSVImporter implements IGridTabImporter
 							rowResult.append( "<" + currentGridTab.getTableName() + ">: " );
 							rowResult.append(logMsg);
 							rowResult.append(" / ");
+							cntErr++; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 							break;
 						}
 
@@ -745,6 +749,7 @@ public class GridTabCSVImporter implements IGridTabImporter
 							rowResult.append( "<" + currentGridTab.getTableName() + ">: " );
 							rowResult.append(logMsg);
 							rowResult.append(" / ");
+							cntErr++; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 							break;
 						}
 					}
@@ -755,6 +760,7 @@ public class GridTabCSVImporter implements IGridTabImporter
 
 				} else { //if error true
 					currentGridTab.dataIgnore();
+					cntErr++; // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert
 
 					rowResult.append( "<" + currentGridTab.getTableName() + ">: " );
 					rowResult.append(logMsg);
@@ -792,6 +798,10 @@ public class GridTabCSVImporter implements IGridTabImporter
 
 		} finally {
 			m_import_mode = importMode;
+		}
+
+		if(cntErr > 0) { // ADDED BY JACKSON - 20200723 : #1849 - Import File loader dari window validasi jika error 1 maka seluruh data tidak dapat insert 
+			trx.rollback();
 		}
 		
 		return rowResult.toString();

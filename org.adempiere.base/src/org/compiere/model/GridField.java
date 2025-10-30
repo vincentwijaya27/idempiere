@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.adempiere.base.LookupFactoryHelper;
 import org.adempiere.exceptions.AdempiereException;
@@ -1296,7 +1294,7 @@ public class GridField
 		if (!m_vo.IsDisplayed)
 			return false;
 		//  no restrictions
-		if (m_vo.DisplayLogic.equals(""))
+		if (m_vo.DisplayLogic.trim().equals("")) // MODIFIED BY ANDI - 20220707 : tambah trim(), supaya kalau cuma blank tidak perlu di cek
 			return true;
 
 		//  ** dynamic content **
@@ -1376,7 +1374,7 @@ public class GridField
 	{
 		if (m_parentEvaluatee != null) {
 			String value = m_parentEvaluatee.get_ValueAsString(variableName);
-			if (value != null)
+			if (!Util.isEmpty(value))
 				return value;
 		}
 		return new DefaultEvaluatee(getGridTab(), m_vo.WindowNo, m_vo.TabNo).get_ValueAsString(ctx, variableName);
@@ -2850,16 +2848,9 @@ public class GridField
 		if (dependentField.getLookup() instanceof MLookup mLookup)
 		{
 			//  if the lookup is dynamic (i.e. contains this columnName as variable)
-			String validation = mLookup.getValidation();
-
-			// Regex
-			String regex = ".*@(?:~|"+tabNo+"\\|)?"+columnName+"(:.+)?@.*";
-
-			// Pattern with DOTALL to match multiple lines
-			Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
-			Matcher matcher = pattern.matcher(validation);
-			
-			if (matcher.find())
+			if (mLookup.getValidation().indexOf("@"+columnName+"@") != -1
+					|| (tabNo >= 0 && mLookup.getValidation().matches(".*[@]"+tabNo+"[|]"+columnName+"([:].+)?[@].*"))
+					|| mLookup.getValidation().matches(".*[@][~]?"+columnName+"([:].+)?[@].*"))
 			{
 				if (log.isLoggable(Level.FINE)) log.fine(columnName + " changed - "
 					+ dependentField.getColumnName() + " set to null");

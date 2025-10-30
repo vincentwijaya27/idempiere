@@ -758,8 +758,14 @@ public class DocumentEngine implements DocAction
 		if (isClosed())
 			return new String[] {ACTION_Post, ACTION_ReActivate};
 
+		// COMMENTED BY ANDI - 20181207 - Hilangin Comment Error Waktu Void
+//		if (isReversed() || isVoided())
+//			return new String[] {ACTION_Post};
+
+		// BEGIN CODE BY ANDI - 20181207 - Hilangin Comment Error Waktu Void
 		if (isReversed() || isVoided())
-			return new String[] {ACTION_Post};
+			return new String[] {ACTION_Post, ACTION_Void};
+		// END CODE BY ANDI - 20181207 - Hilangin Comment Error Waktu Void
 
 		return new String[] {};
 	}	//	getActionOptions

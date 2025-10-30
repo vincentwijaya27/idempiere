@@ -1191,7 +1191,7 @@ public class ReportStarter implements ProcessCall, ClientProcess
         }
     }
 
-    private static class JasperInfo implements Serializable
+    public static class JasperInfo implements Serializable
     {
 		/**
 		 * generated serial id

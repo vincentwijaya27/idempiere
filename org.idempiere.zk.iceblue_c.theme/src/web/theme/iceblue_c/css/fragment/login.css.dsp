@@ -88,38 +88,32 @@
 	border: none;
 }
 
-/* SSO buttons */
-.sso-login-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 65% !important;
-    max-width: 300px;
-    border-radius: 20px !important;
-    overflow: hidden;
-    padding: 8px 15px !important;
+/* BEGIN CODE andi : 20201002 - Hide Left Side : requester Pak Sugi */
+.login-window {
+	background-color: #D4E3F4;
 }
 
-.sso-login-btn img {
-    position: absolute;
-    left: 15px;
-    height: 24px;
-    margin-right: 0;
+.login-window .z-window-content {
+	background-color: #D4E3F4;
 }
 
-.sso-login-btn.icon-only img {
-    margin: 0 !important;
-    height: 24px;
+.login-west-panel {
+	display : none !important;
 }
 
-@media (max-width: 600px) {
-    .sso-login-btn {
-        width: 95% !important;
-        overflow: hidden;
-    	text-overflow: ellipsis;
-    }
+.login-window .z-west-splitter {
+	display : none !important;
 }
+
+.login-field .confirm-panel-right {
+	float : left !important;	
+}
+
+.login-field .login-box-footer-pnl {
+	padding-top: 10px !important;
+	margin-left:0px;
+}
+/* END CODE andi : 20201002 - Hide Left Side : requester Pak Sugi */
 
 @media screen and (max-width: 659px) {
 	.login-box-body, .login-box-header, .login-box-footer {

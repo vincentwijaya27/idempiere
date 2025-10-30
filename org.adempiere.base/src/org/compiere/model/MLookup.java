@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1109,6 +1110,54 @@ public final class MLookup extends Lookup implements Serializable
 				MAX_ROWS = 50000;  // impose hardcoded limit of 50.000
 			}
 			long startTime = System.currentTimeMillis();
+			
+			// BEGIN CODE BY ANDI - 20200603 : Untuk mengakali krn kalau row nya duplicate & jumlah nya banyak, baris baris akhir akan tidak muncul. Di perbaiki supaya distinct, jadi jumlah menjadi lebih sedikit.
+			int hasOrderBy = m_info.Query.lastIndexOf(" ORDER BY ");
+			Boolean flagHasEveryOrderVarAtSelect = true;
+			if(hasOrderBy >= 0) {
+				  String tempStringOrder = m_info.Query.substring(hasOrderBy+10);
+				  String tempStringSelect = m_info.Query.substring(0, m_info.Query.indexOf("FROM ")).replace("SELECT", "").replace("select", "").trim();
+				  
+//				  System.out.println("\n\n >>> tempStringOrder : " + tempStringOrder);
+//				  System.out.println("\n\n >>> tempStringSelect : " + tempStringSelect);
+				  
+				  String[] splitOrder = tempStringOrder.split(",");
+				  String[] splitSelect = tempStringSelect.split(",");
+				  
+//				  for(int i=0; i < splitSelect.length; i++) {
+//					  System.out.println("\n\n >>> splitSelect["+i+"] : " + splitSelect[i]);
+//				  }
+				  
+				  for (int i = 0; i < splitOrder.length; i++) {
+					  splitOrder[i] = splitOrder[i].replace("ASC", "").replace("DESC", "").trim();
+//					  System.out.println("\n\n >>> split[i] : " + splitOrder[i]);
+					  
+					  String fraseOrder = splitOrder[i];
+//					  System.out.println("\n\n >>> fraseOrder : " + fraseOrder);
+					  
+					  boolean contains = Arrays.stream(splitSelect).anyMatch(x -> x.equalsIgnoreCase(fraseOrder));
+					  if(contains) { // kalau ketemu
+						  flagHasEveryOrderVarAtSelect = true;
+//						  System.out.println("\n\n >>> "+splitOrder[i]+" ketemu ");
+					  } else {
+						  flagHasEveryOrderVarAtSelect = false;
+//						  System.out.println("\n\n >>> "+splitOrder[i]+" tidak ketemu ");
+						  break;
+					  }
+				  }
+			}
+			
+//			System.out.println("\n\n >>> last index : "+m_info.Query.lastIndexOf(" ORDER BY "));
+			
+			if(!m_info.Query.startsWith("SELECT DISTINCT") && flagHasEveryOrderVarAtSelect) {
+//				System.out.println("\n\n >>> Menambahkan DISTINCT");
+				m_info.Query = m_info.Query.replace("SELECT ", "SELECT DISTINCT "); 
+			} else {
+//				System.out.println("\n\n >>> gak masuk ke distinct");
+			}
+			
+			// END CODE BY ANDI - 20200603 : Untuk mengakali krn kalau row nya duplicate & jumlah nya banyak, baris baris akhir akan tidak muncul. Di perbaiki supaya distinct, jadi jumlah menjadi lebih sedikit.
+			
 			StringBuilder sql = new StringBuilder().append(m_info.Query);
 
 			// IDEMPIERE 90

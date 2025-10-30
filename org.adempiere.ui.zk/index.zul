@@ -27,6 +27,7 @@ Copyright (C) 2007 Ashley G Ramdass.
   zk.load("html2canvaspro");
   zk.load("org.idempiere.commons");
   zk.load("jquery.maskedinput");
+  zk.load("cperp.clock");
   zk.load("photobooth");
 
   zk.afterLoad(function() {

@@ -453,23 +453,12 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 	@Override
 	protected boolean beforeSave(boolean newRecord)
 	{
-		//Validate User Level
-		if (isMasterRole())
-			return true;
-		else if (getAD_Client_ID() == 0)
+		if (getAD_Client_ID() == 0)
 			setUserLevel(USERLEVEL_System);
-		else if (USERLEVEL_System.equals(getUserLevel()))
+		else if (getUserLevel().equals(USERLEVEL_System))
 		{
 			log.saveError("AccessTableNoUpdate", Msg.getElement(getCtx(), "UserLevel"));
 			return false;
-		}
-		else
-		{
-			if (Util.isEmpty(getUserLevel(), true))
-			{
-				log.saveError("FillMandatory", Msg.getElement(getCtx(), "UserLevel"));
-				return false;
-			}
 		}
 		return true;
 	}	//	beforeSave
@@ -528,11 +517,9 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 		if (isManual())
 			return "-";
 		
-		int userID = Env.getAD_User_ID(getCtx());
-		
 		String roleClientOrgUser = getAD_Role_ID() + ","
 			+ getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y', getDate()," 
-			+ userID + ", getDate()," + userID 
+			+ getUpdatedBy() + ", getDate()," + getUpdatedBy() 
 			+ ",'Y' ";	//	IsReadWrite
 		
 		String sqlWindow = "INSERT INTO AD_Window_Access "
@@ -581,7 +568,7 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 			+ "C_DocType_ID , AD_Ref_List_ID, AD_Role_ID) " 
 			+ "(SELECT "
 			+ getAD_Client_ID() + ",0,'Y', getDate()," 
-			+ userID + ", getDate()," + userID
+			+ getUpdatedBy() + ", getDate()," + getUpdatedBy() 
 			+ ", doctype.C_DocType_ID, action.AD_Ref_List_ID, rol.AD_Role_ID " 
 			+ "FROM AD_Client client " 
 			+ "INNER JOIN C_DocType doctype ON (doctype.AD_Client_ID=client.AD_Client_ID) "
@@ -598,7 +585,7 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 				+ " AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy) "
 				+ "SELECT i.AD_InfoWindow_ID," + getAD_Role_ID() + ","
 				+ getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',getDate()," 
-				+ userID + ", getDate()," + userID
+				+ getUpdatedBy() + ", getDate()," + getUpdatedBy()
 				+ " FROM AD_InfoWindow i LEFT JOIN AD_InfoWindow_Access ia ON "
 				+ "(ia.AD_Role_ID=" + getAD_Role_ID()
 				+ " AND i.AD_InfoWindow_ID = ia.AD_InfoWindow_ID) "
@@ -1491,14 +1478,14 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 			if (column.getAD_Process_ID() > 0)
 			{
 				// Verify access to process for buttons
-				Boolean access = getProcessAccess(column.getAD_Process_ID());
+				Boolean access = MRole.getDefault().getProcessAccess(column.getAD_Process_ID());
 				if (access == null)
 					return false;
 			}
 			else if (column.getAD_InfoWindow_ID() > 0)
 			{
 				// Verify access to info window for buttons
-				Boolean access = getInfoAccess(column.getAD_InfoWindow_ID());
+				Boolean access = MRole.getDefault().getInfoAccess(column.getAD_InfoWindow_ID());
 				if (access == null)
 					return false;
 			}
@@ -1737,7 +1724,7 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 					+ "             AND ce.AD_Process_Para_ID IS NULL "
 					+ "             AND ce.ASP_Status = 'H')"; // Hide
 			String noReportsFilter = "";
-			if (! MRole.getDefault().isCanReport())
+			if (! isCanReport())
 				noReportsFilter = " AND AD_Process_ID NOT IN (SELECT p.AD_Process_ID FROM AD_Process p WHERE IsReport='Y')";
 			String sql = "SELECT AD_Process_ID, IsReadWrite, IsActive FROM AD_Process_Access WHERE AD_Role_ID=?" + ASPFilter + noReportsFilter;
 			PreparedStatement pstmt = null;
@@ -1938,7 +1925,7 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 							m_formAccess.remove(formId);
 						}
 					} else {
-						if ( ! (formId == SystemIDs.FORM_ARCHIVEVIEWER && !MRole.getDefault().isCanReport()) )
+						if ( ! (formId == SystemIDs.FORM_ARCHIVEVIEWER && !isCanReport()) )
 							directAccess.put(formId, Boolean.valueOf("Y".equals(rs.getString(2))));
 					}
 				}
@@ -2103,12 +2090,15 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 		}
 		if (TableNameIn != null && !tableName.equals(TableNameIn))
 		{
-			String msg = "TableName not correctly parsed - TableNameIn=" 
-				+ TableNameIn + " - " + asp;
-			if (ti.length > 0)
-				msg += " - #1 " + ti[0]; 
-			msg += "\n = " + SQL;
-			log.log(Level.SEVERE, msg);
+			// BEGIN COMMENTED BY ANDI : 20191024 - Untuk mencegah warning apabila di WHERE Clause ada "Subquery" menggunakan WHERE
+//			String msg = "TableName not correctly parsed - TableNameIn=" 
+//				+ TableNameIn + " - " + asp;
+//			if (ti.length > 0)
+//				msg += " - #1 " + ti[0]; 
+//			msg += "\n = " + SQL;
+//			log.log(Level.SEVERE, msg);
+			// END COMMENTED BY ANDI : 20191024 - Untuk mencegah warning apabila di WHERE Clause ada "Subquery" menggunakan  WHERE
+			
 			Trace.printStack();
 			tableName = TableNameIn;
 		}
@@ -2237,6 +2227,196 @@ public final class MRole extends X_AD_Role implements ImmutablePOSupport
 		return retSQL.toString();
 	}	//	addAccessSQL
 
+	/*************************************************************************
+	 *	CREATED BY ANDI - 20210427 : #3700 - Inventory Move Line - Locator To tidak kena filter personal lock
+	 *  ISI Di bawah ini sama dengan addAccessSQL (String SQL, String TableNameIn, boolean fullyQualified, boolean rw), cuma beda di 
+	 */
+	public String addAccessSQL (String SQL, String TableNameIn, boolean fullyQualified, boolean rw, boolean RecordAccessFilter)
+	{
+		
+		if(RecordAccessFilter) { // kalau masih pakai record access, langsung return dari original
+			return addAccessSQL (SQL, TableNameIn, fullyQualified, rw); // bring to ORIGINAL
+		}
+		
+		StringBuilder retSQL = new StringBuilder();
+
+		//	Cut off last ORDER BY clause
+		String orderBy = "";
+		int posOrder = SQL.lastIndexOf(" ORDER BY ");
+		if (posOrder != -1)
+		{
+			orderBy = SQL.substring(posOrder);
+			retSQL.append(SQL.substring(0, posOrder));
+		}
+		else
+			retSQL.append(SQL);
+
+		//	Parse SQL
+		AccessSqlParser asp = new AccessSqlParser(retSQL.toString());
+		AccessSqlParser.TableInfo[] ti = asp.getTableInfo(asp.getMainSqlIndex()); 
+
+		//  Do we have to add WHERE or AND
+		if (asp.getMainSql().indexOf(" WHERE ") == -1)
+			retSQL.append(" WHERE ");
+		else
+			retSQL.append(" AND ");
+
+		//	Use First Table
+		String tableName = "";
+		if (ti.length > 0)
+		{
+			tableName = ti[0].getSynonym();
+			if (tableName.length() == 0)
+				tableName = ti[0].getTableName();
+		}
+		if (TableNameIn != null && !tableName.equals(TableNameIn))
+		{
+
+			// BEGIN COMMENTED BY ANDI : 20191024 - Untuk mencegah warning apabila di WHERE Clause ada "Subquery" menggunakan WHERE
+			
+//			String msg = "TableName not correctly parsed - TableNameIn=" 
+//				+ TableNameIn + " - " + asp;
+//			if (ti.length > 0)
+//				msg += " - #1 " + ti[0]; 
+//			msg += "\n = " + SQL;
+//			
+//			log.log(Level.SEVERE, msg);
+			
+			// END COMMENTED BY ANDI : 20191024 - Untuk mencegah warning apabila di WHERE Clause ada "Subquery" menggunakan  WHERE
+			
+			Trace.printStack();
+			tableName = TableNameIn;
+		}
+
+		if (! tableName.equals(X_AD_PInstance_Log.Table_Name)) { // globalqss, bug 1662433 
+			//	Client Access
+			if (fullyQualified)
+				retSQL.append(tableName).append(".");
+			retSQL.append(getClientWhere(rw));
+
+			//	Org Access
+			if (!isAccessAllOrgs())
+			{
+				retSQL.append(" AND ");
+				String orgWhere = getOrgWhere(rw);
+				if (fullyQualified)
+					orgWhere = orgWhere.replaceAll("AD_Org_ID", tableName + ".AD_Org_ID");
+				retSQL.append(orgWhere);
+			}
+		} else {
+			retSQL.append("1=1");
+		}
+		
+		//	** Data Access	**
+		for (int i = 0; i < ti.length; i++)
+		{
+			String TableName = ti[i].getTableName();
+			
+			//[ 1644310 ] Rev. 1292 hangs on start
+			if (TableName.toUpperCase().endsWith("_TRL")) continue;
+			if (isView(TableName)) continue;
+			
+			int AD_Table_ID = getAD_Table_ID (TableName);
+			//	Data Table Access
+			if (AD_Table_ID != 0 && !isTableAccess(AD_Table_ID, !rw))
+			{
+				retSQL.append(" AND 1=3");	//	prevent access at all
+				if (log.isLoggable(Level.FINE)) log.fine("No access to AD_Table_ID=" + AD_Table_ID 
+					+ " - " + TableName + " - " + retSQL);
+				break;	//	no need to check further 
+			}
+			
+			//	Data Column Access
+	
+			//	Data Record Access
+			String keyColumnName = "";
+			if (fullyQualified)
+			{
+				keyColumnName = ti[i].getSynonym();	//	table synonym
+				if (keyColumnName.length() == 0)
+					keyColumnName = TableName;
+				keyColumnName += ".";
+			}
+			//keyColumnName += TableName + "_ID";	//	derived from table
+			if (getIdColumnName(TableName) == null) continue;
+			keyColumnName += getIdColumnName(TableName); 
+	
+			//log.fine("addAccessSQL - " + TableName + "(" + AD_Table_ID + ") " + keyColumnName);
+			String recordWhere = getRecordWhere (AD_Table_ID, keyColumnName, rw, TableName, ti[i].getSynonym());;
+			if (recordWhere.length() > 0)
+			{
+				retSQL.append(" AND ").append(recordWhere);
+				if (log.isLoggable(Level.FINEST)) log.finest("Record access - " + recordWhere);
+			}
+		}	//	for all table info
+		
+		// BEGIN COMMENTED BY ANDI - 20210427 : #3700 - Inventory Move Line - Locator To tidak kena filter personal lock
+		
+		//	Dependent Records (only for main SQL)
+//		String mainSql = asp.getMainSql();
+//		loadRecordAccess(false);
+//		int AD_Table_ID = 0;
+//		String whereColumnName = null;
+//		ArrayList<Integer> includes = new ArrayList<Integer>();
+//		ArrayList<Integer> excludes = new ArrayList<Integer>();
+//		for (int i = 0; i < m_recordDependentAccess.length; i++)
+//		{
+//			String columnName = m_recordDependentAccess[i].getKeyColumnName
+//				(asp.getTableInfo(asp.getMainSqlIndex()) );
+//			if (columnName == null)
+//				continue;	//	no key column
+//			
+//			if (mainSql.toUpperCase().startsWith("SELECT COUNT(*) FROM ")) {
+//				// globalqss - Carlos Ruiz - [ 1965744 ] Dependent entities access problem
+//				// this is the count select, it doesn't have the column but needs to be filtered
+//				 MTable table = MTable.get(getCtx(), tableName);
+//				 if (table == null)
+//					 continue;
+//				 MColumn column = table.getColumn(columnName);
+//				 if (column == null || column.isVirtualColumn() || !column.isActive())
+//					 continue;
+//			} else {
+//				int posColumn = mainSql.indexOf(columnName);
+//				if (posColumn == -1)
+//					continue;
+//				//	we found the column name - make sure it's a column name
+//				char charCheck = mainSql.charAt(posColumn-1);	//	before
+//				if (!(charCheck == ',' || charCheck == '.' || charCheck == ' ' || charCheck == '('))
+//					continue;
+//				charCheck = mainSql.charAt(posColumn+columnName.length());	//	after
+//				if (!(charCheck == ',' || charCheck == ' ' || charCheck == ')'))
+//					continue;
+//			}
+//			
+//			if (AD_Table_ID != 0 && AD_Table_ID != m_recordDependentAccess[i].getAD_Table_ID())
+//				retSQL.append(getDependentAccess(whereColumnName, includes, excludes));
+//			
+//			AD_Table_ID = m_recordDependentAccess[i].getAD_Table_ID();
+//			//	*** we found the column in the main query
+//			if (m_recordDependentAccess[i].isExclude())
+//			{
+//				excludes.add(m_recordDependentAccess[i].getRecord_ID());
+//				if (log.isLoggable(Level.FINE)) log.fine("Exclude " + columnName + " - " + m_recordDependentAccess[i]);
+//			}
+//			else if (!rw || !m_recordDependentAccess[i].isReadOnly())
+//			{
+//				includes.add(m_recordDependentAccess[i].getRecord_ID());
+//				if (log.isLoggable(Level.FINE)) log.fine("Include " + columnName + " - " + m_recordDependentAccess[i]);
+//			}
+//			whereColumnName = getDependentRecordWhereColumn (mainSql, columnName);
+//		}	//	for all dependent records
+		
+		
+//		retSQL.append(getDependentAccess(whereColumnName, includes, excludes)); 
+		//
+		
+		// END COMMENTED BY ANDI - 20210427 : #3700 - Inventory Move Line - Locator To tidak kena filter personal lock
+		
+		retSQL.append(orderBy);
+		if (log.isLoggable(Level.FINEST)) log.finest(retSQL.toString());
+		return retSQL.toString();
+	}	//	addAccessSQL - custom by andi - 20210427
+	
 	/**
 	 * 	Get Dependent Access 
 	 *	@param whereColumnName column name for includes and excludes id

@@ -1354,12 +1354,6 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 				.append("WHERE C_Invoice_ID=").append(getC_Invoice_ID());
 			int no = DB.executeUpdate(sql.toString(), get_TrxName());
 			if (log.isLoggable(Level.FINE)) log.fine("Lines -> #" + no);
-			
-			MInvoicePaySchedule[] invoicePaySchedules = MInvoicePaySchedule.getInvoicePaySchedule(getCtx(), this.getC_Invoice_ID(),0, get_TrxName());
-			for(MInvoicePaySchedule invoicePaySchedule : invoicePaySchedules) {
-				invoicePaySchedule.setAD_Org_ID(getAD_Org_ID());
-				invoicePaySchedule.saveEx();
-			}
 		}
 		
 		return true;
@@ -2208,7 +2202,35 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 		}	//	user
 
 		//	Update Project
-		updateProjectInvoiceAmt(false);
+		if (isSOTrx() && getC_Project_ID() != 0)
+		{
+			MProject project = new MProject (getCtx(), getC_Project_ID(), get_TrxName());
+			BigDecimal amt = getGrandTotal(true);
+			int C_CurrencyTo_ID = project.getC_Currency_ID();
+			if (C_CurrencyTo_ID != getC_Currency_ID())
+				amt = MConversionRate.convert(getCtx(), amt, getC_Currency_ID(), C_CurrencyTo_ID,
+					getDateAcct(), 0, getAD_Client_ID(), getAD_Org_ID());
+			if (amt == null)
+			{
+				m_processMsg = MConversionRateUtil.getErrorMessage(getCtx(), "ErrorConvertingCurrencyToProjectCurrency",
+						getC_Currency_ID(), C_CurrencyTo_ID, 0, getDateAcct(), get_TrxName());
+				return DocAction.STATUS_Invalid;
+			}
+			BigDecimal newAmt = project.getInvoicedAmt();
+			if (newAmt == null)
+				newAmt = amt;
+			else
+				newAmt = newAmt.add(amt);
+			if (log.isLoggable(Level.FINE)) log.fine("GrandTotal=" + getGrandTotal(true) + "(" + amt
+				+ ") Project " + project.getName()
+				+ " - Invoiced=" + project.getInvoicedAmt() + "->" + newAmt);
+			project.setInvoicedAmt(newAmt);
+			if (!project.save(get_TrxName()))
+			{
+				m_processMsg = "Could not update Project";
+				return DocAction.STATUS_Invalid;
+			}
+		}	//	project
 		
 		// auto delay capture authorization payment
 		if (isSOTrx() && !isReversal())
@@ -2362,10 +2384,6 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 	private void setDefiniteDocumentNo() {
 		if (isReversal() && ! MSysConfig.getBooleanValue(MSysConfig.Invoice_ReverseUseNewNumber, true, getAD_Client_ID())) // IDEMPIERE-1771
 			return;
-
-		if (getProcessedOn().signum() > 0) // IDEMPIERE-6067 - if > 0, invoice has already has been reactivated and dates/documentno should not be updated
-			return;
-
 		MDocType dt = MDocType.get(getC_DocType_ID());
 		if (dt.isOverwriteDateOnComplete()) {
 			setDateInvoiced(TimeUtil.getDay(0));
@@ -2864,71 +2882,13 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 		if (m_processMsg != null)
 			return false;
 
-		MPeriod.testPeriodOpen(getCtx(), getDateAcct(), getC_DocType_ID(), getAD_Org_ID());
-
-		if (!DocumentEngine.canReactivateThisDocType(getC_DocType_ID())) {
-			m_processMsg = Msg.getMsg(getCtx(), "DocTypeCannotBeReactivated", new Object[] {MDocType.get(getC_DocType_ID()).getNameTrl()});
-			return false;
-		}
-
-		MAllocationHdr[] allocations = MAllocationHdr.getOfInvoice(getCtx(), getC_Invoice_ID(), get_TrxName());
-		if (allocations.length > 0) {
-			setProcessMessage(Msg.parseTranslation(getCtx(), "InvoiceReactivationFailedAllocationLine"));
-			return false;
-		}
-
-		MMatchInv[] matchInvs = MMatchInv.getInvoice(getCtx(), getC_Invoice_ID(), get_TrxName());
-		if (matchInvs.length > 0) {
-			setProcessMessage(Msg.parseTranslation(getCtx(), "InvoiceReactivationFailedMatchInvoice"));
-			return false;
-		}
-
-		MMatchPO[] matchPos = MMatchPO.getInvoice(getCtx(), getC_Invoice_ID(), get_TrxName());
-		if (matchPos.length > 0) {
-			setProcessMessage(Msg.parseTranslation(getCtx(), "InvoiceReactivationFailedMatchPO"));
-			return false;
-		}
-
-		MFactAcct.deleteEx(MInvoice.Table_ID, getC_Invoice_ID(), get_TrxName());
-		setPosted(false);
-		setDocAction(DOCACTION_Complete);
-		setProcessed(false);
-
-		ICreditManager creditManager = Core.getCreditManager(this);
-		if (creditManager != null)
-		{
-			CreditStatus status = creditManager.checkCreditStatus(DOCACTION_Re_Activate);
-			if (status.isError())
-			{
-				m_processMsg = status.getErrorMsg();
-				return false;
-			}
-		}
-
-		updateProjectInvoiceAmt(true);
-
-		// Update qty invoiced on related order/rma lines 
-		for (MInvoiceLine line : getLines()) {
-
-			if (line.getC_OrderLine_ID() != 0) {
-				MOrderLine  ol = new MOrderLine (getCtx(), line.getC_OrderLine_ID(), get_TrxName());
-				ol.setQtyInvoiced(ol.getQtyInvoiced().subtract(line.getQtyInvoiced()));
-				ol.saveEx();
-			}
-
-			if (line.getM_RMALine_ID() != 0) {
-				MRMALine rmaLine = new MRMALine (getCtx(),line.getM_RMALine_ID(), get_TrxName());
-				rmaLine.setQtyInvoiced(rmaLine.getQtyInvoiced().subtract(line.getQtyInvoiced()));
-				rmaLine.saveEx();
-			}
-		}
-
 		// After reActivate
 		m_processMsg = ModelValidationEngine.get().fireDocValidate(this,ModelValidator.TIMING_AFTER_REACTIVATE);
 		if (m_processMsg != null)
 			return false;
 
-		return true;
+
+		return false;
 	}	//	reActivateIt
 
 	/**
@@ -3144,12 +3104,13 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 	 * @return list of unpaid invoice data
 	 */
 	public static Vector<Vector<Object>> getUnpaidInvoiceData(boolean isMultiCurrency, Timestamp date, int AD_Org_ID, int C_Currency_ID, 
-			int C_BPartner_ID, String trxName)
+			int C_BPartner_ID, int C_Project_ID, int C_Order_ID, String trxName)
 	{
 		/********************************
 		 *  Load unpaid Invoices
 		 *      1-TrxDate, 2-Value, (3-Currency, 4-InvAmt,)
 		 *      5-ConvAmt, 6-ConvOpen, 7-ConvDisc, 8-WriteOff, 9-Applied
+		 *      10-Project // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
 		 * 
 		 SELECT i.DateInvoiced,i.DocumentNo,i.C_Invoice_ID,c.ISO_Code,
 		 i.GrandTotal*i.MultiplierAP "GrandTotal", 
@@ -3169,15 +3130,38 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 			+ "currencyConvertInvoice(i.C_Invoice_ID,?,invoiceOpen(C_Invoice_ID,C_InvoicePaySchedule_ID),?)*i.MultiplierAP, "  //  7   #3, #4  Converted Open
 			+ "currencyConvertInvoice(i.C_Invoice_ID"                               //  8       AllowedDiscount
 			+ ",?,invoiceDiscount(i.C_Invoice_ID,?,C_InvoicePaySchedule_ID),i.DateInvoiced)*i.Multiplier*i.MultiplierAP,"               //  #5, #6
-			+ "i.MultiplierAP "
+			+ "i.MultiplierAP, "
+			+ "C_Project.name AS Project_Name, " // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+			+ "C_Order.DocumentNo AS Order_DocumentNo " // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 			+ "FROM C_Invoice_v i"		//  corrected for CM/Split
+			+ " LEFT JOIN C_Project C_Project ON (C_Project.C_Project_ID = i.C_Project_ID) "		 // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+			+ " LEFT JOIN C_Order C_Order ON (C_Order.C_Order_ID = i.C_Order_ID) "		 			 // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 			+ " INNER JOIN C_Currency c ON (i.C_Currency_ID=c.C_Currency_ID) "
 			+ "WHERE i.IsPaid='N' AND i.Processed='Y'"
 			+ " AND i.C_BPartner_ID=?");                                            //  #7
 		if (!isMultiCurrency)
 			sql.append(" AND i.C_Currency_ID=?");                                   //  #8
-		if (AD_Org_ID != 0 ) 
-			sql.append(" AND i.AD_Org_ID=" + AD_Org_ID);
+		if (AD_Org_ID != 0 ) {
+			// commented by andi - 20181025
+//			sql.append(" AND i.AD_Org_ID=" + AD_Org_ID); 
+			
+			// BEGIN CODE ANDI - 20181025
+			sql.append(" AND ( i.AD_Org_ID = " + AD_Org_ID + " OR i.AD_Org_ID IN (SELECT ad_org_id FROM ad_orginfo WHERE parent_org_id = " + AD_Org_ID + ") )");
+			// END CODE ANDI - 20181025
+		}
+		
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		if (C_Project_ID != 0 ) {
+			sql.append(" AND i.C_Project_ID=" + C_Project_ID);
+		}
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		if (C_Order_ID != 0 ) {
+			sql.append(" AND i.C_Order_ID=" + C_Order_ID);
+		}
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		
 		sql.append(" ORDER BY i.DateInvoiced, i.DocumentNo");
 		if (s_log.isLoggable(Level.FINE)) s_log.fine("InvSQL=" + sql.toString());
 		
@@ -3206,6 +3190,8 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 				line.add(rs.getTimestamp(1));       //  1-TrxDate
 				KeyNamePair pp = new KeyNamePair(rs.getInt(3), rs.getString(2));
 				line.add(pp);                       //  2-Value
+				line.add(rs.getString("Project_Name"));				        // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+				line.add(rs.getString("Order_DocumentNo"));				    // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 				if (isMultiCurrency)
 				{
 					line.add(rs.getString(4));      //  3-Currency
@@ -3580,42 +3566,6 @@ public class MInvoice extends X_C_Invoice implements DocAction, IDocsPostProcess
 			}			
 		}
 		return true;
-	}
-
-	private String updateProjectInvoiceAmt(boolean negateAmt) {
-		
-		if (isSOTrx() && getC_Project_ID() != 0) {
-			
-			MProject project = new MProject (getCtx(), getC_Project_ID(), get_TrxName());
-			BigDecimal amt = getGrandTotal(true);
-			int C_CurrencyTo_ID = project.getC_Currency_ID();
-			if (C_CurrencyTo_ID != getC_Currency_ID())
-				amt = MConversionRate.convert(getCtx(), amt, getC_Currency_ID(), C_CurrencyTo_ID,
-					getDateAcct(), 0, getAD_Client_ID(), getAD_Org_ID());
-			if (amt == null)
-			{
-				m_processMsg = MConversionRateUtil.getErrorMessage(getCtx(), "ErrorConvertingCurrencyToProjectCurrency",
-						getC_Currency_ID(), C_CurrencyTo_ID, 0, getDateAcct(), get_TrxName());
-				return DocAction.STATUS_Invalid;
-			}
-			BigDecimal newAmt = project.getInvoicedAmt();
-			if (newAmt == null)
-				newAmt = amt;
-			else
-				newAmt = newAmt.add(negateAmt ? amt.negate() : amt);
-			if (log.isLoggable(Level.FINE)) log.fine("GrandTotal=" + getGrandTotal(true) + "(" + amt
-				+ ") Project " + project.getName()
-				+ " - Invoiced=" + project.getInvoicedAmt() + "->" + newAmt);
-			project.setInvoicedAmt(newAmt);
-			if (!project.save(get_TrxName()))
-			{
-				m_processMsg = "Could not update Project";
-				return DocAction.STATUS_Invalid;
-			}
-			
-		}
-
-		return "";
 	}
 	
 }	//	MInvoice

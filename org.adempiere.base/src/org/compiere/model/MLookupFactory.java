@@ -399,8 +399,9 @@ public class MLookupFactory
 			+ "cd.ColumnName AS DisplayColumn,rt.IsValueDisplayed,cd.IsTranslated,"	//	3..5
 			+ "rt.WhereClause,rt.OrderByClause,t.AD_Window_ID,t.PO_Window_ID, "		//	6..9
 			+ "t.AD_Table_ID, cd.ColumnSQL as DisplayColumnSQL, "					//	10..11
-			+ "rt.AD_Window_ID as RT_AD_Window_ID, rt.AD_InfoWindow_ID as AD_InfoWindow_ID " // 12..13
-			+ "FROM AD_Ref_Table rt"
+			+ "rt.AD_Window_ID as RT_AD_Window_ID, rt.AD_InfoWindow_ID as AD_InfoWindow_ID, " // 12..13
+			+ "rt.Z_ValueToDisplay_ID " // ADDED BY JACKSON -- Value To Display (14)
+			+ "FROM AD_Ref_Table rt "
 			+ " INNER JOIN AD_Table t ON (rt.AD_Table_ID=t.AD_Table_ID)"
 			+ " INNER JOIN AD_Column ck ON (rt.AD_Key=ck.AD_Column_ID)"
 			+ " INNER JOIN AD_Column cd ON (rt.AD_Display=cd.AD_Column_ID) "
@@ -416,6 +417,9 @@ public class MLookupFactory
 		int overrideZoomWindow = 0;
 		int infoWindowId = 0;
 		boolean loaded = false;
+		// BEGIN CODE JACKSON - 20191001 -- Menambahkan Value to Display
+		int Z_ValueToDisplay_ID = 0;
+		// END CODE JACKSON - 20191001
 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -501,8 +505,16 @@ public class MLookupFactory
 			realSQL.append(TableName).append(".").append(KeyColumn).append(",");
 			if (KeyColumn.endsWith("_ID") || KeyColumn.endsWith("_UU"))
 				realSQL.append("NULL,");
-			if (isValueDisplayed)
-				realSQL.append("NVL(").append(TableName).append(".Value,'-1') || '").append(separator).append("' || ");
+			if (isValueDisplayed) {
+				// BEGIN CODE JACKSON - 20191001 -- Menambahkan Value to Display
+				if(Z_ValueToDisplay_ID > 0) {
+					String ColumnName = DB.getSQLValueString(null, "SELECT ColumnName FROM AD_Column WHERE AD_Column_ID = ?", Z_ValueToDisplay_ID);
+					realSQL.append("NVL(").append(TableName).append("."+ ColumnName +",'-1') || '-' || ");
+				}else {
+					realSQL.append("NVL(").append(TableName).append(".Value,'-1') || '").append(separator).append("' || ");
+				}
+				// END CODE JACKSON - 20191001
+			}
 			if (displayColumnSQL != null && displayColumnSQL.trim().length() > 0)
 				realSQL.append("NVL(").append(displayColumnSQL).append(",'-1')");
 			else {
@@ -532,8 +544,16 @@ public class MLookupFactory
 			realSQL.append(TableName).append(".").append(KeyColumn).append(",");
 			if (KeyColumn.endsWith("_ID") || KeyColumn.endsWith("_UU"))
 				realSQL.append("NULL,");
-			if (isValueDisplayed)
-				realSQL.append("NVL(").append(TableName).append(".Value,'-1') || '").append(separator).append("' || ");
+			if (isValueDisplayed) {
+				// BEGIN CODE JACKSON - 20191001 -- Menambahkan Value to Display
+				if(Z_ValueToDisplay_ID > 0) {
+					String ColumnName = DB.getSQLValueString(null, "SELECT ColumnName FROM AD_Column WHERE AD_Column_ID = ?", Z_ValueToDisplay_ID);
+					realSQL.append("NVL(").append(TableName).append("."+ ColumnName +",'-1') || '-' || ");
+				}else {
+					realSQL.append("NVL(").append(TableName).append(".Value,'-1') || '").append(separator).append("' || ");
+				}
+				// END CODE JACKSON - 20191001
+			}
 			if (displayColumnSQL != null && displayColumnSQL.trim().length() > 0)
 				realSQL.append("NVL(").append(displayColumnSQL).append(",'-1')");
 			else {

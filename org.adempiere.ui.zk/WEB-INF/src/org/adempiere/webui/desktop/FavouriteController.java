@@ -261,6 +261,22 @@ public class FavouriteController
 		}
 		return list;
 	} // getFavourites
+	
+	// BEGIN CODE ANDI - 20190822 - Menambahkan Widget yang Serupa dengan Favourite, hanya saja, dengan Parent Menu Actual (AD_Menu_ID = 1000217) & Projection (AD_Menu_ID = 1000218)
+	
+	/**
+	 * @return List of favourites node
+	 */
+	public List<MTreeNode> getFavourites(int AD_Menu_ID) {
+		List<MTreeNode> list = new ArrayList<>();
+		for(int key : nodeMap.keySet()) {
+			if(nodeMap.get(key).getParent_ID() == AD_Menu_ID)
+				list.add(nodeMap.get(key));
+		}
+		return list;
+	}
+	
+	// END CODE ANDI - 20190822 - Menambahkan Widget yang Serupa dengan Favourite, hanya saja, dengan Parent Menu Actual (AD_Menu_ID = 1000217) & Projection (AD_Menu_ID = 1000218)
 
 	/**
 	 * Add callback for after add node to favourites

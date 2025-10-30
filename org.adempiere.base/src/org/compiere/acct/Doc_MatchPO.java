@@ -401,7 +401,15 @@ public class Doc_MatchPO extends Doc
 				poCost = poCost.setScale(as.getCostingPrecision(), RoundingMode.HALF_UP);
 		}
 
-		String costingError = createMatchPOCostDetail(as, poCost, landedCostMap);
+		//BEGIN CODE MICHAEL - 20211213 - 5733 : ADDED VALIDATION FOR AMT
+		int orderID = m_oLine.getC_Order_ID();
+		
+		int docTypeID = DB.getSQLValue(null, "SELECT c_doctype_id FROM C_Order WHERE c_order_id = '" + orderID + "'");
+		BigDecimal tolerance = DB.getSQLValueBD(null, "SELECT tolerance FROM C_Order WHERE c_order_id = '" + orderID + "'");
+		//END CODE MICHAEL - 20211213 - 5733 : ADDED VALIDATION FOR AMT
+		
+		String costingError = createMatchPOCostDetail(as, poCost, landedCostMap, docTypeID, tolerance);
+		
 		if (costingError != null && costingError.trim().length() > 0) 
 		{
 			p_Error = costingError;
@@ -567,7 +575,7 @@ public class Doc_MatchPO extends Doc
 	 * @param landedCostMap
 	 * @return error message or empty string
 	 */
-	private String createMatchPOCostDetail(MAcctSchema as, BigDecimal poCost, Map<Integer, BigDecimal> landedCostMap)
+	private String createMatchPOCostDetail(MAcctSchema as, BigDecimal poCost, Map<Integer, BigDecimal> landedCostMap, int docTypeID, BigDecimal tolerance)
 	{
 		if (m_ioLine != null && m_ioLine.getM_InOutLine_ID() > 0 &&
 			m_oLine != null && m_oLine.getC_OrderLine_ID() > 0)
@@ -581,6 +589,7 @@ public class Doc_MatchPO extends Doc
 			// Create Cost Detail Matched PO using Total Amount and Total Qty based on OrderLine
 			MMatchPO[] mPO = MMatchPO.getOrderLine(getCtx(), m_oLine.getC_OrderLine_ID(), getTrxName());
 			BigDecimal tQty = Env.ZERO;
+			BigDecimal tAltQuantity2 = Env.ZERO; // vincent PI
 			BigDecimal tAmt = Env.ZERO;
 			for (int i = 0 ; i < mPO.length ; i++)
 			{
@@ -638,6 +647,28 @@ public class Doc_MatchPO extends Doc
 			
 			if (tAmt.scale() > as.getCostingPrecision())
 				tAmt = tAmt.setScale(as.getCostingPrecision(), RoundingMode.HALF_UP);
+
+			//BEGIN CODE BY VINCENT WIJAYA 22/APR/2022 - MENGUBAH tAmt sesuai dengan Line Net Amt PO EGG nya
+			String docTypeNames = DB.getSQLValueString(null, "SELECT Value FROM AD_SysConfig WHERE UPPER(Name) = 'DOCUMENT TYPE CONFIG MAP PO EGG' AND isActive = 'Y' ");
+			
+			int C_OrderLine_ID = mMatchPO.get_ValueAsInt("C_OrderLine_ID");
+			int C_Order_ID = DB.getSQLValue(null, "SELECT C_Order_ID FROM C_OrderLine WHERE C_OrderLine_ID = "+C_OrderLine_ID+" ");
+			String docType = DB.getSQLValueString(null, "SELECT Name FROM C_DocType WHERE C_DocType_ID = (SELECT C_DocTypeTarget_ID FROM C_Order WHERE C_Order_ID = "+C_Order_ID+") "); 
+			if( docTypeNames != null && (docType != null && docTypeNames.contains(docType)) ) {				
+				BigDecimal LineNetAmt = DB.getSQLValueBD(null, "SELECT LineNetAmt FROM C_OrderLine WHERE C_OrderLine_ID = "+C_OrderLine_ID+" and isActive = 'Y' ");
+				if(LineNetAmt == null || LineNetAmt.compareTo(Env.ZERO) < 0) {
+					LineNetAmt = Env.ZERO;
+				}else {
+					if(tAmt.compareTo(Env.ZERO) <= 0) { // BERARTI REVERSE
+						tAmt = LineNetAmt.add(LineNetAmt.negate());			
+					}
+					else {
+						tAmt = LineNetAmt;
+					}
+				}
+			}
+			//END CODE BY VINCENT WIJAYA 22/APR/2022 - MENGUBAH tAmt sesuai dengan Line Net Amt PO EGG nya
+			
 			int Ref_CostDetail_ID = 0;
 			if (mMatchPO.getReversal_ID() > 0 && mMatchPO.get_ID() > mMatchPO.getReversal_ID())
 			{
@@ -681,8 +712,6 @@ public class Doc_MatchPO extends Doc
 		for(Integer elementId : landedCostMap.keySet())
 		{
 			BigDecimal amt = landedCostMap.get(elementId);
-			if (mMatchPO.isReversal())
-				amt = amt.negate();
 			amt = amt.multiply(tQty);
 			if (amt.scale() > as.getCostingPrecision())
 				amt = amt.setScale(as.getCostingPrecision(), RoundingMode.HALF_UP);

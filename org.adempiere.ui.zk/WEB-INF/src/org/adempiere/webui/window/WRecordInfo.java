@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -47,9 +48,11 @@ import org.compiere.model.GridField;
 import org.compiere.model.GridTab;
 import org.compiere.model.GridTable;
 import org.compiere.model.MChangeLog;
+import org.compiere.model.MClientInfo;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MOrgInfo;
 import org.compiere.model.MRole;
 import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
@@ -109,6 +112,18 @@ public class WRecordInfo extends Window implements EventListener<Event>
 	public WRecordInfo (String title, DataStatusEvent dse, GridTab gridTab)
 	{
 		super ();
+		
+		MOrgInfo orgInfo = MOrgInfo.get(Env.getAD_Org_ID(Env.getCtx()));
+		String timezoneId = orgInfo.getTimeZone();
+		if (Util.isEmpty(timezoneId, true)) {
+			MClientInfo clientInfo = MClientInfo.get();
+			timezoneId = clientInfo.getTimeZone();
+			if (Util.isEmpty(timezoneId, true))
+				timezoneId = Env.getContext(Env.getCtx(), Env.CLIENT_INFO_TIME_ZONE);
+		}
+		System.out.println(timezoneId);
+		m_dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timezoneId));
+		m_dateFormat.setTimeZone(TimeZone.getTimeZone(timezoneId));
 		this.setTitle(title);
 		if (!ThemeManager.isUseCSSForWindowSize())
 		{
@@ -268,7 +283,7 @@ public class WRecordInfo extends Window implements EventListener<Event>
 		tabPanel = createTimeline();
 		tabPanel.setParent(tabPanels);
 		
-		if("T".equals(userPreference.getProperty(UserPreference.P_RECORD_INFO_DEFAULT_TAB)) || ClientInfo.isMobile())
+		if("T".equals(userPreference.getProperty(UserPreference.P_RECORD_INFO_DEFAULT_TAB)))
 			tab.setSelected(true);
 	}
 
@@ -301,18 +316,17 @@ public class WRecordInfo extends Window implements EventListener<Event>
 			return false;
 		//  Info
 		MUser user = MUser.get(Env.getCtx(), dse.CreatedBy.intValue());
-		if (!ClientInfo.isMobile())
-			m_info.append(" ")
-				.append(Msg.getElement(Env.getCtx(), "CreatedBy"))
-				.append(": ").append(user.getName())
-				.append(" - ").append(m_dateTimeFormat.format(dse.Created)).append("\n");
-
+		m_info.append(" ")
+			.append(Msg.getElement(Env.getCtx(), "CreatedBy"))
+			.append(": ").append(user.getName())
+			.append(" - ").append(m_dateTimeFormat.format(dse.Created)).append("\n");
+		
 		// get user preference
 		userPreference = new UserPreference();
 		userPreference.loadPreference(user.getAD_User_ID());
-
-		if ((!dse.Created.equals(dse.Updated)
-			|| !dse.CreatedBy.equals(dse.UpdatedBy)) && !ClientInfo.isMobile())
+		
+		if (!dse.Created.equals(dse.Updated) 
+			|| !dse.CreatedBy.equals(dse.UpdatedBy))
 		{
 			if (!dse.CreatedBy.equals(dse.UpdatedBy))
 				user = MUser.get(Env.getCtx(), dse.UpdatedBy.intValue());
@@ -322,7 +336,7 @@ public class WRecordInfo extends Window implements EventListener<Event>
 				.append(" - ").append(m_dateTimeFormat.format(dse.Updated)).append("\n");
 		}
 		if (dse.Info != null && dse.Info.length() > 0)
-			m_info.append(ClientInfo.isMobile() ? " " : "\n ").append(dse.Info).append("");
+			m_info.append("\n ").append(dse.Info).append("");
 		
 		//get uuid
 		GridTable gridTable = null;

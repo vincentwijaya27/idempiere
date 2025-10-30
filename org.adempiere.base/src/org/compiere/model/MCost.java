@@ -1555,16 +1555,11 @@ public class MCost extends X_M_Cost implements ICostInfo
 					M_AttributeSetInstance_ID, dateAcct, trxName);
 		}
 		
-		if (history != null && !MCostElement.COSTINGMETHOD_StandardCosting.equals(costingMethod))
+		if (history != null)
 			return history;
 		
 		// get from MCost
-		MCost cost = get(ctx, AD_Client_ID, AD_Org_ID, M_Product_ID, M_CostType_ID, C_AcctSchema_ID, M_CostElement_ID, M_AttributeSetInstance_ID, trxName);
-		if (history != null && MCostElement.COSTINGMETHOD_StandardCosting.equals(costingMethod)) {
-			cost.setCurrentQty(history.getCurrentQty());
-			cost.setCumulatedQty(history.getCumulatedQty());
-		}
-		return cost;
+		return get(ctx, AD_Client_ID, AD_Org_ID, M_Product_ID, M_CostType_ID, C_AcctSchema_ID, M_CostElement_ID, M_AttributeSetInstance_ID, trxName);
 	}	//	get
 
 	@Deprecated
@@ -1907,8 +1902,14 @@ public class MCost extends X_M_Cost implements ICostInfo
 		{
 			if (CurrentQty.signum() < 0)
 			{
-				throw new AverageCostingNegativeQtyException("Product="+getM_Product().getName()+", Current Qty="+getCurrentQty()+", New Current Qty="+CurrentQty
-						+", CostElement="+ce.getName()+", Schema="+getC_AcctSchema().getName());
+				if(MSysConfig.getValue("Avoid Cost Negative Warning", "N", getAD_Client_ID()).equalsIgnoreCase("Y")) {
+					System.out.println("Avoid Cost Negative Warning. "+"Product="+getM_Product().getName()+", M_Cost_UU="+getM_Cost_UU()+" set Current Qty=0");
+					CurrentQty = BigDecimal.ZERO;
+				// END CODE ANDI - 20220518 Avoid Cost Negative Warning - Supaya kalau cost nya negative, langsung di set lagi jadi 0 sehingga tidak warning
+				} else {
+					throw new AverageCostingNegativeQtyException("Product="+getM_Product().getName()+", Current Qty="+getCurrentQty()+", New Current Qty="+CurrentQty
+							+", CostElement="+ce.getName()+", Schema="+getC_AcctSchema().getName());
+				}
 			}
 		}
 		super.setCurrentQty(CurrentQty);

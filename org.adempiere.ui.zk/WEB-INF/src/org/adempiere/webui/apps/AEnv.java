@@ -429,7 +429,7 @@ public final class AEnv
             return;
 		// still null means the field is empty or not selected item
 		if (value == null)
-			value = DisplayType.isUUID(lookup.getDisplayType()) ? "" : -1;
+			value = -1;
         //
         MQuery zoomQuery = new MQuery();   //  ColumnName might be changed in MTab.validateQuery
 		String column = lookup.getColumnName();
@@ -467,7 +467,15 @@ public final class AEnv
 		zoomQuery.setRecordCount(1);    //  guess
 		int windowId = lookup.getZoom(zoomQuery);
 		if (windowId > 0) {
-			zoom(windowId, zoomQuery, lookup.getWindowNo());
+//			zoom(windowId, zoomQuery, lookup.getWindowNo());
+	        // BEGIN CODE ANDI - 20180911
+	        if (value instanceof Integer && ((Integer) value).intValue() >= 0 && zoomQuery != null && zoomQuery.getZoomTableName() != null && windowId <= 0) {
+	        	int tableId = MTable.getTable_ID(zoomQuery.getZoomTableName());
+	        	zoom(tableId, ((Integer) value).intValue(), zoomQuery, lookup.getWindowNo());
+	        } else { // Default
+	        	zoom(windowId, zoomQuery, lookup.getWindowNo());
+	        }
+	        // END CODE ANDI - 20180911
 		} else {
 			int tableId = MTable.getTable_ID(zoomQuery.getZoomTableName());
 	        if (value instanceof Integer && ((Integer) value).intValue() >= 0) {

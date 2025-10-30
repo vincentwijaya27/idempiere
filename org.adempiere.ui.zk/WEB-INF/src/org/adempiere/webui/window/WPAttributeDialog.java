@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.adempiere.exceptions.AdempiereException;
@@ -103,8 +102,6 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 	 */
 	private static final long serialVersionUID = -7810825026970615029L;
 
-	private List<WEditor> editors = new ArrayList<WEditor>();
-	
 	/**
 	 *	Product Attribute Instance Dialog
 	 *	@param M_AttributeSetInstance_ID Product Attribute Set Instance id
@@ -605,21 +602,10 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 						// IDEMPIERE-2999 - set value in online button as HRef
 						if (sourceEditor.getGridField().getDisplayType() == DisplayType.URL)
 							((Urlbox) sourceEditor.getComponent()).setText((String) evt.getNewValue());
-						// update grid field and context
-						sourceEditor.getGridField().setValue(evt.getNewValue(), false);
-						editors.forEach(e -> {
-							// evaluate context (if needed, for e.g dynamic validation)
-							if (e != sourceEditor)
-							{
-								verifyChangedField(e.getGridField(), sourceEditor.getGridField().getColumnName());
-								e.dynamicDisplay();								
-							}
-						});
 					}
 				}
 			});
-			
-			editors.add(editor);			
+
 			Component fieldEditor = editor.getComponent();
 			row.appendChild(fieldEditor);
 			editor.showMenu();
@@ -627,23 +613,9 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 				editor.setReadWrite(false);
 			else
 				m_editors.add(editor);
-			editor.getGridField().addPropertyChangeListener(editor);
 		}
 	}	//	addAttributeLine
 
-	/**
-	 * Reset field value to null if field depends on columnName.
-	 * Duplicated from ProcessParameterPanel.
-	 * @param field
-	 * @param columnName column name of changed field
-	 */
-	private void verifyChangedField(GridField field, String columnName) {
-		ArrayList<String> list = field.getDependentOn();
-		if (list.contains(columnName)) {
-			GridField.updateDependentField(field, columnName, -1, null);
-		}
-	}
-	
 	/**
 	 * Create GridField for attribute
 	 * @param attribute
@@ -1079,6 +1051,7 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 	 */
 	protected boolean saveSelection()
 	{
+		log.info("");
 		MAttributeSet as = m_masi.getMAttributeSet();
 		
 		if (as == null)
@@ -1133,6 +1106,15 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 				m_M_AttributeSetInstance_ID = m_masi.getM_AttributeSetInstance_ID ();
 				m_M_AttributeSetInstanceName = m_masi.getDescription();
 			}
+			
+			// BEGIN CODE ANDI - 20210216 : #3129 - Atribut Set Instance
+			Boolean ASI_integration = MSysConfig.getBooleanValue("Z_IsOverwriteASIOrg_Integration_NOCACHE", false, Env.getAD_Client_ID(Env.getCtx()));
+			System.out.println(">>> ASI_integration : "+ASI_integration);
+			if(ASI_integration) {
+				int AD_Org_ID = Env.getContextAsInt(Env.getCtx(), m_WindowNoParent, 0, "AD_Org_ID");
+				m_masi.setAD_Org_ID(AD_Org_ID);
+			}
+			// END CODE ANDI - 20210216 : #3129 - Atribut Set Instance
 			
 			//	Save Instance Attributes (M_AttributeInstance)
 			MAttribute[] attributes = as.getMAttributes(!m_productWindow);

@@ -470,6 +470,25 @@ public class MAllocationHdr extends X_C_AllocationHdr implements DocAction
 					return DocAction.STATUS_Invalid;
 				}
 			}
+
+			String Z_SkipValidateDateAllocation = MSysConfig.getValue("Z_SkipValidateDateAllocation", null, getAD_Client_ID()); // ADDED BY JACKSON - 20200808 : #1954 - error saat allocation invoice beda tgl transasction dan account date
+			if(Z_SkipValidateDateAllocation != null && Z_SkipValidateDateAllocation.equalsIgnoreCase("Y")) { // ADDED BY JACKSON - 20200808 : #1954 - error saat allocation invoice beda tgl transasction dan account date
+				// Skip
+			} else { // ADDED BY JACKSON - 20200808 : #1954 - error saat allocation invoice beda tgl transasction dan account date
+				// IDEMPIERE-1850 - validate date against related docs
+				if (line.getC_Invoice_ID() > 0) {
+					if (line.getC_Invoice().getDateAcct().after(getDateAcct())) {
+						m_processMsg = "Wrong allocation date";
+						return DocAction.STATUS_Invalid;
+					}
+				}
+				if (line.getC_Payment_ID() > 0) {
+					if (line.getC_Payment().getDateAcct().after(getDateAcct())) {
+						m_processMsg = "Wrong allocation date";
+						return DocAction.STATUS_Invalid;
+					}
+				}
+			}
 		}
 		setApprovalAmt(approval);
 		//

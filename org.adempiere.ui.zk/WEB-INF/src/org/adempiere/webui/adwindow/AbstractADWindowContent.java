@@ -1292,10 +1292,9 @@ public abstract class AbstractADWindowContent extends AbstractUIPart implements 
 			if (infoName != null && infoDisplay != null)
 				break;
 		}
-    	if (infoName == null)
-    		infoName = adTabbox.getSelectedGridTab().getName();
-    	if (infoDisplay == null)
-    		infoDisplay = "";
+		if (infoDisplay == null) {
+			infoDisplay = "";
+		}
 		String description = infoName + ": " + infoDisplay;
 
     	WChat chat = new WChat(curWindowNo, adTabbox.getSelectedGridTab().getCM_ChatID(), adTabbox.getSelectedGridTab().getAD_Table_ID(),
@@ -1340,10 +1339,6 @@ public abstract class AbstractADWindowContent extends AbstractUIPart implements 
     		if (infoName != null && infoDisplay != null)
     			break;
     	}
-    	if (infoName == null)
-    		infoName = adTabbox.getSelectedGridTab().getName();
-    	if (infoDisplay == null)
-    		infoDisplay = "";
     	String header = infoName + ": " + infoDisplay;
 
     	WPostIt postit = new WPostIt(header, adTabbox.getSelectedGridTab().getAD_PostIt_ID(), adTabbox.getSelectedGridTab().getAD_Table_ID(), recordId, recordUU, null);
@@ -1413,9 +1408,6 @@ public abstract class AbstractADWindowContent extends AbstractUIPart implements 
      * @return true if there's last focus editor
      */
 	public boolean focusToLastFocusEditor() {
-		if (ClientInfo.isMobile())
-			return false;
-
 		return focusToLastFocusEditor(false);
 	}
 	
@@ -1605,7 +1597,7 @@ public abstract class AbstractADWindowContent extends AbstractUIPart implements 
     		Integer[] data = (Integer[]) event.getData();
     		adTabbox.setDetailPaneSelectedTab(data[0], data[1]);
     	}
-    	else if (event.getName().equals(ON_FOCUS_DEFER_EVENT) && !ClientInfo.isMobile()) {
+    	else if (event.getName().equals(ON_FOCUS_DEFER_EVENT)) {
     		HtmlBasedComponent comp = (HtmlBasedComponent) event.getData();
     		if (comp instanceof ADTabpanel)
     			((ADTabpanel)comp).focusToFirstEditor(false);
@@ -2163,7 +2155,38 @@ public abstract class AbstractADWindowContent extends AbstractUIPart implements 
 	        String trxInfo = gt.getStatusLine();
 	        if (trxInfo == null)
 	        	trxInfo = "";
-            statusBar.setInfo(trxInfo);
+	        
+	        // BEGIN CODE ANDI - 20181220 - Requester Feli - Role Bisa me-nonaktifkan StatusBar.setInfo
+	        
+	        int found_config = DB.getSQLValue(null, "SELECT ad_sysconfig_id FROM ad_sysconfig WHERE name = 'z-statusbar-showinfo-price-by-role' AND value = 'Y' AND ad_client_id = ?", Env.getAD_Client_ID(ctx));
+	        if(found_config > 0) { 
+	        
+		        String isShowPrice = DB.getSQLValueString(null, "SELECT isShowPrice FROM ad_role WHERE ad_role_id = ?", Env.getAD_Role_ID(this.ctx));
+		        
+		        if(isShowPrice.equalsIgnoreCase("Y")) {
+		        	
+		        	statusBar.setInfo(trxInfo);
+		        	
+		        } else if(
+		        		!gt.getName().equalsIgnoreCase("PO Line") 
+		        		 && !gt.getName().equalsIgnoreCase("Purchase Order")
+		        		 && !gt.getName().equalsIgnoreCase("Requisition")
+		        		 && !gt.getName().equalsIgnoreCase("Requisition Line")
+		        	) {
+		        	
+		        	statusBar.setInfo(trxInfo);
+		        	
+			    } else {
+			    	
+		        	// hide statusbar
+			    	
+		        }   
+	        }
+		        
+	        // END CODE ANDI - 20181220 - Requester Feli - Role Bisa me-nonaktifkan StatusBar.setInfo
+	        
+//            statusBar.setInfo(trxInfo); // Commented by ANDI - 20181220 - Requester Feli - Role Bisa me-nonaktifkan StatusBar.setInfo
+            
 	        SessionManager.getAppDesktop().updateHelpQuickInfo(gt);
         }
 

@@ -17,6 +17,9 @@
 
 package org.adempiere.webui.panel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import org.adempiere.util.Callback;
@@ -69,6 +72,7 @@ public class UserPanel implements EventListener<Event>, Composer<Component>
     protected LabelImageElement feedback;
 
     protected Label lblUserNameValue = new Label();
+    protected Label lbCperpClock = new Label(); // ADDED BY ANDI - 20220314 : 20220314
     protected WPreference preferencePopup;
 	
 	protected Menupopup feedbackMenu;
@@ -109,6 +113,28 @@ public class UserPanel implements EventListener<Event>, Composer<Component>
 	    	lblUserNameValue.setValue(getUserName() + "@" + getClientName() + "." + getOrgName()+"/"+this.getRoleName());	    	
     	}
     	lblUserNameValue.addEventListener(Events.ON_CLICK, this);
+    	
+    	// BEGIN CODE BY ANDI - 20220314 : 20220314
+    	lbCperpClock = (Label) component.getFellowIfAny("cperpClock", true);
+    	LayoutUtils.addSclass("cperpClockClass", (HtmlBasedComponent) component);
+    	
+    	String envDate = Env.getContext(Env.getCtx(), Env.DATE);
+//    	System.out.println("envDate : "+ envDate.substring(11)); // show clock only
+    	
+    	String myTime = envDate.substring(11);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(myTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long formattedTime = date.getTime();
+
+//        System.out.println("formattedTime : "+formattedTime);
+    	
+    	lbCperpClock.setValue(""+formattedTime);
+    	// END CODE BY ANDI - 20220314 : 20220314
 
     	feedback = (LabelImageElement) component.getFellowIfAny("feedback", true);
     	feedback.setLabel(Msg.getMsg(Env.getCtx(), "Feedback"));

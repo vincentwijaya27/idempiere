@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package name="cperp.clock" language="xul/html">
+	<script src="cperp.clock.js" />
+</package>

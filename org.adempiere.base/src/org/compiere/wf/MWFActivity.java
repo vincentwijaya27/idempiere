@@ -18,8 +18,14 @@ package org.compiere.wf;
 
 import static org.compiere.model.SystemIDs.MESSAGE_WORKFLOWRESULT;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,16 +55,21 @@ import org.compiere.model.MProcess;
 import org.compiere.model.MProcessPara;
 import org.compiere.model.MRefList;
 import org.compiere.model.MRole;
+import org.compiere.model.MSysConfig;
 import org.compiere.model.MTable;
 import org.compiere.model.MUser;
 import org.compiere.model.MUserRoles;
 import org.compiere.model.MWFActivityApprover;
+import org.compiere.model.MWindow;
+import org.compiere.model.MZoomCondition;
 import org.compiere.model.PO;
 import org.compiere.model.Query;
 import org.compiere.model.X_AD_WF_Activity;
+import org.compiere.print.MPrintFormat;
 import org.compiere.print.ReportEngine;
 import org.compiere.process.DocAction;
 import org.compiere.process.ProcessInfo;
+import org.compiere.process.ServerProcessCtl;
 import org.compiere.process.StateEngine;
 import org.compiere.util.CLogger;
 import org.compiere.util.DB;
@@ -223,6 +234,19 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 		m_audit.saveEx();
 		//
 		m_process = process;
+		
+		// BEGIN CODE ANDI - 20181112 - Requester Feli : menambahkan kolom SendEmail, saat WF berhenti di node ini, maka system akan mengirimkan email kepada semua user dengan WF Responsible Role ini
+			if(node.get_ValueAsBoolean("SendEmail")) {
+				System.out.println("\n\n >>> node : " + node.getName() + " akan mengirim email.");
+				
+				// CARA 1
+				m_emails = new ArrayList<String>();
+				sendEMail();
+				setTextMsg(m_emails.toString());
+			} else {
+				System.out.println("\n\n >>> node : " + node.getName() + " send email is false.");
+			}
+		// END CODE ANDI - 20181112 - Requester Feli : menambahkan kolom SendEmail
 	}	//	MWFActivity
 	
 	/**
@@ -317,6 +341,16 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			if (m_process == null)
 				m_process = new MWFProcess (getCtx(), getAD_WF_Process_ID(),
 					this.get_TrxName());
+			
+			// BEGIN CODE ANDI : 20180813
+			// Mengganti default Workflow Activity Organization, dari Original nya "Mengikuti Login" ke "Organisasi Document"
+			
+				String tablename = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = ?", m_process.getAD_Table_ID());
+				int ad_org_id_document = DB.getSQLValue(get_TrxName(), "SELECT ad_org_id FROM "+tablename+" WHERE "+tablename+"_id = "+m_process.getRecord_ID() );
+				m_process.setAD_Org_ID(ad_org_id_document);
+				
+			// END CODE ANDI : 20180813
+				
 			m_process.checkActivities(this.get_TrxName(), m_po);
 		}
 		else
@@ -1123,6 +1157,14 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 				if (ppE != null)
 					processMsg = ppE.getName();
 			}
+
+			// BEGIN CODE ANDI - 20190529 : Void Document Hanya 1 Step #670
+			String EntityType = DB.getSQLValueString(get_TrxName(), "SELECT EntityType FROM ad_table WHERE ad_table_id = ?", doc.get_Table_ID());
+			if(doc.getDocStatus().equalsIgnoreCase("VO") && EntityType.equalsIgnoreCase("U")) { // hanya jalan kalau "User Maintained" Table Saja 
+				return true;
+			}
+			// END CODE ANDI - 20190529 : Void Document Hanya 1 Step #670
+			
 			if (!success)
 			{
 				if (processMsg == null || processMsg.length() == 0)
@@ -1170,7 +1212,6 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			attachment.addEntry(report);
 			attachment.setTextMsg(m_node.getName(true));
 			attachment.saveEx();
-			attachment.close();
 			return true;
 		}
 
@@ -1361,6 +1402,14 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 					&& doc.processIt(DocAction.ACTION_Approve)
 					&& doc.save())
 					return true;	//	done
+				
+				// BEGIN CODE ANDI - 20190529 : Void Document Hanya 1 Step #670
+				String EntityType = DB.getSQLValueString(get_TrxName(), "SELECT EntityType FROM ad_table WHERE ad_table_id = ?", doc.get_Table_ID());
+				if(doc.getDocStatus().equalsIgnoreCase("VO") && EntityType.equalsIgnoreCase("U")) { // hanya jalan kalau "User Maintained" Table Saja
+					return true;
+				}
+				// END CODE ANDI - 20190529 : Void Document Hanya 1 Step #670
+				
 			}	//	approval
 			return false;	//	wait for user
 		}
@@ -1804,7 +1853,23 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			message = text.getMailText(true)
 				+ "\n-----\n" + doc.getDocumentInfo()
 				+ "\n" + doc.getSummary();
-		File pdf = doc != null && m_node.isAttachedDocumentToEmail() ? doc.createPDF() : null;
+		
+//		File pdf = doc != null && m_node.isAttachedDocumentToEmail() ? doc.createPDF() : null;
+		// BEGIN CODE ANDI - 20190911 - Update Print Format dengan yang di set by User Admin 
+			File pdf;
+			
+			if(!m_node.get_ValueAsBoolean("isWithAttachment")) {
+				System.out.println("\n\n >>> pdf di isi null");
+				pdf = null;
+			} else if(m_node.get_ValueAsInt("AD_PrintFormat_ID") >= 0) {
+				System.out.println("\n\n >>> pdf di sesuai dengan ad_printformat_id");
+				pdf = createPDFCustomPrintFormat(m_node.get_ValueAsInt("AD_PrintFormat_ID"));
+			} else {
+				System.out.println("\n\n >>> pdf di sesuai default");
+				pdf = doc.createPDF(); // ini default bawaan idempiere
+			}
+		// END CODE ANDI - 20190911 - Update Print Format dengan yang di set by User Admin
+			
 		//
 		MClient client = MClient.get(doc.getCtx(), doc.getAD_Client_ID());
 
@@ -1824,8 +1889,14 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 				if (oo instanceof Integer)
 				{
 					int AD_User_ID = ((Integer)oo).intValue();
-					if (AD_User_ID != 0)
+					if (AD_User_ID != 0) {
 						sendEMail(client, AD_User_ID, null, subject, message, pdf, text.isHtml());
+
+						MUser m_user = new MUser(getCtx(), AD_User_ID, get_TrxName());
+						if(m_user != null && doc != null) {
+							sendFCMNotif(m_user.getName(), doc.getDocumentNo(), doc.get_Table_ID(), m_user.getAD_User_ID()); // ADDED CODE BY ANDI - 20210105 : #SEND NOTIF TO Firebase Cloud Messaging (FCM)
+						}
+					}
 					else
 						log.fine("No User in Document");
 				}
@@ -1835,23 +1906,44 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			else
 				log.fine("No User Field in Document");
 		}
-		else if (recipient.equals(MWFNode.EMAILRECIPIENT_DocumentOwner))
+		else if (recipient.equals(MWFNode.EMAILRECIPIENT_DocumentOwner)) {
 			sendEMail(client, doc.getDoc_User_ID(), null, subject, message, pdf, text.isHtml());
-		else if (recipient.equals(MWFNode.EMAILRECIPIENT_WFResponsible))
+
+			MUser m_user = new MUser(getCtx(), doc.getDoc_User_ID(), get_TrxName());
+			if(m_user != null && doc != null) {
+				sendFCMNotif(m_user.getName(), doc.getDocumentNo(), doc.get_Table_ID(), m_user.getAD_User_ID()); // ADDED CODE BY ANDI - 20210105 : #SEND NOTIF TO Firebase Cloud Messaging (FCM)
+			}
+		} else if (recipient.equals(MWFNode.EMAILRECIPIENT_WFResponsible))
 		{
 			MWFResponsible resp = getResponsible();
-			if (resp.isInvoker())
+			if (resp.isInvoker()) {
 				sendEMail(client, doc.getDoc_User_ID(), null, subject, message, pdf, text.isHtml());
-			else if (resp.isHuman())
+
+				MUser m_user = new MUser(getCtx(), doc.getDoc_User_ID(), get_TrxName());
+				if(m_user != null && doc != null) {
+					sendFCMNotif(m_user.getName(), doc.getDocumentNo(), doc.get_Table_ID(), m_user.getAD_User_ID()); // ADDED CODE BY ANDI - 20210105 : #SEND NOTIF TO Firebase Cloud Messaging (FCM)
+				}
+			}
+			else if (resp.isHuman()) {
 				sendEMail(client, resp.getAD_User_ID(), null, subject, message, pdf, text.isHtml());
-			else if (resp.isRole())
+
+				MUser m_user = new MUser(getCtx(), resp.getAD_User_ID(), get_TrxName());
+				if(m_user != null && doc != null) {
+					sendFCMNotif(m_user.getName(), doc.getDocumentNo(), doc.get_Table_ID(), m_user.getAD_User_ID()); // ADDED CODE BY ANDI - 20210105 : #SEND NOTIF TO Firebase Cloud Messaging (FCM)
+				}
+			} else if (resp.isRole())
 			{
 				MRole role = resp.getRole();
 				if (role != null)
 				{
 					MUser[] users = MUser.getWithRole(role);
-					for (int i = 0; i < users.length; i++)
+					for (int i = 0; i < users.length; i++) {
 						sendEMail(client, users[i].getAD_User_ID(), null, subject, message, pdf, text.isHtml());
+						
+						if(users != null && users.length > 0 && users[i] != null && doc != null) {
+							sendFCMNotif(users[i].getName(), doc.getDocumentNo(), doc.get_Table_ID(), users[i].getAD_User_ID()); // ADDED CODE BY ANDI - 20210105 : #SEND NOTIF TO Firebase Cloud Messaging (FCM)
+						}
+					}
 				}
 			}
 			else if (resp.isOrganization())
@@ -1865,6 +1957,98 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			}
 		}
 	}	//	sendEMail
+	
+	protected void sendFCMNotif(String username, String documentno, int docTypeID, int AD_User_ID) {
+		String url = MSysConfig.getValue("FCM_URL"); // http://10.1.3.180:8085/api/fcmnotif
+
+		URL obj = null;
+		
+		try {
+			obj = new URL(url);
+
+			HttpURLConnection conn = null;
+
+			conn = (HttpURLConnection) obj.openConnection();
+
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Authorization", "Bearer a76d16bdd5c5043f6f93f3e6c59bd35a");
+			conn.setDoOutput(true);
+			
+			conn.setRequestMethod("POST");
+			
+			String data =  "{\r\n    \"username\" : \""+username+"\",\r\n    \"documentno\" : \""+documentno+"\",\r\n    \"docTypeID\" : "+docTypeID+",\r\n    \"AD_User_ID\" : "+AD_User_ID+"\r\n}";
+			System.out.println("\n\n >>> data : " + data);
+			
+			OutputStreamWriter out = null;
+			out = new OutputStreamWriter(conn.getOutputStream());
+
+			out.write(data);
+			out.close();
+
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			new InputStreamReader(conn.getInputStream());   
+	
+			// Response
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					(conn.getInputStream())));
+	
+			String output;
+			if ((output = br.readLine()) != null)
+			{
+				System.out.println("\n\n >>> output : " + output);
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return;
+	}
+
+	/**
+	 * 	Create PDF
+	 *	@return File or null
+	 */
+	public File createPDFCustomPrintFormat (int AD_PrintFormat_ID)
+	{
+		System.out.println("\n\n >>> masuk ke createPDFCustomPrintFormat");
+		try
+		{
+			StringBuilder msgfile = new StringBuilder().append(get_TableName()).append(get_ID()).append("_");
+			File temp = File.createTempFile(msgfile.toString(), ".pdf");
+			return createPDFCustomPrintFormat (temp, AD_PrintFormat_ID);
+		}
+		catch (Exception e)
+		{
+			log.severe("Could not create PDF - " + e.getMessage());
+		}
+		return null;
+	}	//	createPDFCustomPrintFormat
+
+	/**
+	 * 	Create PDF file
+	 *	@param file output file
+	 *	@return file if success
+	 */
+	public File createPDFCustomPrintFormat (File file, int AD_PrintFormat_ID)
+	{
+		System.out.println("\n\n >>> masuk ke createPDF custom");
+		
+		MPrintFormat format = new MPrintFormat(getCtx(), AD_PrintFormat_ID, get_TrxName()); //hardcode : InOut_Header ** TEMPLATE ** (custom by andi)
+		
+		ProcessInfo pi = new ProcessInfo ("", format.getJasperProcess_ID());
+		pi.setRecord_ID ( getRecord_ID() );
+		pi.setIsBatch(true);
+		
+		ServerProcessCtl.process(pi, null);
+		
+		return pi.getPDFReport();
+		
+	}	//	createPDFCustomPrintFormat
 
 	/**
 	 * 	Send EMail
@@ -2024,7 +2208,47 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 			MUser user = MUser.get(getCtx(), getAD_User_ID());
 			sb.append(" (").append(user.getName()).append(")");
 		}
-		return sb.toString();
+//		return sb.toString(); // COMMENTED BY ANDI - 20190524 : Penambahan nama user pada document action (waktu click Document Action) #610
+		
+// BEGIN CODE ANDI - 20190524 : Penambahan nama user pada document action (waktu click Document Action) #610
+		String userList = "";
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			pstmt = DB.prepareStatement(""
+					+ " SELECT "
+					+ "		u.name "
+					+ "	FROM "
+					+ "		ad_user u "
+					+ "		JOIN ad_user_roles ur ON (ur.ad_user_id = u.ad_user_id) "
+					+ "		JOIN ad_wf_responsible wfr ON (wfr.ad_role_id = ur.ad_role_id) "
+					+ "		JOIN ad_wf_node wfn  ON (wfn.ad_wf_responsible_id = wfr.ad_wf_responsible_id) "
+					+ "	WHERE "
+					+ "		u.isactive = 'Y' AND "
+					+ "		ur.isactive = 'Y' AND "
+					+ "		wfr.isactive = 'Y' AND "
+					+ "		wfn.isactive = 'Y' AND "
+					+ "		wfn.ad_wf_node_id = ?"
+					+ "", null);
+			pstmt.setInt(1, getNode().get_ID());
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+
+				String name = rs.getString("name");
+				userList += "\n - " + name;
+			}
+		} catch (SQLException e) {
+			throw new IllegalStateException("Error :" + e.getLocalizedMessage());
+		} finally {
+			DB.close(rs, pstmt);
+			rs = null;
+			pstmt = null;
+		}
+				
+		return sb.toString() + (userList.equalsIgnoreCase("") ? "" : " : "+userList);
+		
+		// END CODE ANDI - 20190524 : Penambahan nama user pada document action (waktu click Document Action) #610
 	}	//	toStringX
 
 	/**
@@ -2037,9 +2261,32 @@ public class MWFActivity extends X_AD_WF_Activity implements Runnable
 		if (po == null)
 			return null;
 		StringBuilder sb = new StringBuilder();
-		String[] keyColumns = po.get_KeyColumns();
-		if ((keyColumns != null) && (keyColumns.length > 0))
+		
+		// COMMENTED BY ANDI - 20200429 : #1739 - Workflow Activities - Summary sama sesuai dengan nama window
+//		String[] keyColumns = po.get_KeyColumns();
+//		if ((keyColumns != null) && (keyColumns.length > 0))
+//			sb.append(Msg.getElement(getCtx(), keyColumns[0])).append(" ");
+		
+		// BEGIN CODE ANDI - 20200429 : #1739 - Workflow Activities - Summary sama sesuai dengan nama window
+		int SoTrxColumn_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = ? AND ColumnName = 'IsSOTrx'", po.get_Table_ID());
+		if(SoTrxColumn_ID > 0) {
+			String SoTrxValue = DB.getSQLValueString(get_TrxName(), "SELECT IsSOTrx FROM "+po.get_TableName()+" WHERE "+po.get_TableName()+"_ID = ?", po.get_ID());
+			Env.setContext(Env.getCtx(), 0, "IsSOTrx", SoTrxValue);
+		}
+		int AD_Window_ID = MZoomCondition.findZoomWindowByTableId(po.get_Table_ID(), po.get_ID());
+		int AD_SysConfig_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_SysConfig_ID FROM AD_SysConfig WHERE AD_Client_ID = ? AND name = 'Workflow-Activities-Name-By-Zoom-Condition-Window-Name' AND isActive = 'Y' AND value = 'Y'", getAD_Client_ID());
+		
+		if(AD_Window_ID > 0 && AD_SysConfig_ID > 0) {
+			MWindow obW = new MWindow(getCtx(), AD_Window_ID, get_TrxName());
+			sb.append(obW.getName()).append(" ");
+		} else {
+			// ini kembali seperti default nya
+			String[] keyColumns = po.get_KeyColumns();
+			if ((keyColumns != null) && (keyColumns.length > 0))
 			sb.append(Msg.getElement(getCtx(), keyColumns[0])).append(" ");
+		}
+		// END CODE ANDI - 20200429 : #1739 - Workflow Activities - Summary sama sesuai dengan nama window
+		
 		int index = po.get_ColumnIndex("DocumentNo");
 		if (index != -1)
 			sb.append(po.get_Value(index)).append(": ");

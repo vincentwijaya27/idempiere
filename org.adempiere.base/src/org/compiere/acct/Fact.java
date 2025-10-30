@@ -17,11 +17,16 @@
 package org.compiere.acct;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.compiere.model.MAccount;
 import org.compiere.model.MAcctSchema;
@@ -30,7 +35,13 @@ import org.compiere.model.MDistribution;
 import org.compiere.model.MDistributionLine;
 import org.compiere.model.MElementValue;
 import org.compiere.model.MFactAcct;
+import org.compiere.model.MInvoice;
+import org.compiere.model.MInvoiceLine;
+import org.compiere.model.MJournal;
+import org.compiere.model.MJournalLine;
+import org.compiere.model.MMatchInv;
 import org.compiere.util.CLogger;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 
 /**
@@ -88,6 +99,8 @@ public final class Fact
 
 	/** Lines               */
 	private ArrayList<FactLine>	m_lines = new ArrayList<FactLine>();
+
+	private ArrayList<FactLine>	FactLineToRemove = new ArrayList<FactLine>();
 
 	/**
 	 *  Dispose
@@ -148,6 +161,153 @@ public final class Fact
 			&& (docLine.getAmtAcctDr() != null || docLine.getAmtAcctCr() != null))
 			line.setAmtAcct(docLine.getAmtAcctDr(), docLine.getAmtAcctCr());
 		//
+		
+		// BEGIN CODE ANDI - 20190909 - Pada Juournal discount, akan di tambahkan id product nya - request by Ci Sin
+//		System.out.println("\n\n >>> account : " + account.getAccount_ID());
+		String DocumentNo = DB.getSQLValueString(get_TrxName(), "SELECT DocumentNo FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+		String tablename = DB.getSQLValueString(get_TrxName(), "SELECT tablename FROM AD_Table WHERE AD_Table_ID = ?", line.getAD_Table_ID());
+//		System.out.println("\n\n >>> fact acct for tablename : " + tablename);
+//		System.out.println("\n\n >>> DocumentNo : " + DocumentNo);
+		if( docLine != null && account.getAccountType().equalsIgnoreCase("R") && (tablename.equalsIgnoreCase("C_Invoice") || tablename.equalsIgnoreCase("M_Inout")) ) {
+			int M_Product_ID = DB.getSQLValue(get_TrxName(), "SELECT M_Product_ID FROM "+tablename+"line d WHERE d."+tablename+"line_ID = ?", docLine.get_ID());
+			if(M_Product_ID > 0) {
+				line.setM_Product_ID(M_Product_ID);
+			}
+		}
+		// END CODE ANDI - 20190909 
+		
+// BEGIN CODE JACKSON - 20190913 - Menambahkan DocStatus & Document No pada Fact Accounting - request by Ci Sin
+		String DocStatus = "??";
+		int AD_ColumnDocStatus_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'docstatus')");
+		if(AD_ColumnDocStatus_ID > 0) {
+			int C_DocType_MI_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocType_ID FROM C_DocType WHERE AD_Client_ID = ? AND Name = 'Match Invoice'", + m_doc.getAD_Client_ID());
+			if(m_doc.getDescription() != null) {
+				Boolean isReversed = m_doc.getDescription().contains("Invoice: ") || m_doc.getDescription().contains("Payment: ") || m_doc.getDescription().contains("->") || m_doc.getDescription().contains("<-") ? true : false;
+				if(isReversed) {
+					DocStatus = "RE";
+					int Reversal_ID = DB.getSQLValue(get_TrxName(), "SELECT Reversal_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+					DB.executeUpdateEx("UPDATE Fact_Acct SET DocStatus = '"+ DocStatus +"' WHERE AD_Client_ID = "+ m_doc.getAD_Client_ID() +" and Record_ID = "+ Reversal_ID +" AND AD_Table_ID = "+ m_doc.get_Table_ID(), get_TrxName());
+				}
+				else
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+			}else {
+				if(m_doc.getC_DocType_ID() == C_DocType_MI_ID) {
+					MMatchInv objMMi = (MMatchInv) m_doc.getPO();
+					int C_Invoice_ID = DB.getSQLValue(get_TrxName(), "SELECT C_Invoice_ID FROM C_InvoiceLine WHERE AD_Client_ID = ? AND C_InvoiceLine_ID = ?"
+							, + m_doc.getAD_Client_ID(), objMMi.getC_InvoiceLine_ID());
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM C_Invoice WHERE AD_Client_ID = ? AND C_Invoice_ID = ?"
+							, + m_doc.getAD_Client_ID(), C_Invoice_ID);
+				}
+				else	
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", + m_doc.getAD_Client_ID(), m_doc.get_ID());
+			}
+		}
+
+		line.set_ValueOfColumn("DocStatus", DocStatus);
+		line.set_ValueOfColumn("DocumentNo", DocumentNo);
+		// END CODE JACKSON - 20190913
+			
+		// BEGIN CODE JACKSON - 20191220 -- #1192 : Accounting fact tambah target document type - Request By Ci Sin
+		int AD_ColumnDocType_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'c_doctype_id')");
+		int AD_ColumnDocTypeTarget_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'c_doctypetarget_id')");
+		if(AD_ColumnDocType_ID > 0 || AD_ColumnDocTypeTarget_ID > 0) {
+			if(AD_ColumnDocType_ID > 0) {
+				int C_DocType_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocType_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+				line.set_ValueOfColumn("C_DocType_ID", C_DocType_ID);
+			}else {
+				int C_DocType_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocTypeTarget_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+				line.set_ValueOfColumn("C_DocType_ID", C_DocType_ID);
+			}
+			
+		}
+		// END CODE JACKSON - 20191220
+		
+		// BEGIN CODE JACKSON - 20200326 : #1398, #1399 - Menambahkan No. Polisi pada Accounting Fact Detail (APR) pada saat Generate Invoice & GL Journal
+		String ClientName = DB.getSQLValueString(get_TrxName(), "SELECT Name FROM AD_Client WHERE AD_Client_ID = ?", m_doc.getAD_Client_ID());
+		if(ClientName.equalsIgnoreCase("APR")) { // ADDED BY JACKSON - 20200504 : Revisi Code pengambilan No. Polisi dari Invoice > Asset menjadi Invoice > Project (IKB) > Asset *Khusus APR* (Reques By Ci Sin)
+			if(tablename.equalsIgnoreCase("C_Invoice")) {
+				MInvoice invoice = new MInvoice(m_doc.getCtx(), line.getRecord_ID(), get_TrxName());
+				// String DocTypeName = DB.getSQLValueString(get_TrxName(), "SELECT Name FROM C_DocType WHERE C_DocType_ID = ?", invoice.getC_DocTypeTarget_ID());
+				
+				if(invoice.get_Value("C_Project_ID") != null && invoice.get_ValueAsInt("C_Project_ID") > 0) {
+					int A_Asset_ID = DB.getSQLValue(get_TrxName(), "SELECT A_Asset_ID FROM C_Project WHERE C_Project_ID = ?", invoice.get_ValueAsInt("C_Project_ID"));
+					String NoPolisi = DB.getSQLValueString(get_TrxName(), "SELECT SerNo FROM A_Asset WHERE A_Asset_ID = ?", A_Asset_ID);
+					if(NoPolisi != null) {
+						line.set_ValueOfColumn("SerNo", NoPolisi);
+					}
+				}
+
+				// BEGIN CODE JACKSON - 20200422 : #1498 - Charge di memo munculkan Product dan muncul di acct jurnal
+				if(invoice.get_Value("A_Asset_ID") != null && invoice.get_ValueAsInt("A_Asset_ID") > 0) {
+					String NoPolisi = DB.getSQLValueString(get_TrxName(), "SELECT SerNo FROM A_Asset WHERE A_Asset_ID = ?", invoice.get_ValueAsInt("A_Asset_ID"));
+					if(NoPolisi != null) {
+						line.set_ValueOfColumn("SerNo", NoPolisi);
+					}
+				}
+				// END CODE JACKSON - 20200422
+
+				// BEGIN CODE JACKSON - 20200422 : #1504 - tambahkan inputan no polisi di invoice vendor
+				if(docLine != null) {
+					MInvoiceLine invoiceLn = new MInvoiceLine(m_doc.getCtx(), docLine.get_ID(), get_TrxName());
+					if(invoiceLn != null && invoiceLn.get_Value("z_nopolisi") != null)
+						line.set_ValueOfColumn("SerNo", invoiceLn.get_Value("z_nopolisi"));
+				}
+				// END CODE JACKSON - 20200422
+			} else if(tablename.equalsIgnoreCase("GL_Journal")) {
+				MJournalLine journalLine = new MJournalLine(m_doc.getCtx(), line.getLine_ID(), get_TrxName());
+				String NoPolisi = journalLine.get_ValueAsString("SerNo");
+				if(NoPolisi != null) {
+					line.set_ValueOfColumn("SerNo", NoPolisi);
+				}
+			}
+		} else if(ClientName.equalsIgnoreCase("Plantation")) { // ADDED BY JACKSON - 20201126 : #2550 - GL journal tambah field Divisi di header (ambil dari Blok di line)
+			if(tablename.equalsIgnoreCase("GL_Journal")) {
+				MJournal journal = new MJournal(m_doc.getCtx(), line.getRecord_ID(), get_TrxName());
+				
+				if(journal.get_Value("Z_Division_ID") != null && journal.get_ValueAsInt("Z_Division_ID") >= 0) {
+					line.set_ValueOfColumn("Z_Division_ID", journal.get_ValueAsInt("Z_Division_ID"));
+				}
+				
+				if(docLine != null) {
+					MJournalLine journalLn = new MJournalLine(m_doc.getCtx(), docLine.get_ID(), get_TrxName());
+					if(journalLn != null ) {
+						if(journalLn.getUser2_ID() > 0) {
+							Timestamp z_thn_tnm = DB.getSQLValueTS(get_TrxName(), "SELECT z_thn_tnm FROM Z_Tbl_Blok WHERE AD_Client_ID = ? AND C_ElementValue_ID = ?", m_doc.getAD_Client_ID(), journalLn.getUser2_ID());
+							if(z_thn_tnm != null) {
+								DateFormat dateFormatYear = new SimpleDateFormat("yyyy");
+								line.set_ValueOfColumn("z_thn_tnm", dateFormatYear.format(z_thn_tnm));
+							}
+							int Z_Tbl_Tpk_ID= DB.getSQLValue(get_TrxName(), "SELECT Z_Tbl_Tpk_ID FROM Z_Tbl_Blok WHERE AD_Client_ID = ? AND C_ElementValue_ID = ?", m_doc.getAD_Client_ID(), journalLn.getUser2_ID());
+							if(Z_Tbl_Tpk_ID > 0) {
+								line.set_ValueOfColumn("Z_Tbl_Tpk_ID", Z_Tbl_Tpk_ID);
+							}
+						} 
+
+						// BEGIN CODE JACKSON - 20210105 : #2751
+						if(journalLn.get_ValueAsString("SerNo") != null) {
+							String NoPolisi = journalLn.get_ValueAsString("SerNo");
+							line.set_ValueOfColumn("SerNo", NoPolisi);
+							
+							int Z_PIC_ID = DB.getSQLValue(get_TrxName(), "SELECT Z_PIC_ID FROM A_Asset WHERE AD_Client_ID = ? AND SerNo = ? AND Z_PIC_ID > 0", journalLn.getAD_Client_ID(), NoPolisi);
+							if(Z_PIC_ID <= 0) {
+								Z_PIC_ID = DB.getSQLValue(get_TrxName(), "SELECT Z_PIC_ID FROM A_Asset WHERE AD_Client_ID = ? AND Name = ? AND Z_PIC_ID > 0", journalLn.getAD_Client_ID(), NoPolisi);
+							}
+						}
+						
+						if(journalLn.get_ValueAsInt("Z_Tbl_Tpk_ID") > 0) {
+							line.set_ValueOfColumn("Z_Tbl_Tpk_ID", journalLn.get_ValueAsInt("Z_Tbl_Tpk_ID"));
+						}
+
+						if(journalLn.get_Value("z_thn_tnm") != null) {
+							line.set_ValueOfColumn("z_thn_tnm", journalLn.get_Value("z_thn_tnm"));
+						}
+						// END CODE JACKSON - 20210105
+					}
+				}
+			}
+		}
+		// END CODE JACKSON - 20200326
+		
 		if (log.isLoggable(Level.FINE)) log.fine(line.toString());
 		add(line);
 		return line;
@@ -812,6 +972,11 @@ public final class Fact
 				if (dl.getDescription() != null)
 					description += " - " + dl.getDescription();
 				factLine.addDescription(description);
+				
+// BEGIN CODE JACKSON - 20200422 : Menambahkan Set SerNo agar tidak hilang apabila sudah di set sebelumnya
+				factLine.set_ValueOfColumn("SerNo", dLine.get_Value("SerNo"));
+				factLine.set_ValueOfColumn("Z_Cross_Account_ID", dLine.get_Value("Z_Cross_Account_ID"));
+// END CODE JACKSOn - 20200422
 				//
 				if (log.isLoggable(Level.INFO)) log.info(factLine.toString());
 				newLines.add(factLine);
@@ -975,5 +1140,243 @@ public final class Fact
 		} //	toString
 		
 	}	//	Balance
+	
+// BEGIN CODE JACKSON - 20200209 : ValidateFactLine() agar menyatukan Fact Line apabila ada Account & Business Partner yang sama 
+// *** ( Dengan Metode selalu menambah ke FactLine selanjutnya ) ***
+	public void validateFactLine() {
+		FactLine flnBefore = null;
+		
+// Sorting m_lines
+		Collections.sort(m_lines, new Comparator<FactLine>(){
+			@Override
+			public int compare(FactLine fln1, FactLine fln2) {
+				
+	// Sort by Account_ID agar bisa di looping
+				Integer account1 = ((FactLine) fln1).getAccount_ID();
+				Integer account2 = ((FactLine) fln2).getAccount_ID();
+				Integer sCompAccount = account1.compareTo(account2);
+	            
+	            if (sCompAccount != 0) {
+	                return sCompAccount;
+	            } 
+	// Sort By Business Partner
+	            Integer bp1 = ((FactLine) fln1).getC_BPartner_ID();
+	            Integer bp2 = ((FactLine) fln2).getC_BPartner_ID();
+				Integer sCompBP = bp1.compareTo(bp2);
+				
+				if (sCompBP != 0) {
+	                return sCompBP;
+	            } 
+	// Sort By Product
+	            Integer prd1 = ((FactLine) fln1).getM_Product_ID();
+	            Integer prd2 = ((FactLine) fln2).getM_Product_ID();
+				Integer sCompPrd = prd1.compareTo(prd2);
+				
+				if (sCompPrd != 0) {
+	                return sCompPrd;
+	            } 
+	// Sort By Project
+	            Integer prj1 = ((FactLine) fln1).getC_Project_ID();
+	            Integer prj2 = ((FactLine) fln2).getC_Project_ID();
+				Integer sCompPrj = prj1.compareTo(prj2);
+				
+				if (sCompPrj != 0) {
+	                return sCompPrj;
+	            }  
+	// Sort By Sales Region
+	            Integer sr1 = ((FactLine) fln1).getC_SalesRegion_ID();
+	            Integer sr2 = ((FactLine) fln2).getC_SalesRegion_ID();
+				Integer sCompSr = sr1.compareTo(sr2);
+				
+				if (sCompSr != 0) {
+	                return sCompSr;
+	            }  
+	// Sort By Campaign
+	            Integer cmpgn1 = ((FactLine) fln1).getC_Campaign_ID();
+	            Integer cmpgn2 = ((FactLine) fln2).getC_Campaign_ID();
+				Integer sCompCmpgn = cmpgn1.compareTo(cmpgn2);
+				
+				if (sCompCmpgn != 0) {
+	                return sCompCmpgn;
+	            } 
+	// Sort By Cost Center
+	            Integer cc1 = ((FactLine) fln1).getUser1_ID();
+	            Integer cc2 = ((FactLine) fln2).getUser1_ID();
+	            
+				return cc1.compareTo(cc2);
+			}
+		});
+		
+		for(FactLine fln : m_lines) {
+
+			String ClientName = DB.getSQLValueString(get_TrxName(), "SELECT Name FROM AD_Client WHERE AD_Client_ID = ?", fln.getAD_Client_ID());
+			boolean flag = false;
+			int index = m_lines.indexOf(fln);
+			
+			if(flnBefore == null) {// Kalau flnBefore == null, continue
+				flnBefore = fln;
+				FactLineToRemove.add(flnBefore);
+				continue;
+			}
+			if(ClientName.equalsIgnoreCase("APR")) { // ADDED BY JACKSON - 20200423 : Menambahkan IF kalau APR ada pengecekan No. Polisi juga
+				if(fln.getAccount_ID() == flnBefore.getAccount_ID() && fln.getC_BPartner_ID() == flnBefore.getC_BPartner_ID() 
+						&& fln.getM_Product_ID() == flnBefore.getM_Product_ID() && fln.getC_Project_ID() == flnBefore.getC_Project_ID()
+						&& fln.getC_SalesRegion_ID() == flnBefore.getC_SalesRegion_ID() && fln.getC_Campaign_ID() == flnBefore.getC_Campaign_ID()
+						&& fln.getUser1_ID() == flnBefore.getUser1_ID() && fln.get_ValueAsString("SerNo").equalsIgnoreCase(flnBefore.get_ValueAsString("SerNo"))) { // Kalau ada FactLine yang memiliki Account yang sama
+	/* #1 Kalau bukan di sisi (Debit / Credit) yang sama */
+					if((flnBefore.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0 && fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) 
+							|| (flnBefore.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0 && fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0)) {
+		/* Kalau Debit Before > Credit Now maka di letakkan di posisi Debit */
+						if(flnBefore.getAmtSourceDr().compareTo(fln.getAmtSourceCr()) > 0) {
+							BigDecimal AmtSourceDr = flnBefore.getAmtSourceDr();
+							BigDecimal AmtAcctDr =flnBefore.getAmtAcctDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.subtract(fln.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.subtract(fln.getAmtAcctCr()));
+							m_lines.get(index).setAmtSourceCr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctCr(BigDecimal.ZERO);
+							flag = true;
+						} 
+		/* Kalau Credit Now > Debit Before maka di letakkan di posisi Credit */
+						else if(fln.getAmtSourceCr().compareTo(flnBefore.getAmtSourceDr()) > 0) {
+								BigDecimal AmtSourceCr = fln.getAmtSourceCr();
+								BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+								m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(flnBefore.getAmtSourceDr()));
+								m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(flnBefore.getAmtAcctDr()));
+								m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
+								m_lines.get(index).setAmtAcctDr(BigDecimal.ZERO);
+								flag = true;
+						} 
+		/* Kalau Debit Now > Credit Before maka di letakkan di posisi Debit */
+						else if(fln.getAmtSourceDr().compareTo(flnBefore.getAmtSourceCr()) > 0) {
+							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtAcctDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.subtract(flnBefore.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.subtract(flnBefore.getAmtAcctCr()));
+							m_lines.get(index).setAmtSourceCr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctCr(BigDecimal.ZERO);
+							flag = true;
+						} 
+		/* Kalau Credit Before > Debit Now maka di letakkan di posisi Credit */
+						else if(flnBefore.getAmtSourceCr().compareTo(fln.getAmtSourceDr()) > 0) {
+							BigDecimal AmtSourceCr = flnBefore.getAmtSourceCr();
+							BigDecimal AmtAcctCr = flnBefore.getAmtAcctCr();
+							m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(fln.getAmtSourceDr()));
+							m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(fln.getAmtAcctDr()));
+							m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctDr(BigDecimal.ZERO);
+							flag = true;
+						} 
+	/* #2 Kalau di sisi (Debit / Credit) yang sama */
+					} else {
+		/* Kalau di posisi Debit*/
+						if(fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0) {
+							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtSourceDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.add(flnBefore.getAmtSourceDr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.add(flnBefore.getAmtAcctDr()));
+							flag = true;
+						}
+		/* Kalau di posisi Debit*/
+						else if (fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) {
+							BigDecimal AmtSourceCr = fln.getAmtSourceCr();
+							BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+							m_lines.get(index).setAmtSourceCr(AmtSourceCr.add(flnBefore.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctCr(AmtAcctCr.add(flnBefore.getAmtAcctCr()));
+							flag = true;
+						}
+					}
+				}else {
+		/* Kalau sudah berbeda Account_ID */
+					FactLineToRemove.remove(flnBefore);
+					flag = true;
+				}
+				flnBefore = fln;
+				if(flag && (index + 1) != m_lines.size())
+					FactLineToRemove.add(flnBefore);
+			}else {
+				if(fln.getAccount_ID() == flnBefore.getAccount_ID() && fln.getC_BPartner_ID() == flnBefore.getC_BPartner_ID() 
+						&& fln.getM_Product_ID() == flnBefore.getM_Product_ID() && fln.getC_Project_ID() == flnBefore.getC_Project_ID()
+						&& fln.getC_SalesRegion_ID() == flnBefore.getC_SalesRegion_ID() && fln.getC_Campaign_ID() == flnBefore.getC_Campaign_ID()
+						&& fln.getUser1_ID() == flnBefore.getUser1_ID()) { // Kalau ada FactLine yang memiliki Account yang sama
+	/* #1 Kalau bukan di sisi (Debit / Credit) yang sama */
+					if((flnBefore.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0 && fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) 
+							|| (flnBefore.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0 && fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0)) {
+		/* Kalau Debit Before > Credit Now maka di letakkan di posisi Debit */
+						if(flnBefore.getAmtSourceDr().compareTo(fln.getAmtSourceCr()) > 0) {
+							BigDecimal AmtSourceDr = flnBefore.getAmtSourceDr();
+							BigDecimal AmtAcctDr =flnBefore.getAmtAcctDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.subtract(fln.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.subtract(fln.getAmtAcctCr()));
+							m_lines.get(index).setAmtSourceCr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctCr(BigDecimal.ZERO);
+							flag = true;
+						} 
+		/* Kalau Credit Now > Debit Before maka di letakkan di posisi Credit */
+						else if(fln.getAmtSourceCr().compareTo(flnBefore.getAmtSourceDr()) > 0) {
+								BigDecimal AmtSourceCr = fln.getAmtSourceCr();
+								BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+								m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(flnBefore.getAmtSourceDr()));
+								m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(flnBefore.getAmtAcctDr()));
+								m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
+								m_lines.get(index).setAmtAcctDr(BigDecimal.ZERO);
+								flag = true;
+						} 
+		/* Kalau Debit Now > Credit Before maka di letakkan di posisi Debit */
+						else if(fln.getAmtSourceDr().compareTo(flnBefore.getAmtSourceCr()) > 0) {
+							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtAcctDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.subtract(flnBefore.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.subtract(flnBefore.getAmtAcctCr()));
+							m_lines.get(index).setAmtSourceCr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctCr(BigDecimal.ZERO);
+							flag = true;
+						} 
+		/* Kalau Credit Before > Debit Now maka di letakkan di posisi Credit */
+						else if(flnBefore.getAmtSourceCr().compareTo(fln.getAmtSourceDr()) > 0) {
+							BigDecimal AmtSourceCr = flnBefore.getAmtSourceCr();
+							BigDecimal AmtAcctCr = flnBefore.getAmtAcctCr();
+							m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(fln.getAmtSourceDr()));
+							m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(fln.getAmtAcctDr()));
+							m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
+							m_lines.get(index).setAmtAcctDr(BigDecimal.ZERO);
+							flag = true;
+						} 
+	/* #2 Kalau di sisi (Debit / Credit) yang sama */
+					} else {
+		/* Kalau di posisi Debit*/
+						if(fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0) {
+							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtSourceDr();
+							m_lines.get(index).setAmtSourceDr(AmtSourceDr.add(flnBefore.getAmtSourceDr()));
+							m_lines.get(index).setAmtAcctDr(AmtAcctDr.add(flnBefore.getAmtAcctDr()));
+							flag = true;
+						}
+		/* Kalau di posisi Debit*/
+						else if (fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) {
+							BigDecimal AmtSourceCr = fln.getAmtSourceCr();
+							BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+							m_lines.get(index).setAmtSourceCr(AmtSourceCr.add(flnBefore.getAmtSourceCr()));
+							m_lines.get(index).setAmtAcctCr(AmtAcctCr.add(flnBefore.getAmtAcctCr()));
+							flag = true;
+						}
+					}
+				}else {
+		/* Kalau sudah berbeda Account_ID */
+					FactLineToRemove.remove(flnBefore);
+					flag = true;
+				}
+				flnBefore = fln;
+				if(flag && (index + 1) != m_lines.size())
+					FactLineToRemove.add(flnBefore);
+			}
+		}
+
+/* Looping untuk menghapus FactLine yang tidak terpakai lagi*/
+		for (FactLine fln : FactLineToRemove) {
+			int indexToRemove = m_lines.indexOf(fln);
+			m_lines.remove(indexToRemove);
+		}
+	}
+// END CODE JACKSON - 20200209
 	
 }   //  Fact

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import org.compiere.apps.IStatusBar;
 import org.compiere.minigrid.IMiniTable;
 import org.compiere.model.GridTab;
+import org.compiere.model.MClient;
 import org.compiere.model.MInOut;
 import org.compiere.model.MInvoice;
 import org.compiere.model.MLocator;
@@ -212,10 +213,24 @@ public abstract class CreateFromShipment extends CreateFrom
 			sql.append(" LEFT OUTER JOIN C_UOM_Trl uom ON (l.C_UOM_ID=uom.C_UOM_ID AND uom.AD_Language='")
 			.append(Env.getAD_Language(Env.getCtx())).append("')");
 		//
-		sql.append(" WHERE l.C_Order_ID=? "			//	#1
-				+ "GROUP BY l.QtyOrdered,CASE WHEN l.QtyOrdered=0 THEN 0 ELSE l.QtyEntered/l.QtyOrdered END, "
+		sql.append(" WHERE l.C_Order_ID=? ");			//	#1
+
+		// BEGIN CODE ANDI - 20200707 : 1771 : Material Reciept - Create Lines From hanya muncul PO Line yang tick Active = Y (Khusus Comdiv)
+		MClient OBClient = new MClient(Env.getCtx(), Env.getAD_Client_ID(Env.getCtx()), null);
+		if(OBClient.getName().equalsIgnoreCase("Comdiv")) {
+			sql.append(" AND l.isActive = 'Y' ");
+		}
+		// END CODE ANDI - 20200707 : 1771 : Material Reciept - Create Lines From hanya muncul PO Line yang tick Active = Y (Khusus Comdiv)
+		
+		sql.append("GROUP BY l.QtyOrdered,CASE WHEN l.QtyOrdered=0 THEN 0 ELSE l.QtyEntered/l.QtyOrdered END, "
 				+ "l.C_UOM_ID,COALESCE(uom.UOMSymbol,uom.Name), p.M_Locator_ID, loc.Value, po.VendorProductNo, "
 				+ "l.M_Product_ID,COALESCE(p.Name,c.Name), l.Line,l.C_OrderLine_ID "
+				
+				// BEGIN CODE BY ANDI - 2018 12 12 >> requester ci Sintia, kalau kosong tidak perlu tampil
+				+ " HAVING "
+				+ " (l.QtyOrdered-SUM(COALESCE(m.Qty,0))-COALESCE((SELECT SUM(MovementQty) FROM M_InOutLine iol JOIN M_InOut io ON iol.M_InOut_ID=io.M_InOut_ID WHERE l.C_OrderLine_ID=iol.C_OrderLine_ID AND io.Processed='N'),0)) > 0"
+				// END CODE BY ANDI - 2018 12 12 >> requester ci Sintia, kalau kosong tidak perlu tampil
+				
 				+ "ORDER BY l.Line");
 		//
 		if (log.isLoggable(Level.FINER)) log.finer(sql.toString());
@@ -585,6 +600,17 @@ public abstract class CreateFromShipment extends CreateFrom
 				//	Credit Memo - negative Qty
 				if (m_invoice != null && m_invoice.isCreditMemo() )
 					QtyEntered = QtyEntered.negate();
+				
+				// BEGIN CODE ANDI - 20180910
+				BigDecimal QtyReserved = DB.getSQLValueBD(null, "SELECT QtyReserved From c_orderline WHERE c_orderline_id = ?", C_OrderLine_ID);
+				int ad_client_id = DB.getSQLValue(null, "SELECT ad_client_id From c_orderline WHERE c_orderline_id = ?", C_OrderLine_ID);
+				int foundConfig = DB.getSQLValue(null, "SELECT ad_sysconfig_id FROM ad_sysconfig WHERE name = 'Z-CreateFromShipment-Validasi-Shipment-GT-SOLine' AND value = 'Y' AND isActive = 'Y' AND ad_client_id = "+ ad_client_id);
+				if(
+						QtyEntered.floatValue() > QtyReserved.floatValue() && foundConfig > 0
+				) {
+					throw new IllegalArgumentException("QtyEntered("+QtyEntered+") tidak boleh melebihi QtrReserved("+QtyReserved+") di SO");
+				}
+				// END CODE ANDI - 20180910
 
 				//	Create new InOut Line
 				inout.createLineFrom(C_OrderLine_ID, C_InvoiceLine_ID, M_RMALine_ID, M_Product_ID, C_UOM_ID, QtyEntered, M_Locator_ID);

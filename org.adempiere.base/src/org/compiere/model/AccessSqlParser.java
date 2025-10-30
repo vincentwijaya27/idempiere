@@ -208,8 +208,12 @@ public class AccessSqlParser
 			sql = sql.substring(1,sql.length()-1);
 			
 		int fromIndex = sql.indexOf(FROM);
-		if (fromIndex != sql.lastIndexOf(FROM))
-			log.log(Level.WARNING, "More than one FROM clause - " + sql);
+// BEGIN COMMENTED BY ANDI : 20190822 - Untuk mencegah warning apabila di WHERE Clause ada Subquery menggunakan FROM
+		
+//		if (fromIndex != sql.lastIndexOf(FROM))
+//			log.log(Level.WARNING, "More than one FROM clause - " + sql);
+		
+		// END COMMENTED BY ANDI : 20190822 - Untuk mencegah warning apabila di WHERE Clause ada Subquery menggunakan FROM
 		while (fromIndex != -1)
 		{
 			String from = sql.substring(fromIndex+FROM_LENGTH);

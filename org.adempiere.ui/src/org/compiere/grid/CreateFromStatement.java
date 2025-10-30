@@ -72,11 +72,26 @@ public abstract class CreateFromStatement extends CreateFromBatch
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("WITH Payments AS ( ");
-		sql.append("SELECT p.DateTrx as DateTrx, p.C_Payment_ID, NULL AS C_DepositBatch_ID, p.DocumentNo, p.C_Currency_ID, c.ISO_Code, p.PayAmt,");
-		sql.append(" currencyConvert(p.PayAmt,p.C_Currency_ID,ba.C_Currency_ID,p.DateAcct,p.C_ConversionType_ID,p.AD_Client_ID,p.AD_Org_ID) AS ConvAmount, bp.Name,");
+//		sql.append("SELECT p.DateTrx as DateTrx, p.C_Payment_ID, NULL AS C_DepositBatch_ID, p.DocumentNo, p.C_Currency_ID, c.ISO_Code, p.PayAmt,"); // COMMENTED BY ANDI - 20190409 : diganti query nya supaya Payment yang dengan No GL tetap bisa di tarik waktu create lines from
+		// ADDED BY ANDI - 20190409 :  diganti query nya supaya Payment yang dengan No GL tetap bisa di tarik waktu create lines from
+		sql.append("SELECT p.DateTrx,p.C_Payment_ID,p.DocumentNo, p.C_Currency_ID,c.ISO_Code, "
+	        +" CASE p.isreceipt "
+	        +"     WHEN 'Y'::bpchar THEN p.payamt "
+	        +"     ELSE p.payamt * '-1'::integer::numeric "
+	        +" END AS payamt, ");
+//		sql.append(" currencyConvert(p.PayAmt,p.C_Currency_ID,ba.C_Currency_ID,p.DateAcct,p.C_ConversionType_ID,p.AD_Client_ID,p.AD_Org_ID) AS ConvAmount, bp.Name,");
+		// ADDED BY ANDI - 20190409 :  diganti query nya supaya Payment yang dengan No GL tetap bisa di tarik waktu create lines from
+		sql.append("currencyConvert("+
+				" (CASE p.isreceipt "
+		        +"     WHEN 'Y'::bpchar THEN p.payamt "
+		        +"     ELSE p.payamt * '-1'::integer::numeric "
+		        +" END ) "
+		+",p.C_Currency_ID,ba.C_Currency_ID,p.DateAcct,p.C_ConversionType_ID,p.AD_Client_ID,p.AD_Org_ID), bp.Name ");
 		sql.append(" p.Processed, p.C_BankAccount_ID, p.C_DocType_ID, p.TenderType, p.R_AuthCode, p.C_BPartner_ID ");
 		sql.append("FROM C_BankAccount ba");
-		sql.append(" INNER JOIN C_Payment_v p ON (p.C_BankAccount_ID=ba.C_BankAccount_ID)");
+//		sql.append(" INNER JOIN C_Payment_v p ON (p.C_BankAccount_ID=ba.C_BankAccount_ID)");
+		// ADDED BY ANDI - 20190409 :  diganti query nya supaya Payment yang dengan No GL tetap bisa di tarik waktu create lines from
+		sql.append(" INNER JOIN C_Payment p ON (p.C_BankAccount_ID=ba.C_BankAccount_ID)");
 		sql.append(" INNER JOIN C_Currency c ON (p.C_Currency_ID=c.C_Currency_ID)");
 		sql.append(" LEFT OUTER JOIN C_BPartner bp ON (p.C_BPartner_ID=bp.C_BPartner_ID) ");
 		sql.append(" WHERE (p.C_DepositBatch_ID = 0 OR p.C_DepositBatch_ID IS NULL) ");

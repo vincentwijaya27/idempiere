@@ -71,7 +71,10 @@ public class Allocation
 	private int         i_applied = 9;
 	private int 		i_overUnder = 10;
 	
-	protected int         	m_AD_Org_ID = 0;
+	protected int       m_AD_Org_ID = 0;
+	public int         	m_C_Project_ID = 0; // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+	public int         	m_C_Order_ID = 0; // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+	public boolean     	m_isMultiCurrency = false; // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 
 	private ArrayList<Integer>	m_bpartnerCheck = new ArrayList<Integer>(); 
 
@@ -159,6 +162,7 @@ public class Allocation
 		columnNames.add(Msg.getMsg(Env.getCtx(), "ConvertedAmount"));
 		columnNames.add(Msg.getMsg(Env.getCtx(), "OpenAmt"));
 		columnNames.add(Msg.getMsg(Env.getCtx(), "AppliedAmt"));
+		columnNames.add(Msg.getMsg(Env.getCtx(), "Applied Edit")); // Added By Andi - 20191106 - #1024 : payment allocation pada kolom payment tambahkan tik klw mau edit applied
 		
 		return columnNames;
 	}
@@ -181,7 +185,10 @@ public class Allocation
 		}
 		paymentTable.setColumnClass(i++, BigDecimal.class, true);       //  5-ConvAmt
 		paymentTable.setColumnClass(i++, BigDecimal.class, true);       //  6-ConvOpen
-		paymentTable.setColumnClass(i++, BigDecimal.class, false);      //  7-Allocated
+//		paymentTable.setColumnClass(i++, BigDecimal.class, false);      //  7-Allocated // COMMENTED BY ANDI - 20190918 : #904 - Payment Allocation tambah validasi : Di section "Payment" apabila row di tick, angka payment tidak boleh di ganti. Karena tidak boleh ada payment partial.
+		paymentTable.setColumnClass(i++, BigDecimal.class, true);       //  7-Allocated // ADDED BY ANDI - 20190918 : #904 - Payment Allocation tambah validasi : Di section "Payment" apabila row di tick, angka payment tidak boleh di ganti. Karena tidak boleh ada payment partial.
+//		paymentTable.setColumnClass(i++, BigDecimal.class, true);      	//  8-Multiplier
+		paymentTable.setColumnClass(i++, Boolean.class, false);         //  9-Selection-Editable - Applied Edit  // Added By Andi - 20191106 - #1024 : payment allocation pada kolom payment tambahkan tik klw mau edit applied
 		//
 		i_payment = isMultiCurrency ? 7 : 5;
 		
@@ -212,7 +219,7 @@ public class Allocation
 	 */
 	public Vector<Vector<Object>> getInvoiceData(boolean isMultiCurrency, Timestamp date, String trxName)
 	{
-		return MInvoice.getUnpaidInvoiceData(isMultiCurrency, date, m_AD_Org_ID, m_C_Currency_ID, m_C_BPartner_ID, trxName);
+		return MInvoice.getUnpaidInvoiceData(isMultiCurrency, date, m_AD_Org_ID, m_C_Currency_ID, m_C_BPartner_ID, m_C_Project_ID, m_C_Order_ID, trxName);
 	}
 
 	/**
@@ -227,6 +234,8 @@ public class Allocation
 		columnNames.add(Msg.getMsg(Env.getCtx(), "Select"));
 		columnNames.add(Msg.translate(Env.getCtx(), "Date"));
 		columnNames.add(Util.cleanAmp(Msg.translate(Env.getCtx(), "DocumentNo")));
+		columnNames.add("Project"); // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		columnNames.add("Order"); // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 		if (isMultiCurrency)
 		{
 			columnNames.add(Msg.getMsg(Env.getCtx(), "TrxCurrency"));
@@ -253,6 +262,8 @@ public class Allocation
 		invoiceTable.setColumnClass(i++, Boolean.class, false);         //  0-Selection
 		invoiceTable.setColumnClass(i++, Timestamp.class, true);        //  1-TrxDate
 		invoiceTable.setColumnClass(i++, String.class, true);           //  2-Value
+		invoiceTable.setColumnClass(i++, String.class, true);           //  11-Project // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		invoiceTable.setColumnClass(i++, String.class, true);           // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 		if (isMultiCurrency)
 		{
 			invoiceTable.setColumnClass(i++, String.class, true);       //  3-Currency
@@ -274,11 +285,22 @@ public class Allocation
 	 */
 	protected void prepareForCalculate(boolean isMultiCurrency)
 	{
-		i_open = isMultiCurrency ? 6 : 4;
-		i_discount = isMultiCurrency ? 7 : 5;
-		i_writeOff = isMultiCurrency ? 8 : 6;
-		i_applied = isMultiCurrency ? 9 : 7;
-		i_overUnder = isMultiCurrency ? 10 : 8;
+		// COMMENTED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+//		i_open = isMultiCurrency ? 6 : 4;
+//		i_discount = isMultiCurrency ? 7 : 5;
+//		i_writeOff = isMultiCurrency ? 8 : 6;
+//		i_applied = isMultiCurrency ? 9 : 7;
+//		i_overUnder = isMultiCurrency ? 10 : 8;
+		
+		m_isMultiCurrency = isMultiCurrency;
+		
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		i_open = isMultiCurrency ? 8 : 6;
+		i_discount = isMultiCurrency ? 9 : 7;
+		i_writeOff = isMultiCurrency ? 10 : 8;
+		i_applied = isMultiCurrency ? 11 : 9;
+		i_overUnder = isMultiCurrency ? 12 : 10;
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 	}   //  loadBPartner
 	
 	/**
@@ -307,7 +329,12 @@ public class Allocation
 		//  Payments
 		if (!isInvoice)
 		{
-			BigDecimal open = (BigDecimal)payment.getValueAt(row, i_open);
+			// ADDED BY ANDI - 20190925 : Payment memiliki different column krn ada penambahan Project & OrderDocumentNo di Invoice
+			int i_open_payment = (m_isMultiCurrency ? 6 : 4);
+			// ADDED BY ANDI - 20190925 : Payment memiliki different column krn ada penambahan Project & OrderDocumentNo di Invoice
+			
+//			BigDecimal open = (BigDecimal)payment.getValueAt(row, i_open);
+			BigDecimal open = (BigDecimal)payment.getValueAt(row, i_open_payment);
 			BigDecimal applied = (BigDecimal)payment.getValueAt(row, i_payment);
 			
 			if (col == 0)
@@ -337,6 +364,22 @@ public class Allocation
 			}
 			
 			payment.setValueAt(applied, row, i_payment);
+
+			// BEGIN CODE Andi - 20191106 - #1024 : payment allocation pada kolom payment tambahkan tik klw mau edit applied
+			if(col == 6) { // applied editable
+				
+				if (((Boolean)payment.getValueAt(row, 6)).booleanValue()) {
+					payment.setColumnClass(i_payment, BigDecimal.class, false);
+				} else {
+					payment.setColumnClass(i_payment, BigDecimal.class, true);
+				}
+				
+			} else {
+				
+				payment.setColumnClass(i_payment, BigDecimal.class, true);
+				payment.setValueAt(false, row, 6);
+			}
+			// BEGIN CODE Andi - 20191106 - #1024 : payment allocation pada kolom payment tambahkan tik klw mau edit applied
 		}
 
 		//  Invoice

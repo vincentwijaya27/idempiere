@@ -18,7 +18,6 @@ package org.compiere.model;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -844,11 +843,6 @@ public class MPayment extends X_C_Payment
 						log.saveError("FillMandatory", Msg.getElement(getCtx(), COLUMNNAME_ConvertedAmt));
 						return false;
 					}
-					BigDecimal converted = getPayAmt().multiply(getCurrencyRate());
-					int stdPrecision = MCurrency.getStdPrecision(getCtx(), as.getC_Currency_ID());
-					if (converted.scale() > stdPrecision)
-						converted = converted.setScale(stdPrecision, RoundingMode.HALF_UP);
-					setConvertedAmt(converted);
 				}
 				else
 				{
@@ -2895,11 +2889,6 @@ public class MPayment extends X_C_Payment
 		
 		MPeriod.testPeriodOpen(getCtx(), getDateAcct(), getC_DocType_ID(), getAD_Org_ID());
 
-		if (!DocumentEngine.canReactivateThisDocType(getC_DocType_ID())) {
-			m_processMsg = Msg.getMsg(getCtx(), "DocTypeCannotBeReactivated", new Object[] {MDocType.get(getC_DocType_ID()).getNameTrl()});
-			return false;
-		}
-
 		MAllocationHdr[] allocations = MAllocationHdr.getOfPayment(getCtx(), getC_Payment_ID(), get_TrxName());
 		if (allocations.length > 0) {
 			m_processMsg = Msg.getMsg(getCtx(), "PaymentReactivationFailedAllocationLine");
@@ -3262,6 +3251,7 @@ public class MPayment extends X_C_Payment
 			+ "FROM C_Payment_v p"		//	Corrected for AP/AR
 			+ " INNER JOIN C_Currency c ON (p.C_Currency_ID=c.C_Currency_ID) "
 			+ "WHERE p.IsAllocated='N' AND p.Processed='Y'"
+			+ " AND p.IsReconciled='Y'" // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi
 			+ " AND p.C_Charge_ID IS NULL"		//	Prepayments OK
 			+ " AND p.C_BPartner_ID=?");                   		//      #5
 		if (!isMultiCurrency)

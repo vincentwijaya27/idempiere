@@ -45,6 +45,7 @@ import org.compiere.model.MLookupFactory;
 
 import static org.compiere.model.SystemIDs.*;
 
+import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.KeyNamePair;
@@ -104,7 +105,8 @@ public class WCreateFromInvoiceUI extends CreateFromInvoice implements EventList
 	
 	protected Label shipmentLabel = new Label();
 	/** Shipments parameter field */
-	protected Listbox shipmentField = ListboxFactory.newDropdownListbox();
+	//protected Listbox shipmentField = ListboxFactory.newDropdownListbox(); // COMMENTED BY JACKSON - 20200228 : #1359 - Create Lines From di window Invoice
+	protected WEditor shipmentField; // ADDED BY JACKSON - 20200228 : #1359 - Create Lines From di window Invoice
     
     /** Label for the rma selection */
     protected Label rmaLabel = new Label();
@@ -183,8 +185,10 @@ public class WCreateFromInvoiceUI extends CreateFromInvoice implements EventList
 		row.appendChild(new Space());
 		row.appendChild(new Space());
 		row.appendChild(shipmentLabel.rightAlign());
-		ZKUpdateUtil.setHflex(shipmentField, "1");
-		row.appendChild(shipmentField);				
+		if (shipmentField != null)
+			row.appendChild(shipmentField.getComponent());
+//		ZKUpdateUtil.setHflex(shipmentField, "1");
+//		row.appendChild(shipmentField);				
         
         // Add RMA document selection to panel
 		row = rows.newRow();
@@ -250,17 +254,19 @@ public class WCreateFromInvoiceUI extends CreateFromInvoice implements EventList
 				C_Order_ID = ((Integer) li.getValue()).intValue();
 			//  set Invoice, RMA and Shipment to Null
 			rmaField.setSelectedIndex(-1);
-			shipmentField.setSelectedIndex(-1);
+//			shipmentField.setSelectedIndex(-1);
+			shipmentField.setValue(null);
 			loadOrder(C_Order_ID, true);
 		}
 		//  Shipment
 		else if (e.getTarget().equals(shipmentField))
 		{
-			ListItem li = shipmentField.getSelectedItem();
+//			ListItem li = shipmentField.getSelectedItem();
 			int M_InOut_ID = 0;
-			if (li != null && li.getValue() != null)
-				M_InOut_ID = ((Integer) li.getValue()).intValue();
+//			if (li != null && li.getValue() != null)
+//				M_InOut_ID = ((Integer) li.getValue()).intValue();
 			//  set Order, RMA and Invoice to Null
+			M_InOut_ID = (int) shipmentField.getValue();
 			orderField.setSelectedIndex(-1);
 			rmaField.setSelectedIndex(-1);
 			loadShipment(M_InOut_ID);
@@ -274,7 +280,8 @@ public class WCreateFromInvoiceUI extends CreateFromInvoice implements EventList
 		        M_RMA_ID = ((Integer) li.getValue()).intValue();
 		    //  set Order and Invoice to Null
 		    orderField.setSelectedIndex(-1);
-		    shipmentField.setSelectedIndex(-1);
+//		    shipmentField.setSelectedIndex(-1);
+			shipmentField.setValue(null);
 		    loadRMA(M_RMA_ID);
 		}
 		m_actionActive = false;
@@ -357,18 +364,24 @@ public class WCreateFromInvoiceUI extends CreateFromInvoice implements EventList
 		if (log.isLoggable(Level.CONFIG)) log.config("C_BPartner_ID" + C_BPartner_ID);
 
 		//  load Shipments (Receipts) - Completed, Closed
-		shipmentField.removeActionListener(this);
-		shipmentField.removeAllItems();
+		int AD_Column_InOut_ID = DB.getSQLValue(null, "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = 'c_invoice') AND LOWER(ColumnName) = 'm_inout_id'");        //  C_Invoice.M_InOut_ID
+		MLookup lookup = MLookupFactory.get (Env.getCtx(), p_WindowNo, 0, AD_Column_InOut_ID, DisplayType.Search);
+		shipmentField = new WSearchEditor ("M_InOut_ID", true, false, true, lookup);
+		//
+		int M_InOut_ID = Env.getContextAsInt(Env.getCtx(), p_WindowNo, "M_InOut_ID");
+		shipmentField.setValue(new Integer(M_InOut_ID));
+//		shipmentField.removeActionListener(this);
+//		shipmentField.removeAllItems();
 		//	None
 		KeyNamePair pp = new KeyNamePair(0,"");
-		shipmentField.addItem(pp);
+//		shipmentField.addItem(pp);
 		
-		ArrayList<KeyNamePair> list = loadShipmentData(C_BPartner_ID);
-		for(KeyNamePair knp : list)
-			shipmentField.addItem(knp);
-		
-		shipmentField.setSelectedIndex(0);
-		shipmentField.addActionListener(this);
+//		ArrayList<KeyNamePair> list = loadShipmentData(C_BPartner_ID);
+//		for(KeyNamePair knp : list)
+//			shipmentField.addItem(knp);
+//		
+//		shipmentField.setSelectedIndex(0);
+//		shipmentField.addActionListener(this);
 	}
 	
 	/**

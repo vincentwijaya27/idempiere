@@ -21,13 +21,16 @@ import static org.adempiere.base.markdown.IMarkdownRenderer.MARKDOWN_OPENING_TAG
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.logging.Level;
 
 import org.adempiere.base.Core;
 import org.compiere.util.CCache;
 import org.compiere.util.DB;
+import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
+import org.compiere.util.Msg;
 import org.compiere.util.Util;
 
 /**
@@ -269,13 +272,7 @@ public class MMailText extends X_R_MailText
 			}
 
 			token = inStr.substring(0, j);
-			String parseValue = parseVariable(token, po, keepEscapeSequence);
-			if (keepEscapeSequence && !(("@"+token+"@").equals(parseValue))) 
-			{
-				if (parseValue.contains("@"))
-					parseValue = parseValue.replace("@", "@@");
-			}
-			outStr.append(parseValue);		// replace context
+			outStr.append(parseVariable(token, po, keepEscapeSequence));		// replace context
 
 			inStr = inStr.substring(j+1, inStr.length());	// from second @
 			i = inStr.indexOf('@');
@@ -294,7 +291,59 @@ public class MMailText extends X_R_MailText
 	 */
 	protected String parseVariable (String variable, PO po, boolean keepEscapeSequence)
 	{
-		return Env.parseVariable("@"+variable+"@", po, get_TrxName(), true, true, keepEscapeSequence, keepEscapeSequence);
+		return Env.parseVariable("@"+variable+"@", po, get_TrxName(), true, true, true, keepEscapeSequence);
+	}	//	translate
+	
+	/**
+	 * 	Parse Variable
+	 *	@param variable variable
+	 *	@param po po
+	 *	@return translated variable or if not found the original tag
+	 */
+	protected String parseVariable (String variable, PO po)
+	{
+		if (variable.contains("<") && variable.contains(">")) { // IDEMPIERE-3096
+			return Env.parseVariable("@"+variable+"@", po, get_TrxName(), true);
+		}
+		// special default formatting cases for dates/times/boolean in mail text not covered by Env.parseVariable
+		int index = po.get_ColumnIndex(variable);
+		if (index == -1){
+			StringBuilder msgreturn = new StringBuilder("@").append(variable).append("@");
+			return msgreturn.toString();	//	keep for next
+		}	
+		//
+		MColumn col = MColumn.get(Env.getCtx(), po.get_TableName(), variable);
+		Object value = null;
+		if (col != null && col.isSecure()) {
+			value = "********";
+		} else if (col.getAD_Reference_ID() == DisplayType.Date || col.getAD_Reference_ID() == DisplayType.DateTime || col.getAD_Reference_ID() == DisplayType.Time) {
+			SimpleDateFormat sdf = DisplayType.getDateFormat(col.getAD_Reference_ID());
+			value = sdf.format (po.get_Value(index));	
+		} else if (col.getAD_Reference_ID() == DisplayType.YesNo) {
+			if (po.get_ValueAsBoolean(variable))
+				value = Msg.getMsg(Env.getCtx(), "Yes");
+			else
+				value = Msg.getMsg(Env.getCtx(), "No");
+		} else {
+			value = po.get_Value(index);
+			// BEGIN CODE JACKSON - 20191025 -- Menambahkan kondisi apabila variable contain C_Order_ID , ambil Document No. Order tersebut
+			if(variable.contains("_ID")) {
+				String TableName = variable.substring(0, variable.length() - 3);
+				String DocumentNo = DB.getSQLValueString(get_TrxName(), "SELECT DocumentNo FROM "+ TableName +" WHERE AD_Client_ID = ? AND "+ TableName +"_ID = ?", getAD_Client_ID(), value);
+				if(DocumentNo != null)
+					value = DocumentNo;
+				else{
+					String Name = DB.getSQLValueString(get_TrxName(), "SELECT Name FROM "+ TableName +" WHERE AD_Client_ID = ? AND "+ TableName +"_ID = ?", getAD_Client_ID(), value);
+					if(Name != null) {
+						value = Name;
+					}
+				}
+			}
+			// END CODE JACKSON - 20191025
+		}
+		if (value == null)
+			return "";
+		return value.toString();
 	}	//	translate
 	
 	/**

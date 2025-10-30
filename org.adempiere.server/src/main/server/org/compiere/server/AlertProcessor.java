@@ -291,12 +291,12 @@ public class AlertProcessor extends AdempiereServer
 					note.saveEx();
 					if (attachments.size() > 0) {
 						// Attachment
-						try (MAttachment attachment = new MAttachment (getCtx(), MNote.Table_ID, note.getAD_Note_ID(), note.getAD_Note_UU(), trx.getTrxName())) {
+						MAttachment attachment = new MAttachment (getCtx(), MNote.Table_ID, note.getAD_Note_ID(), note.getAD_Note_UU(), trx.getTrxName());
 						attachment.setClientOrg(alert.getAD_Client_ID(), alert.getAD_Org_ID());
 						for (File f : attachments) {
 							attachment.addEntry(f);
 						}
-						attachment.saveEx();}
+						attachment.saveEx();
 					}
 					countMail++;
 					trx.commit();
@@ -326,7 +326,7 @@ public class AlertProcessor extends AdempiereServer
 		Exception error = null;
 		try
 		{
-			pstmt = DB.prepareNormalReadReplicaStatement(sql, trxName);
+			pstmt = DB.prepareNormalReadReplicaStatement(sql, trxName, null);
 			rs = pstmt.executeQuery ();
 			ResultSetMetaData meta = rs.getMetaData();
 			boolean isFirstRow = true;
@@ -389,7 +389,7 @@ public class AlertProcessor extends AdempiereServer
 		Exception error = null;
 		try
 		{
-			pstmt = DB.prepareNormalReadReplicaStatement(sql, trxName);
+			pstmt = DB.prepareNormalReadReplicaStatement(sql, trxName, null);
 			rs = pstmt.executeQuery ();
 			ResultSetMetaData meta = rs.getMetaData();
 			while (rs.next ())

@@ -79,6 +79,7 @@ public class MSequence extends X_AD_Sequence
 	 */
 	public static int getNextID (int AD_Client_ID, String TableName, String trxName)
 	{
+//		int QUERY_TIME_OUT_SYSCONFIG = MSysConfig.getIntValue("QUERY_TIME_OUT", QUERY_TIME_OUT); // ADDED BY Andi - 20210405 : #3625 - Perpanjang Timeout untuk query Sequence
 		boolean isSystemNativeSequence = MSysConfig.getBooleanValue(MSysConfig.SYSTEM_NATIVE_SEQUENCE,false);
 		//	Check AdempiereSys
 		boolean adempiereSys = false;
@@ -343,15 +344,66 @@ public class MSequence extends X_AD_Sequence
 		String prefix = seq.getPrefix();
 		String suffix = seq.getSuffix();
 		String decimalPattern = seq.getDecimalPattern();
+		
+		// BEGIN CODE JACKSON : 20190625 - #608 - Document sequence untuk business partner dibuat sesuai organization dan business partner group
+		
+//		int QUERY_TIME_OUT_SYSCONFIG = MSysConfig.getIntValue("QUERY_TIME_OUT", QUERY_TIME_OUT); // ADDED BY Andi - 20210405 : #3625 - Perpanjang Timeout untuk query Sequence
+		
+		int c_bp_group_id = 0;
+		int M_Product_Category_ID = 0; // ADDED BY JACKSON - 20200709
+		int User1_ID = 0; // ADDED BY JACKSON - 20210525
+		boolean isUseBPartnerGLevel = false;
+		boolean isUseProductCategLevel = false; // ADDED BY JACKSON - 20200709
+		boolean IsCostCenterLevelSequence = false; // ADDED BY JACKSON - 20210525
+		PreparedStatement prpstmt1 = null;
+		ResultSet rs1 = null;
+		String sql1 = "SELECT isbpartnerglevelsequence, IsProductCategLevelSequence, IsCostCenterLevelSequence FROM ad_sequence WHERE ad_sequence_id = " + AD_Sequence_ID;
+		prpstmt1 = DB.prepareStatement(sql1, trxName);
+
+		try {
+
+			rs1 = prpstmt1.executeQuery();
+
+			while (rs1.next()) {
+				isUseBPartnerGLevel = rs1.getBoolean("isBPartnerGLevelSequence");
+				isUseProductCategLevel = rs1.getBoolean("IsProductCategLevelSequence"); // ADDED BY JACKSON - 20200709
+				IsCostCenterLevelSequence = rs1.getBoolean("IsCostCenterLevelSequence"); // ADDED BY JACKSON - 20210525 : #4053
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (po != null && isUseBPartnerGLevel && po.get_Value("C_BP_Group_ID") != null)
+			c_bp_group_id = (int) po.get_Value("C_BP_Group_ID");
+		if (po != null && isUseProductCategLevel && po.get_Value("M_Product_Category_ID") != null) // ADDED BY JACKSON - 20200709
+			M_Product_Category_ID = (int) po.get_Value("M_Product_Category_ID");
+		if (po != null && IsCostCenterLevelSequence && po.get_Value("User1_ID") != null) // ADDED BY JACKSON - 20210525 : #4053
+			User1_ID = (int) po.get_Value("User1_ID");
+		
+		if(User1_ID <= 0 && po.getAD_Org_ID() != 0) { // ADDED BY JACKSON - 20210525 : #4053 - Default User1_ID apabila di Dokumen tidak ada User1_ID
+			User1_ID = DB.getSQLValue(trxName, "SELECT C_ElementValue_ID FROM C_ElementValue WHERE Value = '*' AND C_Element_ID = (SELECT C_Element_ID FROM C_Element WHERE AD_Client_ID = ? AND LOWER(Name) LIKE '%cost center%')", Env.getAD_Client_ID(Env.getCtx()));
+			if(User1_ID <= 0) {
+				String errMsgCostCenter = DB.getSQLValueString(trxName, "SELECT Value FROM AD_SysConfig WHERE AD_Client_ID = ? AND LOWER(Name) = 'error message cost center default'", Env.getAD_Client_ID(Env.getCtx()));
+				if(errMsgCostCenter == null)
+					errMsgCostCenter = "Belum ada Cost Center '*' (Default)!";
+				throw new AdempiereException(errMsgCostCenter);
+			}
+		}
+		// END CODE JACKSON : 20190625
 
 		String selectSQL = null;
-		if (isStartNewYear || isUseOrgLevel) {
+//		if (isStartNewYear || isUseOrgLevel) {
+		if (isStartNewYear || isUseOrgLevel || isUseBPartnerGLevel || isUseProductCategLevel || IsCostCenterLevelSequence) {
 			selectSQL = "SELECT y.CurrentNext, s.CurrentNextSys "
 					+ "FROM AD_Sequence_No y, AD_Sequence s "
 					+ "WHERE y.AD_Sequence_ID = s.AD_Sequence_ID "
 					+ "AND s.AD_Sequence_ID = ? "
 					+ "AND y.CalendarYearMonth = ? "
 					+ "AND y.AD_Org_ID = ? "
+					+ "AND y.C_BP_Group_ID = ? " // ADDED BY JACKSON - 20190625
+					+ "AND y.M_Product_Category_ID = ? " // ADDED BY JACKSON - 20190625
+					+ "AND y.User1_ID = ? " // ADDED BY JACKSON - 20210525 : #4053
 					+ "AND s.IsActive='Y' AND s.IsTableID='N' AND s.IsAutoSequence='Y' "
 					+ "ORDER BY s.AD_Client_ID DESC";
 		} else {
@@ -438,6 +490,11 @@ public class MSequence extends X_AD_Sequence
 			if (isUseOrgLevel || isStartNewYear) {
 				pstmt.setString(index++, calendarYearMonth);
 				pstmt.setInt(index++, docOrg_ID);
+				// BEGIN CODE JACKSON : 20190625 - Tambah set C_BP_Group_ID || UPDATED BY JACKSON - 20200709 || UPDATED BY JACKSON - 20210525 : #4053
+				pstmt.setInt(index++, c_bp_group_id);
+				pstmt.setInt(index++, M_Product_Category_ID);
+				pstmt.setInt(index++, User1_ID);
+				// END CODE JACKSON : 20190625
 			}
 
 			//
@@ -463,8 +520,9 @@ public class MSequence extends X_AD_Sequence
 						next = rs.getInt(2);
 					} else {
 						String sql;
-						if (isStartNewYear || isUseOrgLevel)
-							sql = "UPDATE AD_Sequence_No SET CurrentNext = CurrentNext + ? WHERE AD_Sequence_ID=? AND CalendarYearMonth=? AND AD_Org_ID=?";
+//						if (isStartNewYear || isUseOrgLevel)
+						if (isStartNewYear || isUseOrgLevel || isUseBPartnerGLevel || isUseProductCategLevel || IsCostCenterLevelSequence)
+							sql = "UPDATE AD_Sequence_No SET CurrentNext = CurrentNext + ? WHERE AD_Sequence_ID=? AND CalendarYearMonth=? AND AD_Org_ID=? AND C_BP_Group_ID=? AND M_Product_Category_ID = ? AND User1_ID = ?";
 						else
 							sql = "UPDATE AD_Sequence SET CurrentNext = CurrentNext + ? WHERE AD_Sequence_ID=?";
 						if (!DB.isOracle() && !DB.isPostgreSQL())
@@ -474,9 +532,15 @@ public class MSequence extends X_AD_Sequence
 					}
 					updateSQL.setInt(1, incrementNo);
 					updateSQL.setInt(2, AD_Sequence_ID);
-					if (isStartNewYear || isUseOrgLevel) {
+//					if (isStartNewYear || isUseOrgLevel) {
+					if (isStartNewYear || isUseOrgLevel || isUseBPartnerGLevel || isUseProductCategLevel || IsCostCenterLevelSequence) {
 						updateSQL.setString(3, calendarYearMonth);
 						updateSQL.setInt(4, docOrg_ID);
+						// BEGIN CODE JACKSON : 20190625 - Tambah set C_BP_Group_ID || UPDATED BY JACKSON - 20200709 || UPDATED BY JACKSON - 20210525 : #4053
+						updateSQL.setInt(5, c_bp_group_id);
+						updateSQL.setInt(6, M_Product_Category_ID);
+						updateSQL.setInt(7, User1_ID);
+						// END CODE JACKSON : 20190625
 					}
 					updateSQL.executeUpdate();
 				}
@@ -497,6 +561,11 @@ public class MSequence extends X_AD_Sequence
 					seqno.setAD_Org_ID(docOrg_ID);
 					seqno.setCalendarYearMonth(calendarYearMonth);
 					seqno.setCurrentNext(startNo + incrementNo);
+					// BEGIN CODE JACKSON : 20190625 - Tambah set C_BP_Group_ID || UPDATED BY JACKSON - 20200709 || UPDATED BY JACKSON - 20210525 : #4053
+					seqno.set_Value("C_BP_Group_ID", c_bp_group_id);
+					seqno.set_Value("M_Product_Category_ID", M_Product_Category_ID);
+					seqno.set_Value("User1_ID", User1_ID);
+					// END CODE JACKSON : 20190625
 					seqno.saveEx();
 				}
 				else	// standard

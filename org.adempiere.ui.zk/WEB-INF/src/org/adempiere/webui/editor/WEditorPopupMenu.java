@@ -159,7 +159,7 @@ public class WEditorPopupMenu extends Menupopup implements EventListener<Event>
 			if (winIDPO > 0)
 				canAccessPO = MRole.getDefault().getWindowAccess(winIDPO);
 			if ((winID <= 0 || canAccess == null) && (canAccessPO == null || canAccessPO == false)) {
-    	    	this.zoomEnabled = false;
+//    	    	this.zoomEnabled = false; // COMMENTED BY ANDI - 20200417 : supaya isReadWrite di Role tidak perlu men-disable Click Lookup. Requester Feli
     	    	this.newEnabled = false;
     	    	this.updateEnabled = false;
 

@@ -34,13 +34,13 @@ public class DefaultCreateFromFactory implements ICreateFromFactory
 	public ICreateFrom create(GridTab mTab) 
 	{
 		String tableName = mTab.getTableName();
-		if (tableName.equals(I_C_Invoice.Table_Name))
-			return new WCreateFromInvoiceUI(mTab);
-		else if (tableName.equals(I_C_BankStatement.Table_Name))
-			return new WCreateFromStatementUI(mTab);
-		else if (tableName.equals(I_M_InOut.Table_Name))
-			return new WCreateFromShipmentUI(mTab);
-		else if (tableName.equals(I_M_RMA.Table_Name))
+//		if (tableName.equals(I_C_Invoice.Table_Name)) -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+//			return new WCreateFromInvoiceUI(mTab); -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+//		else if (tableName.equals(I_C_BankStatement.Table_Name)) -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+//			return new WCreateFromStatementUI(mTab); -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+//		else if (tableName.equals(I_M_InOut.Table_Name)) -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+//			return new WCreateFromShipmentUI(mTab); -- COMMENTED BY JACKSON - 20200430 : Comment pemanggilan WCreateFromInvoiceUI agar yang terpanggil WCreateFromInvoiceUI milik General
+		if (tableName.equals(I_M_RMA.Table_Name))
 			return new WCreateFromRMAUI(mTab);
 		else if (tableName.equals(I_M_PackageMPS.Table_Name))
 			return new WCreateFromPackageShipmentUI(mTab);

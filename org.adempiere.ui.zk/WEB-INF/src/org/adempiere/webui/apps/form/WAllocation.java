@@ -27,7 +27,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
+import org.adempiere.util.Callback;
 import org.adempiere.webui.ClientInfo;
 import org.adempiere.webui.LayoutUtils;
 import org.adempiere.webui.component.Button;
@@ -67,6 +70,7 @@ import org.compiere.util.Msg;
 import org.compiere.util.Trx;
 import org.compiere.util.TrxRunnable;
 import org.compiere.util.Util;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
@@ -131,6 +135,10 @@ public class WAllocation extends Allocation
 	private Checkbox multiCurrency = new Checkbox();
 	private Label chargeLabel = new Label();
 	private Label dateLabel = new Label();
+	private Label projectLabel = new Label(); // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+	private WSearchEditor projectSearch = null; // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+	private Label orderLabel = new Label(); // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+	private WSearchEditor orderSearch = null; // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 	/** Document date parameter */
 	private WDateEditor dateField = new WDateEditor();
 	/** Auto write off parameter */
@@ -140,6 +148,11 @@ public class WAllocation extends Allocation
 	private WTableDirEditor organizationPick;
 	/** Number of column for {@link #parameterLayout} */
 	private int noOfColumn;
+	// ADDED BY JACKSON - 20200907 : Flag supaya hanya bisa proses melalui Click (bukan Type Enter)
+	private Boolean isClicked = false;
+	/**	Window No					*/
+	private int         		m_WindowNo = 0; // ADDED BY JACKSON - 20200907
+	DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy"); // ADDED BY JACKSON - 20200907
 	
 	/** Center of {@link #mainLayout}. */
 	private Borderlayout infoPanel = new Borderlayout();
@@ -185,6 +198,8 @@ public class WAllocation extends Allocation
 	private Label DocTypeLabel = new Label();
 	/** Document types. Part of {@link #allocationLayout}. */
 	private WTableDirEditor DocTypePick = null;
+	private Label AccDateLabel = new Label(); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi : #1825 - payment allocation utk receipt muncul ada validasi
+	private WDateEditor AccDateField = new WDateEditor(); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi : #1825 - payment allocation utk receipt muncul ada validasi
 	private Label allocCurrencyLabel = new Label();
 	/** Status bar, bottom of {@link #allocationPanel} */
 	private Hlayout statusBar = new Hlayout();	
@@ -203,6 +218,8 @@ public class WAllocation extends Allocation
 		mainLayout.setStyle("min-height: 600px");
 		
 		dateLabel.setText(Msg.getMsg(Env.getCtx(), "Date"));
+		projectLabel.setText("Project"); // ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		orderLabel.setText(Msg.getMsg(Env.getCtx(), "Order")); // ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 		autoWriteOff.setSelected(false);
 		autoWriteOff.setText(Msg.getMsg(Env.getCtx(), "AutoWriteOff", true));
 		autoWriteOff.setTooltiptext(Msg.getMsg(Env.getCtx(), "AutoWriteOff", false));
@@ -217,7 +234,9 @@ public class WAllocation extends Allocation
 		invoiceInfo.setText(".");
 		paymentInfo.setText(".");
 		chargeLabel.setText(" " + Msg.translate(Env.getCtx(), "C_Charge_ID"));
-		DocTypeLabel.setText(" " + Msg.translate(Env.getCtx(), "C_DocType_ID"));	
+		DocTypeLabel.setText(" " + Msg.translate(Env.getCtx(), "C_DocType_ID"));
+		AccDateLabel.setText(" " + Msg.translate(Env.getCtx(), "DateAcct")); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi
+		AccDateLabel.setMandatory(true); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi
 		differenceLabel.setText(Msg.getMsg(Env.getCtx(), "Difference"));
 		differenceField.setText("0");
 		differenceField.setReadonly(true);
@@ -344,6 +363,20 @@ public class WAllocation extends Allocation
 		row.appendChild(dateLabel.rightAlign());
 		row.appendChild(dateField.getComponent());
 		
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		row.appendCellChild(projectLabel.rightAlign());
+		ZKUpdateUtil.setHflex(projectSearch.getComponent(), "true");
+		row.appendCellChild(projectSearch.getComponent(),1);
+		projectSearch.showMenu();
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		row.appendCellChild(orderLabel.rightAlign());
+		ZKUpdateUtil.setHflex(orderSearch.getComponent(), "true");
+		row.appendCellChild(orderSearch.getComponent(),1);
+		orderSearch.showMenu();
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		
 		row.appendCellChild(organizationLabel.rightAlign());
 		ZKUpdateUtil.setHflex(organizationPick.getComponent(), "true");
 		row.appendCellChild(organizationPick.getComponent(),1);
@@ -415,6 +448,10 @@ public class WAllocation extends Allocation
 		ZKUpdateUtil.setHflex(DocTypePick.getComponent(), "true");
 		row.appendCellChild(DocTypePick.getComponent());
 		DocTypePick.showMenu();
+		
+		row.appendChild(AccDateLabel.rightAlign()); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi 
+		row.appendChild(AccDateField.getComponent()); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi
+		
 		if (maxWidth(SMALL_WIDTH-1))
 		{
 			row = rows.newRow();
@@ -486,6 +523,22 @@ public class WAllocation extends Allocation
 		MLookup lookupBP = MLookupFactory.get (Env.getCtx(), form.getWindowNo(), 0, AD_Column_ID, DisplayType.Search);
 		bpartnerSearch = new WSearchEditor("C_BPartner_ID", true, false, true, lookupBP);
 		bpartnerSearch.addValueChangeListener(this);
+		
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		//  Project
+		AD_Column_ID = 1349; // C_Project.C_Project_ID   3510;        //  C_Invoice.C_Project_ID
+		MLookup lookupProject = MLookupFactory.get (Env.getCtx(), form.getWindowNo(), 0, AD_Column_ID, DisplayType.Search);
+		projectSearch = new WSearchEditor("C_Project_ID", true, false, true, lookupProject);
+		projectSearch.addValueChangeListener(this);
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		//  Project
+		AD_Column_ID = 4247;        //  C_Invoice.C_Order_ID
+		MLookup lookupOrder = MLookupFactory.get (Env.getCtx(), form.getWindowNo(), 0, AD_Column_ID, DisplayType.Search);
+		orderSearch = new WSearchEditor("C_Order_ID", true, false, true, lookupOrder);
+		orderSearch.addValueChangeListener(this);
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 
 		//  Status bar
 		statusBar.appendChild(new Label(Msg.getMsg(Env.getCtx(), "AllocateStatus")));
@@ -500,6 +553,7 @@ public class WAllocation extends Allocation
 		cal.set(Calendar.MILLISECOND, 0);
 		dateField.setValue(new Timestamp(cal.getTimeInMillis()));
 		dateField.addValueChangeListener(this);
+		AccDateField.setValue(new Timestamp(cal.getTimeInMillis())); // ADDED BY JACKSON - 20200730 : #1825 - payment allocation utk receipt muncul ada validasi
 
 		//  Charge
 		AD_Column_ID = 61804;    //  C_AllocationLine.C_Charge_ID
@@ -562,15 +616,46 @@ public class WAllocation extends Allocation
 		//	Allocate
 		else if (e.getTarget().equals(allocateButton))
 		{
-			allocateButton.setEnabled(false);
-			MAllocationHdr allocation = saveData();
-			loadBPartner();
-			allocateButton.setEnabled(true);
-			if (allocation != null) 
-			{
-				DocumentLink link = new DocumentLink(Msg.getElement(Env.getCtx(), MAllocationHdr.COLUMNNAME_C_AllocationHdr_ID) + ": " + allocation.getDocumentNo(), allocation.get_Table_ID(), allocation.get_ID());				
-				statusBar.appendChild(link);
-			}					
+// BEGIN CODE JACKSON - 20200909 : #2109 - payment allocation ada pertanyaan saat process
+			Component thistarget = form;
+			Callback<Boolean> m_callback = new Callback<Boolean>() {
+				@Override
+				public void onCallback(Boolean result) {
+					if ( result )
+					{
+						isClicked = true;
+						Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
+						
+						allocateButton.setEnabled(false);
+						MAllocationHdr allocation = saveData();
+						loadBPartner();
+						allocateButton.setEnabled(true);
+						if (allocation != null) 
+						{
+							DocumentLink link = new DocumentLink(allocation.getDocumentNo(), allocation.get_Table_ID(), allocation.get_ID());				
+							statusBar.appendChild(link);
+						}	
+						
+						Clients.clearBusy();
+						
+						isClicked = false;
+						
+					}
+				}
+			};
+			
+			Dialog.ask(m_WindowNo, null, "Account date is '"+ dateFormat.format((Timestamp) AccDateField.getValue()) +"', Ok to Process?", m_callback);
+			isClicked = true;	
+// END CODE JACKSON - 20200909
+//			allocateButton.setEnabled(false);
+//			MAllocationHdr allocation = saveData();
+//			loadBPartner();
+//			allocateButton.setEnabled(true);
+//			if (allocation != null) 
+//			{
+//				DocumentLink link = new DocumentLink(Msg.getElement(Env.getCtx(), MAllocationHdr.COLUMNNAME_C_AllocationHdr_ID) + ": " + allocation.getDocumentNo(), allocation.get_Table_ID(), allocation.get_ID());				
+//				statusBar.appendChild(link);
+//			}					
 		}
 		else if (e.getTarget().equals(refreshButton))
 		{
@@ -625,13 +710,15 @@ public class WAllocation extends Allocation
 		String name = e.getPropertyName();
 		Object value = e.getNewValue();
 		if (log.isLoggable(Level.CONFIG)) log.config(name + "=" + value);
-		if (value == null && (!name.equals("C_Charge_ID")||!name.equals("C_DocType_ID") ))
-			return;
+		
+//		if (value == null && (!name.equals("C_Charge_ID")||!name.equals("C_DocType_ID") )) // COMMENTED BY ANDI - SO AFTER Value Set to NULL, Set it to 0
+//		return; // COMMENTED BY ANDI - SO AFTER Value Set to NULL, Set it to 0
 		
 		// Organization
 		if (name.equals("AD_Org_ID"))
 		{
-			setAD_Org_ID((int) value);
+//			setAD_Org_ID((int) value);
+			setAD_Org_ID(value!=null ? ((Integer) value).intValue() : 0);
 			
 			loadBPartner();
 		}
@@ -651,8 +738,10 @@ public class WAllocation extends Allocation
 		//  BPartner
 		if (name.equals("C_BPartner_ID"))
 		{
-			bpartnerSearch.setValue(value);
-			setC_BPartner_ID((int) value);
+//			bpartnerSearch.setValue(value);
+//			setC_BPartner_ID((int) value);
+			bpartnerSearch.setValue(value!=null? ((Integer)value).intValue() : 0);
+			setC_BPartner_ID(value!=null? ((Integer)value).intValue() : 0);
 			loadBPartner();
 		}
 		//	Currency
@@ -662,8 +751,25 @@ public class WAllocation extends Allocation
 			loadBPartner();
 		}
 		//	Date for Multi-Currency
-		else if (name.equals("Date") && multiCurrency.isSelected())
+		else if (name.equals("Date") && multiCurrency.isSelected()) {
 			loadBPartner();
+		}
+		
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		else if (name.equals("C_Project_ID"))
+		{
+			m_C_Project_ID = (value == null ? 0 : ((Integer)value).intValue());
+			loadBPartner();
+		}
+		// ADDED BY ANDI - 20190919 : #905 - Payment Allocation tambah Filter Project
+		
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
+		else if (name.equals("C_Order_ID"))
+		{
+			m_C_Order_ID = (value == null ? 0 : ((Integer)value).intValue());
+			loadBPartner();
+		}
+		// ADDED BY ANDI - 20190923 : #914 - Payment Allocation tambah Filter Order
 	}   //  vetoableChange
 	
 	/**

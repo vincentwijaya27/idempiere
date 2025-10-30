@@ -31,6 +31,7 @@ import org.compiere.model.MAcctSchemaElement;
 import org.compiere.model.MConversionRate;
 import org.compiere.model.MCurrency;
 import org.compiere.model.MFactAcct;
+import org.compiere.model.MMatchInv;
 import org.compiere.model.MMovement;
 import org.compiere.model.MRevenueRecognitionPlan;
 import org.compiere.model.MUOM;
@@ -393,6 +394,24 @@ public final class FactLine extends X_Fact_Acct
 			setM_Product_ID (m_docLine.getM_Product_ID());
 		if (getM_Product_ID() == 0)
 			setM_Product_ID (m_doc.getM_Product_ID());
+
+		// BEGIN CODE ANDI - 20190909 - Kalau M_Product_ID == 0 / kalau terpilih adalah Charge, maka di journal Product nya akan narik dari z_product_ID
+		if (getM_Product_ID() == 0 && m_docLine != null) {
+			if(m_doc.get_TableName().equalsIgnoreCase("c_invoice")) {
+				int AD_Table_ID_Line = DB.getSQLValue(get_TrxName(), "SELECT AD_Table_ID FROM AD_Table WHERE TableName = 'C_InvoiceLine'");
+				int AD_Column_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = ? AND LOWER(ColumnName) = 'z_product_id'", AD_Table_ID_Line);
+				if(AD_Column_ID > 0) {
+					/*
+					 * Kalau Column z_product_id ditemukan, just in case kolom ini belum ada di Environment QA or Production
+					 * */
+					
+					int z_product_id = DB.getSQLValue(get_TrxName(), "SELECT z_product_id FROM c_invoiceline WHERE c_invoiceline_ID = ?", m_docLine.get_ID());
+					setM_Product_ID (z_product_id);
+				}
+			}
+		}
+		// BEGIN CODE ANDI - 20190909 - Kalau M_Product_ID == 0 / kalau terpilih adalah Charge, maka di journal Product nya akan narik dari z_product_ID
+		
 		//	UOM
 		if (m_docLine != null)
 			setC_UOM_ID (m_docLine.getC_UOM_ID());
@@ -458,6 +477,78 @@ public final class FactLine extends X_Fact_Acct
 			setUser2_ID (m_docLine.getUser2_ID());
 		if (getUser2_ID() == 0)
 			setUser2_ID (m_doc.getUser2_ID());
+		
+// BEGIN CODE JACKSON - 20190913 - Menambahkan DocStatus & Document No pada Fact Accounting - request by Ci Sin
+		// Doc Status
+		String DocStatus = "??";
+		int AD_ColumnDocStatus_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'docstatus')");
+		if(AD_ColumnDocStatus_ID > 0) {
+			int C_DocType_MI_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocType_ID FROM C_DocType WHERE AD_Client_ID = ? AND Name = 'Match Invoice'", getAD_Client_ID());
+			if(m_doc.getDescription() != null) {
+				Boolean isReversed = m_doc.getDescription().contains("Invoice: ") || m_doc.getDescription().contains("Payment: ") || m_doc.getDescription().contains("->") || m_doc.getDescription().contains("<-") ? true : false;
+				if(isReversed) {
+					DocStatus = "RE";
+					int Reversal_ID = DB.getSQLValue(get_TrxName(), "SELECT Reversal_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+					DB.executeUpdateEx("UPDATE Fact_Acct SET DocStatus = '"+ DocStatus +"' WHERE AD_Client_ID = "+ m_doc.getAD_Client_ID() +" and Record_ID = "+ Reversal_ID +" AND AD_Table_ID = "+ m_doc.get_Table_ID(), get_TrxName());
+				}
+				else
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", getAD_Client_ID(), m_doc.get_ID());
+			}else {
+				if(m_doc.getC_DocType_ID() == C_DocType_MI_ID) {
+					MMatchInv objMMi = (MMatchInv) m_doc.getPO();
+					int C_Invoice_ID = DB.getSQLValue(get_TrxName(), "SELECT C_Invoice_ID FROM C_InvoiceLine WHERE AD_Client_ID = ? AND C_InvoiceLine_ID = ?"
+							, getAD_Client_ID(), objMMi.getC_InvoiceLine_ID());
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM C_Invoice WHERE AD_Client_ID = ? AND C_Invoice_ID = ?"
+							, getAD_Client_ID(), C_Invoice_ID);
+				}
+				else	
+					DocStatus = DB.getSQLValueString(get_TrxName(), "SELECT DocStatus FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", getAD_Client_ID(), m_doc.get_ID());
+			}
+		}
+		
+		set_Value("DocStatus", DocStatus);
+		// Document No.
+		String DocumentNo = DB.getSQLValueString(get_TrxName(), "SELECT DocumentNo FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", getAD_Client_ID(), m_doc.get_ID());
+		set_Value("DocumentNo", DocumentNo);
+		// END CODE JACKSON - 20190913
+				
+		// BEGIN CODE ANDI - 20191115 - Menambahkan Year Dari GL Journal Line pada Fact Accounting - request by Ci Sin
+//				System.out.println("\n\n >>> m_doc.get_TableName() : " + m_doc.get_TableName());
+		if(m_doc.get_TableName().equalsIgnoreCase("GL_Journal") && m_doc != null && m_docLine != null) {
+			int AD_Table_ID_Line = DB.getSQLValue(get_TrxName(), "SELECT AD_Table_ID FROM AD_Table WHERE TableName = 'GL_JournalLine'");
+			int AD_Column_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = ? AND ColumnName = 'C_Year_ID'", AD_Table_ID_Line);
+//					System.out.println("\n\n >>> AD_Column_ID : " + AD_Column_ID);
+			if(AD_Column_ID > 0) {
+				
+				/*
+				 * Kalau Ketemu kolom C_Year_ID di TableLine
+				 * Ini Adalah colom custom, just in case belum di tambah di Environment Prod or QA
+				 * */
+				
+				int C_Year_ID = DB.getSQLValue(get_TrxName(), "SELECT C_Year_ID FROM GL_JournalLine WHERE GL_Journal_ID = ? AND Account_ID = ?", m_doc.get_ID(), m_docLine.getAccount().getAccount_ID());
+//						System.out.println("\n\n >>> C_Year_ID : " + C_Year_ID);
+				if(C_Year_ID > 0) {
+					set_ValueOfColumn("C_Year_ID", C_Year_ID);
+				}
+			}
+		}
+		
+		// END CODE ANDI - 20191115 - Menambahkan Year Dari GL Journal Line pada Fact Accounting - request by Ci Sin
+		
+		// BEGIN CODE JACKSON - 20191220 -- #1192 : Accounting fact tambah target document type - Request By Ci Sin
+		int AD_ColumnDocType_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'c_doctype_id')");
+		int AD_ColumnDocTypeTarget_ID = DB.getSQLValue(get_TrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE LOWER(TableName) = '"+ m_doc.get_TableName().toLowerCase() +"' AND LOWER(ColumnName) = 'c_doctypetarget_id')");
+		if(AD_ColumnDocType_ID > 0 || AD_ColumnDocTypeTarget_ID > 0) {
+			if(AD_ColumnDocType_ID > 0) {
+				int C_DocType_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocType_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+				set_Value("C_DocType_ID", C_DocType_ID);
+			}else {
+				int C_DocType_ID = DB.getSQLValue(get_TrxName(), "SELECT C_DocTypeTarget_ID FROM "+ m_doc.get_TableName() +" WHERE AD_Client_ID = ? AND "+ m_doc.get_TableName()+"_ID = ?", m_doc.getAD_Client_ID(), m_doc.get_ID());
+				set_Value("C_DocType_ID", C_DocType_ID);
+			}
+			
+		}
+		// END CODE JACKSON - 20191220
 		//	References in setAccount
 	}   //  setDocumentInfo
 

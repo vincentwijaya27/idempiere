@@ -15,6 +15,9 @@
 package org.adempiere.webui.apps.form;
 
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -52,6 +55,7 @@ import org.compiere.model.MProduct;
 
 import static org.compiere.model.SystemIDs.*;
 
+import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.KeyNamePair;
@@ -174,7 +178,8 @@ public class WCreateFromShipmentUI extends CreateFromShipment implements EventLi
     	boolean isRMAWindow = ((getGridTab().getAD_Window_ID() == WINDOW_RETURNTOVENDOR) || (getGridTab().getAD_Window_ID() == WINDOW_CUSTOMERRETURN)); 
 
     	bPartnerLabel.setText(Msg.getElement(Env.getCtx(), "C_BPartner_ID"));
-		orderLabel.setText(Msg.getElement(Env.getCtx(), "C_Order_ID", false));
+//		orderLabel.setText(Msg.getElement(Env.getCtx(), "C_Order_ID", false)); // Commented By Andi : 20181114
+    	orderLabel.setText("Order"); // Added By Andi : 20181114 - Mengganti Text dari "Purchase Order" menjadi "Order", dikarenakan Window ini digunakan waktu Create Lines di Document Shipment & Material Receipt. (jadi sumbernya mungkin dari SO, mungkin dari PO)
 		invoiceLabel.setText(Msg.getElement(Env.getCtx(), "C_Invoice_ID", false));
         rmaLabel.setText(Msg.translate(Env.getCtx(), "M_RMA_ID"));
 		locatorLabel.setText(Msg.translate(Env.getCtx(), "M_Locator_ID"));
@@ -373,7 +378,18 @@ public class WCreateFromShipmentUI extends CreateFromShipment implements EventLi
 		//  load BPartner
 		int AD_Column_ID = 3499;        //  C_Invoice.C_BPartner_ID
 		MLookup lookup = MLookupFactory.get (Env.getCtx(), p_WindowNo, 0, AD_Column_ID, DisplayType.Search);
-		bPartnerField = new WSearchEditor ("C_BPartner_ID", true, false, true, lookup);
+//		bPartnerField = new WSearchEditor ("C_BPartner_ID", true, false, true, lookup); // commented by andi - 20190102 -- requester : feli, supaya Material Receipt Tidak bisa cross business partner dengan header nya
+		
+		// Begin Code Andi - 20190102  -- requester : feli, supaya Material Receipt Tidak bisa cross business partner dengan header nya
+		int found_config_client = DB.getSQLValue(null, "SELECT ad_sysconfig_id FROM ad_sysconfig WHERE name = 'Z-WCreateFromShipmentUI-ReadOnly-CBPartner-At-Create-Lines-From' AND value = 'Y' AND ad_client_id = "+getGridTab().get_ValueAsString("AD_Client_ID") );
+		int found_config_system = DB.getSQLValue(null, "SELECT ad_sysconfig_id FROM ad_sysconfig WHERE name = 'Z-WCreateFromShipmentUI-ReadOnly-CBPartner-At-Create-Lines-From' AND value = 'Y' AND ad_client_id = 0" );
+		
+		if(found_config_client > 0 | found_config_system > 0) {
+			bPartnerField = new WSearchEditor ("C_BPartner_ID", true, true, true, lookup); // read only nya di buat "true" -- paremeter ke 3 dari "false" jadi "true"
+		} else {
+			bPartnerField = new WSearchEditor ("C_BPartner_ID", true, false, true, lookup);
+		}
+		// End Code Andi - 20190102  -- requester : feli, supaya Material Receipt Tidak bisa cross business partner dengan header nya
 		//
 		int C_BPartner_ID = Env.getContextAsInt(Env.getCtx(), p_WindowNo, "C_BPartner_ID");
 		bPartnerField.setValue(Integer.valueOf(C_BPartner_ID));
@@ -419,18 +435,37 @@ public class WCreateFromShipmentUI extends CreateFromShipment implements EventLi
 		orderField.removeActionListener(this);
 		orderField.removeAllItems();
 		orderField.addItem(pp);
+
+		// BEGIN CODE ANDI - 20200225 : Tambahan Validasi Cost Center untuk Integration #1299 - 8. Create lines from --> validasi muncul sesuai dengan cost center yang diisi.
+		int User1_ID = -1;
+		if(getGridTab().getValue("User1_ID") != null) {
+			User1_ID = (int) getGridTab().getValue("User1_ID");
+		}
+		// END CODE ANDI - 20200225 : Tambahan Validasi Cost Center untuk Integration #1299 - 8. Create lines from --> validasi muncul sesuai dengan cost center yang diisi.
 		
-		ArrayList<KeyNamePair> list = loadOrderData(C_BPartner_ID, forInvoice, sameWarehouseCb.isSelected());
+		ArrayList<KeyNamePair> list = loadOrderData(C_BPartner_ID, forInvoice, sameWarehouseCb.isSelected(), User1_ID);
 		for(KeyNamePair knp : list)
 			orderField.addItem(knp);
 		
 		int C_Order_ID = Env.getContextAsInt(Env.getCtx(), p_WindowNo, "C_Order_ID");
 		if (C_Order_ID > 0) {
 			orderField.setValue(Integer.valueOf(C_Order_ID));
+			
+			// BEGIN CODE ANDI - 20200424 : #1436 - Inputan Material Receipt (khusus client COMDIV), waktu Order sudah terisi, otomatis ter-set
+			//  set Invoice and Shipment to Null
+			invoiceField.setSelectedIndex(-1);
+			invoiceField.setDisabled(true);
+			
+            rmaField.setSelectedIndex(-1);
+            rmaField.setDisabled(true);
+    		// END CODE ANDI - 20200424 : #1436 - Inputan Material Receipt (khusus client COMDIV), waktu Order sudah terisi, otomatis ter-set
+            
 			if (orderField.getSelectedItem() != null) { // in case the order is not in the list, f.e. the BP was changed
 				KeyNamePair knpo = orderField.getSelectedItem().toKeyNamePair();
 				if (knpo != null && knpo.getKey() > 0)
 					loadOrder(knpo.getKey(), false, locatorField.getValue()!=null?((Integer)locatorField.getValue()).intValue():0);
+			} else { // ADDED CODE ANDI - 20200424 : #1436
+				loadOrder(C_Order_ID, false, locatorField.getValue()!=null?((Integer)locatorField.getValue()).intValue():0);
 			}
 		} else {
 			orderField.setSelectedIndex(0);
@@ -439,6 +474,93 @@ public class WCreateFromShipmentUI extends CreateFromShipment implements EventLi
 
 		initBPDetails(C_BPartner_ID);
 	}   //  initBPOrderDetails
+	
+	/**
+	 *  Load Order Data
+	 *  @param C_BPartner_ID BPartner
+	 *  @param forInvoice for invoice
+	 *  @param sameWarehouseOnly for sameWarehouseOnly
+	 *  @param User1_ID for cost center
+	 */
+	protected ArrayList<KeyNamePair> loadOrderData (int C_BPartner_ID, boolean forInvoice, boolean sameWarehouseOnly, int User1_ID)
+	{
+		ArrayList<KeyNamePair> list = new ArrayList<KeyNamePair>();
+
+		String isSOTrxParam = isSOTrx ? "Y":"N";
+		//	Display
+		StringBuffer display = new StringBuffer("o.DocumentNo||' - ' ||")
+			.append(DB.TO_CHAR("o.DateOrdered", DisplayType.Date, Env.getAD_Language(Env.getCtx())))
+			.append("||' - '||")
+			.append(DB.TO_CHAR("o.GrandTotal", DisplayType.Amount, Env.getAD_Language(Env.getCtx())));
+		//
+		String column = "ol.QtyDelivered";
+		if (forInvoice)
+			column = "ol.QtyInvoiced";
+		StringBuffer sql = new StringBuffer("SELECT o.C_Order_ID,").append(display)
+			.append(" FROM C_Order o "
+			+ "WHERE o.C_BPartner_ID=? AND o.IsSOTrx=? AND o.DocStatus IN ('CL','CO')"
+			+ " AND o.C_Order_ID IN "
+				  + "(SELECT ol.C_Order_ID FROM C_OrderLine ol"
+				  + " WHERE ol.QtyOrdered - ").append(column).append(" != 0) ");
+		if(sameWarehouseOnly)
+		{
+			sql = sql.append(" AND o.M_Warehouse_ID=? ");
+		}
+
+		// Code Edward - 11-04-19 (#390 - khusus comdiv)
+		if ( Env.getContextAsInt(Env.getCtx(), getGridTab().getWindowNo(), "AD_Client_ID") == 1000000 )
+		{
+			sql = sql.append(" AND o.AD_Org_ID=? ");
+		}
+		
+		// BEGIN CODE ANDI - 20200225 : Tambahan Validasi Cost Center untuk Integration #1299 - 8. Create lines from --> validasi muncul sesuai dengan cost center yang diisi.
+		if(User1_ID > 0) {
+			sql.append(" AND o.User1_ID = "+User1_ID + " ");
+		}
+		// END CODE ANDI - 20200225 : Tambahan Validasi Cost Center untuk Integration #1299 - 8. Create lines from --> validasi muncul sesuai dengan cost center yang diisi.
+		
+		
+		sql = sql.append("ORDER BY o.DateOrdered,o.DocumentNo");
+//		System.out.println("\n\n >>> sql : " + sql );
+		//
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			int idx = 1;
+			pstmt = DB.prepareStatement(sql.toString(), null);
+			pstmt.setInt(idx++, C_BPartner_ID);
+			pstmt.setString(idx++, isSOTrxParam);
+			if(sameWarehouseOnly)
+			{
+				//only active for material receipts
+				pstmt.setInt(idx++, getM_Warehouse_ID());
+			}
+
+			// Code Edward - 11-04-19 (#390 - khusus comdiv)
+			if ( Env.getContextAsInt(Env.getCtx(), getGridTab().getWindowNo(), "AD_Client_ID") == 1000000 )
+			{
+				pstmt.setInt(idx++, Env.getContextAsInt(Env.getCtx(), getGridTab().getWindowNo(), "AD_Org_ID") );
+			}
+
+			rs = pstmt.executeQuery();
+			while (rs.next())
+			{
+				list.add(new KeyNamePair(rs.getInt(1), rs.getString(2)));
+			}
+		}
+		catch (SQLException e)
+		{
+			log.log(Level.SEVERE, sql.toString(), e);
+		}
+		finally
+		{
+			DB.close(rs, pstmt);
+			rs = null; pstmt = null;
+		}
+
+		return list;
+	}   //  loadOrderData
 	
 	/**
 	 * Load bpartner related details. <br/>

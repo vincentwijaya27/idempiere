@@ -49,6 +49,7 @@ import org.compiere.db.Database;
 import org.compiere.db.ProxyFactory;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MLanguage;
+import org.compiere.model.MProcess;
 import org.compiere.model.MRole;
 import org.compiere.model.MSequence;
 import org.compiere.model.MSysConfig;
@@ -57,6 +58,7 @@ import org.compiere.model.MTable;
 import org.compiere.model.PO;
 import org.compiere.model.POResultSet;
 import org.compiere.model.SystemIDs;
+import org.compiere.print.MPrintFormat;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
 
@@ -2807,7 +2809,21 @@ public final class DB
 	 *  @return Prepared Statement (from replica if possible, otherwise normal statement)
 	 */
 	public static PreparedStatement prepareNormalReadReplicaStatement(String sql, String trxName) {
-		return prepareNormalReadReplicaStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, trxName);
+		return prepareNormalReadReplicaStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, trxName, null); // ADDED 5th parameter format by Andi - 20220228 : replica for Print Format
+	}
+
+	/**
+	 *	Prepare Read Replica Statement
+	 *  @param sql sql statement
+	 * 	@param trxName transaction
+	 *  @return Prepared Statement (from replica if possible, otherwise normal statement)
+	 */
+	public static PreparedStatement prepareNormalReadReplicaStatement(String sql, String trxName, MPrintFormat format) { // ADDED 3rd parameter format by Andi - 20220228 : replica for Print Format
+		int concurrency = ResultSet.CONCUR_READ_ONLY;
+		String upper = sql.toUpperCase();
+		if (upper.startsWith("UPDATE ") || upper.startsWith("DELETE "))
+			concurrency = ResultSet.CONCUR_UPDATABLE;
+		return prepareNormalReadReplicaStatement(sql, ResultSet.TYPE_FORWARD_ONLY, concurrency, trxName, format); // ADDED 5th parameter format by Andi - 20220228 : replica for Print Format
 	}
 
 	/**
@@ -2818,12 +2834,26 @@ public final class DB
 	 * 	@param trxName transaction name
 	 *  @return Prepared Statement (from replica if possible, otherwise normal statement)
 	 */
-	private static PreparedStatement prepareNormalReadReplicaStatement(String sql, int resultSetType, int resultSetConcurrency, String trxName) {
+	private static PreparedStatement prepareNormalReadReplicaStatement(String sql, int resultSetType, int resultSetConcurrency, String trxName, MPrintFormat format) {  // ADDED 5th parameter format by Andi - 20220228 : replica for Print Format
 		if (sql == null || sql.length() == 0)
 			throw new IllegalArgumentException("No SQL");
+		
+		int AD_Process_ID = -1;
+		MProcess obProcess = null;
+		
+		int AD_Column_ID = getSQLValue(null, "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = (SELECT AD_Table_ID FROM AD_Table WHERE TableName = 'AD_Process') AND ColumnName = 'UseDatabaseReplication'");
+		
+		if(format != null && format.getAD_ReportView_ID() > 0) {
+			AD_Process_ID = getSQLValue(null, "SELECT AD_Process_ID FROM AD_Process WHERE AD_ReportView_ID = ?", format.getAD_ReportView_ID());
+			if(AD_Process_ID > 0) {
+				obProcess = new MProcess(Env.getCtx(), AD_Process_ID, null);
+			}
+		}
+		
 		boolean useReadReplica = MSysConfig.getValue(MSysConfig.DB_READ_REPLICA_URLS) != null;
 		if (   trxName == null
 			&& useReadReplica
+			&& (AD_Column_ID > 0 && obProcess != null && obProcess.get_ValueAsBoolean("UseDatabaseReplication")) // Added condition by Andi - 20220228 : Replica for Print Format
 			&& resultSetType == ResultSet.TYPE_FORWARD_ONLY
 			&& resultSetConcurrency == ResultSet.CONCUR_READ_ONLY) {
 			// this is a candidate for a read replica connection (read-only, forward-only, no-trx), try to obtain one, otherwise fallback to normal

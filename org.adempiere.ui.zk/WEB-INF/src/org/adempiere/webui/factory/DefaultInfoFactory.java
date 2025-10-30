@@ -40,6 +40,7 @@ import org.compiere.model.Lookup;
 import org.compiere.model.MDocType;
 import org.compiere.model.MInfoWindow;
 import org.compiere.model.MTable;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 
 /**
@@ -162,6 +163,26 @@ public class DefaultInfoFactory implements IInfoFactory {
 
 		if (col.indexOf('.') != -1)
 			col = col.substring(col.indexOf('.')+1);
+		
+		// BEGIN CODE ANDI : 20180709 -----------------------
+		
+		Boolean multiSelectionProduct = true;
+	
+		// Mencari nama table yang lagi di pakai untuk lookup
+		String lookupstring = lookup.toString();
+		int begincut = lookupstring.indexOf("Column_ID=")+("Column_ID=").length();
+		int endcut = lookupstring.indexOf(",Size=");
+		String ad_column_id = lookupstring.substring(begincut, endcut);
+		
+		String currentTableName = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = (SELECT ad_table_id FROM ad_column WHERE ad_column_id = "+ad_column_id+")");
+			
+			// System.out.println("\n\n >>> currentTableName : " + currentTableName);
+		
+		// Melakukan customisasi jika tablename == xxxx
+		if(currentTableName == "C_Project" ) {
+			multiSelectionProduct = false;
+		}
+		// END CODE ANDI : 20180709 ----------------------- 
 						
 		if (col.equals("M_Product_ID"))
 		{

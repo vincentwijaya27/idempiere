@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -48,6 +49,7 @@ import org.compiere.model.MMatchPO;
 import org.compiere.model.MNote;
 import org.compiere.model.MPeriod;
 import org.compiere.model.MRefList;
+import org.compiere.model.MSysConfig;
 import org.compiere.model.ModelValidationEngine;
 import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
@@ -456,6 +458,12 @@ public abstract class Doc
 	/** Error Message			*/
 	protected String			p_Error = null;
 
+	/*
+	 * ADDED BY JACKSON - 20201120
+	 * Check 3 Digit Account Cost Center Group 
+	 * */
+	private List<Integer> ListDocumentType = new ArrayList<Integer>();
+	
 	/**
 	 * 	Get Context
 	 *	@return context
@@ -771,6 +779,10 @@ public abstract class Doc
 	 */
 	private final String postLogic ()
 	{
+		int cntErr = 0; // ADDED BY JACKSON - 20201118 : #2413 - invoice vendor validasi cost center dgn account 3 digit pertama
+		String TableName = DB.getSQLValueString(getTrxName(), "SELECT TableName FROM AD_Table WHERE AD_Table_ID = ?", get_Table_ID()); // ADDED BY JACKSON - 20201120
+		getDocumentTypes(); // ADDED BY JACKSON - 20201120
+		
 		//  rejectUnbalanced
 		if (!m_as.isSuspenseBalancing() && !isBalanced())
 			return STATUS_NotBalanced;
@@ -794,6 +806,9 @@ public abstract class Doc
 			p_Error = validatorMsg;
 			return STATUS_Error;
 		}
+		
+		int AD_ColumnErrMsg_ID = DB.getSQLValue(getTrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE AD_Table_ID = ? AND ColumnName = 'ErrorMsg'", get_Table_ID()); // ADDED BY JACKSON - 20201118 : #2413 - invoice vendor validasi cost center dgn account 3 digit pertama
+
 
 		for (int f = 0; f < facts.size(); f++)
 		{
@@ -835,11 +850,92 @@ public abstract class Doc
 				if (!fact.isAcctBalanced())
 					return STATUS_NotBalanced;
 			}
-
+			
+// BEGIN CODE JACKSON - 20201118 : #2413 - invoice vendor validasi cost center dgn account 3 digit pertama
+			boolean IsCheck3DigAccountCostCenterGroup = MSysConfig.getValue("IsCheck3DigAccountCostCenterGroup", "N", getAD_Client_ID()).equalsIgnoreCase("Y");
+			if(IsCheck3DigAccountCostCenterGroup && ListDocumentType.contains(getC_DocType_ID())) {
+				for (FactLine fl : fact.getLines()) {
+					if(fl.getAccount_ID() > 0 && fl.getUser1_ID() > 0) {
+						List<String> listAccounts3Dig = new ArrayList<String>();
+						boolean IsError = true;
+						boolean IsMultipleCCGroup = DB.getSQLValueString(getTrxName(), "SELECT Z_IsMultipleCCGroup FROM C_ElementValue WHERE C_ElementValue_ID = ?", fl.getUser1_ID()).equalsIgnoreCase("Y") ? true : false;
+						int Z_CostCenter_Group_ID = DB.getSQLValue(getTrxName(), "SELECT Z_CostCenter_Group_ID FROM C_ElementValue WHERE C_ElementValue_ID = ?",fl.getUser1_ID());
+						if(Z_CostCenter_Group_ID > 0) {
+							String AccountValue = DB.getSQLValueString(getTrxName(), "SELECT Value FROM C_ElementValue WHERE C_ElementValue_ID = ?", fl.getAccount_ID());
+							listAccounts3Dig.add(AccountValue.substring(0, 3));
+							String CostCenterGroupValue = DB.getSQLValueString(getTrxName(), "SELECT Value FROM Z_CostCenter_Group WHERE Z_CostCenter_Group_ID = ?", Z_CostCenter_Group_ID);
+							if(IsMultipleCCGroup) {
+								String AcctMultipleCCGroup = DB.getSQLValueString(getTrxName(), "SELECT Value FROM AD_SysConfig WHERE AD_Client_ID = ? AND LOWER(Name) = 'account multiple cost center group' AND IsActive = 'Y'", getAD_Client_ID());
+								if(AcctMultipleCCGroup != null) {
+									for (String accountValue : AcctMultipleCCGroup.split(",")) {
+										listAccounts3Dig.add(accountValue.trim().substring(0, 3));
+									}
+								}
+							} 
+							
+							for (String account3Dig : listAccounts3Dig) {
+								if(CostCenterGroupValue.equalsIgnoreCase(account3Dig)) {
+									IsError = false;
+									break;
+								}
+							}
+							
+							if(IsError) {
+								String ErrorMsg = DB.getSQLValueString(getTrxName(), "SELECT Description FROM AD_SysConfig WHERE AD_Client_ID = ? AND Name = 'IsCheck3DigAccountCostCenterGroup'", getAD_Client_ID());
+								p_Error = ErrorMsg;
+								if(AD_ColumnErrMsg_ID > 0) {
+									String sql = "UPDATE "+ TableName +" SET ErrorMsg = '"+ ErrorMsg +"' WHERE "+ TableName +"_ID = "+ get_ID();
+									DB.executeUpdateEx(sql, getTrxName());
+									cntErr++;
+								}
+							}
+						}
+					}
+				}
+			}
+// END CODE JACKSON - 20201118
 		}	//	for all facts
 
+// BEGIN CODE JACKSON - 20200120 #1305 : Insert Cross Account di Fact Accounting Detail
+		int AD_Column_Cross_Acc_ID = DB.getSQLValue(getTrxName(), "SELECT AD_Column_ID FROM AD_Column WHERE LOWER(ColumnName) = 'z_cross_account_id'");
+		if(AD_Column_Cross_Acc_ID > 0 && facts != null && facts.size() > 0 && facts.get(0).getLines().length == 2) {
+			facts.get(0).getLines()[0].set_ValueOfColumn("Z_Cross_Account_ID", facts.get(0).getLines()[1].getAccount_ID());
+			facts.get(0).getLines()[1].set_ValueOfColumn("Z_Cross_Account_ID", facts.get(0).getLines()[0].getAccount_ID());
+		}
+// END CODE JACKSON - 20200120
+		
+// BEGIN CODE JACKSON - 20201118 : #2413 - invoice vendor validasi cost center dgn account 3 digit pertama
+		if(cntErr == 0 && AD_ColumnErrMsg_ID > 0) {
+			String ErrorMsg = DB.getSQLValueString(getTrxName(), "SELECT ErrorMsg FROM "+ TableName +" WHERE "+ TableName +"_ID = "+ get_ID());
+			if(ErrorMsg != null && !ErrorMsg.equalsIgnoreCase(""))
+				DB.executeUpdateEx("UPDATE "+ TableName +" SET ErrorMsg = NULL WHERE "+ TableName +"_ID = "+ get_ID(), getTrxName());
+		}
+// END CODE JACKSON - 20201118
+		
 		return STATUS_Posted;
 	}   //  postLogic
+	
+	private void getDocumentTypes() {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "SELECT Z_Integer1 FROM Z_Config WHERE AD_Client_ID = ? AND LOWER(Name) = 'document type 3 dig check cc group' AND IsActive = 'Y'";
+		try {
+			pstmt = DB.prepareStatement(sql, getTrxName());
+			pstmt.setInt(1, getAD_Client_ID());
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				ListDocumentType.add(rs.getInt("Z_Integer1"));
+			}
+		} catch (SQLException e) {
+			throw new IllegalStateException("Error :" + e.getLocalizedMessage());
+		} finally {
+			DB.close(rs, pstmt);
+			rs = null;
+			pstmt = null;
+			sql = "";
+		}
+	}
 
 	/**
 	 *  Post Commit. <br/>

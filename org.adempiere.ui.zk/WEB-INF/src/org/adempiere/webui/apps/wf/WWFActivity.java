@@ -13,15 +13,19 @@
  *****************************************************************************/
 package org.adempiere.webui.apps.wf;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.adempiere.util.Callback;
+import org.adempiere.util.ProcessUtil;
 import org.adempiere.webui.LayoutUtils;
 import org.adempiere.webui.apps.AEnv;
 import org.adempiere.webui.component.Button;
+import org.adempiere.webui.component.Checkbox;
 import org.adempiere.webui.component.Column;
 import org.adempiere.webui.component.Columns;
 import org.adempiere.webui.component.Grid;
@@ -46,12 +50,20 @@ import org.adempiere.webui.window.Dialog;
 import org.compiere.model.MColumn;
 import org.compiere.model.MLookup;
 import org.compiere.model.MLookupFactory;
+import org.compiere.model.MOrder;
+import org.compiere.model.MPInstance;
+import org.compiere.model.MProcess;
 import org.compiere.model.MQuery;
 import org.compiere.model.MRefList;
 import org.compiere.model.MSysConfig;
+import org.compiere.model.MTab;
+import org.compiere.model.MTable;
+import org.compiere.model.MWindow;
 import org.compiere.model.Query;
 import org.compiere.model.SystemIDs;
+import org.compiere.process.ProcessInfo;
 import org.compiere.util.CLogger;
+import org.compiere.util.DB;
 import org.compiere.util.DisplayType;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
@@ -100,17 +112,25 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 	private static final CLogger log = CLogger.getCLogger(WWFActivity.class);
 
 	//
-	private Label lNode = new Label(Msg.translate(Env.getCtx(), "AD_WF_Node_ID"));
-	private Textbox fNode = new Textbox();
-	private Label lDesctiption = new Label(Msg.translate(Env.getCtx(), "Description"));
-	private Textbox fDescription = new Textbox();
-	private Label lHelp = new Label(Msg.translate(Env.getCtx(), "Help"));
-	private Textbox fHelp = new Textbox();
+//	private Label lNode = new Label(Msg.translate(Env.getCtx(), "AD_WF_Node_ID"));
+//	private Textbox fNode = new Textbox();
+//	private Label lDesctiption = new Label(Msg.translate(Env.getCtx(), "Description"));
+//	private Textbox fDescription = new Textbox();
+//	private Label lHelp = new Label(Msg.translate(Env.getCtx(), "Help"));
+//	private Textbox fHelp = new Textbox();
 	private Label lHistory = new Label(Msg.translate(Env.getCtx(), "History"));
 	private Html fHistory = new Html();
-	private Label lAnswer = new Label(Msg.getMsg(Env.getCtx(), "Answer"));
+	private Label lAnswer = new Label(Msg.getMsg(Env.getCtx(), "Approve")); // updated by Andi 20200415 : label Answer di ganti Approve, requester Pak Sugi 
 	private Textbox fAnswerText = new Textbox();
 	private Listbox fAnswerList = new Listbox();
+
+	// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+	private Checkbox fAnswerCheckboxYes = new Checkbox();
+	private Checkbox fAnswerCheckboxNo = new Checkbox();
+	private Label lYes = new Label("Yes    ");
+	private Label lNo = new Label("No");
+	// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+	
 	private Button fAnswerButton = new Button();
 	private Button bZoom = new Button();
 	private Label lTextMsg = new Label(Msg.getMsg(Env.getCtx(), "Messages"));
@@ -123,6 +143,20 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 
 	private ListModelTable model = null;
 	private WListbox listbox = new WListbox();
+	
+	// BEGIN CODE ANDI 20200402 : Requester Feli & Silvia
+	private Listbox fSortList = new Listbox();
+	private Label lToggleSort = new Label("Sort By");
+	private Button bToggleSort = new Button(); 
+	private Boolean orderByCrated = true;
+	// END CODE ANDI 20200402 : Requester Feli & Silvia
+	
+	// BEGIN CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+	private Button bTogglePrint = new Button(); 
+	// END CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+	
+	// ADDED BY ANDI - 20200616 : Flag supaya hanya bisa proses melalui Click (bukan Type Enter)
+	private Boolean isClicked = false;
 
 	private final static String HISTORY_DIV_START_TAG = "<div style='overflow-y:scroll;height: 100px; border: 1px solid #7F9DB9;'>";
 	
@@ -143,6 +177,15 @@ public class WWFActivity extends ADForm implements EventListener<Event>
         loadActivities();
 
         fAnswerList.setMold("select");
+        
+        // BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+        fAnswerCheckboxYes.setEnabled(true);
+        fAnswerCheckboxNo.setEnabled(true);
+		lYes.setPre(true);
+		lYes.setStyle("cursor:pointer;");
+		lNo.setPre(true);
+		lNo.setStyle("cursor:pointer;");
+		// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
 
 		if (ThemeManager.isUseFontIconForImage()) {
         	bZoom.setIconSclass("z-icon-Zoom");
@@ -157,6 +200,24 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		setTooltipText(bOK, "Ok");
 		setTooltipText(bRefresh, "Refresh");
 
+	 // BEGIN CODE ANDI - 20200402 : Requester Feli & Silvia
+	    fSortList.setMold("select");
+	    
+	    fSortList.removeAllItems();
+	    fSortList.appendItem("Created", "Created");
+	    fSortList.appendItem("Organization", "AD_Org_ID");
+	    
+	    fSortList.setVisible(true);
+	    
+	    bToggleSort.setImage(ThemeManager.getThemeResource("images/Refresh16.png")); 
+	    bToggleSort.setEnabled(true);
+	 // END CODE ANDI - 20200402 : Requester Feli & Silvia
+	    
+	    // BEGIN CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+	    bTogglePrint.setImage(ThemeManager.getThemeResource("images/Print16.png")); 
+	    bTogglePrint.setEnabled(false);
+	    // END CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+		
         MLookup lookup = MLookupFactory.get(Env.getCtx(), m_WindowNo,
                 0, SystemIDs.COLUMN_AD_WF_ACTIVITY_AD_USER_ID, DisplayType.Search);
         fForward = new WSearchEditor(lookup, Msg.translate(
@@ -199,38 +260,57 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		grid.appendChild(rows);
 
 		Row row = new Row();
-		rows.appendChild(row);
 		Div div = new Div();
-		div.setStyle("text-align: right;");
-		div.appendChild(lNode);
-		row.appendChild(div);
-		row.appendChild(fNode);
-		ZKUpdateUtil.setHflex(fNode, "true");
-		fNode.setReadonly(true);
+//		rows.appendChild(row);
+//		div.setStyle("text-align: right;");
+//		div.appendChild(lNode);
+//		row.appendChild(div);
+//		row.appendChild(fNode);
+//		ZKUpdateUtil.setHflex(fNode, "true");
+//		fNode.setReadonly(true);
 
+//		row = new Row();
+//		rows.appendChild(row);
+//		row.setValign("top");
+//		div = new Div();
+//		div.setStyle("text-align: right;");
+//		div.appendChild(lDesctiption);
+//		row.appendChild(div);
+//		row.appendChild(fDescription);
+//		fDescription.setMultiline(true);
+//		ZKUpdateUtil.setHflex(fDescription, "true");
+//		fDescription.setReadonly(true);
+
+//		row = new Row();
+//		rows.appendChild(row);
+//		div = new Div();
+//		div.setStyle("text-align: right;");
+//		div.appendChild(lHelp);
+//		row.appendChild(div);
+//		row.appendChild(fHelp);
+//		fHelp.setMultiline(true);
+//		fHelp.setRows(3);
+//		ZKUpdateUtil.setHflex(fHelp, "true");
+//		fHelp.setReadonly(true);
+		
+		// BEGIN CODE ANDI - 20200402 : Tambahan Button Toggle Sort / Order
 		row = new Row();
 		rows.appendChild(row);
-		row.setValign("top");
+		
 		div = new Div();
 		div.setStyle("text-align: right;");
-		div.appendChild(lDesctiption);
+		div.appendChild(lToggleSort);
 		row.appendChild(div);
-		row.appendChild(fDescription);
-		fDescription.setMultiline(true);
-		ZKUpdateUtil.setHflex(fDescription, "true");
-		fDescription.setReadonly(true);
-
-		row = new Row();
-		rows.appendChild(row);
-		div = new Div();
-		div.setStyle("text-align: right;");
-		div.appendChild(lHelp);
-		row.appendChild(div);
-		row.appendChild(fHelp);
-		fHelp.setMultiline(true);
-		fHelp.setRows(3);
-		ZKUpdateUtil.setHflex(fHelp, "true");
-		fHelp.setReadonly(true);
+		
+		Hbox hbox2 = new Hbox();
+		hbox2.appendChild(fSortList);
+//		hbox.appendChild(fAnswerButton);
+//		fAnswerButton.addEventListener(Events.ON_CLICK, this);
+		row.appendChild(hbox2);
+		
+		row.appendChild(bToggleSort);
+		bToggleSort.addEventListener(Events.ON_CLICK, this);
+		// END CODE ANDI - 20200402 : Tambahan Button Toggle Sort / Order
 
 		row = new Row();
 		rows.appendChild(row);
@@ -241,6 +321,11 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		row.appendChild(fHistory);
 		ZKUpdateUtil.setHflex(fHistory, "true");
 
+		// BEGIN CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+		row.appendChild(bTogglePrint);
+		bTogglePrint.addEventListener(Events.ON_CLICK, this);
+		// END CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+		
 		row = new Row();
 		rows.appendChild(row);
 		div = new Div();
@@ -251,6 +336,19 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		hbox.appendChild(fAnswerText);
 		ZKUpdateUtil.setHflex(fAnswerText, "true");
 		hbox.appendChild(fAnswerList);
+		
+		// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+		hbox.appendChild(fAnswerCheckboxYes);
+		hbox.appendChild(lYes);
+		hbox.appendChild(fAnswerCheckboxNo);
+		hbox.appendChild(lNo);
+		// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+		
+		lYes.addEventListener(Events.ON_CLICK, this);
+		lNo.addEventListener(Events.ON_CLICK, this);
+		fAnswerCheckboxYes.addEventListener(Events.ON_CLICK, this);
+		fAnswerCheckboxNo.addEventListener(Events.ON_CLICK, this);
+		
 		hbox.appendChild(fAnswerButton);
 		hbox.appendChild(bZoom);
 		row.appendChild(hbox);
@@ -326,6 +424,16 @@ public class WWFActivity extends ADForm implements EventListener<Event>
         {
     		if (comp == bZoom)
     			cmd_zoom();
+    		
+    		// BEGIN CODE ANDI - 20200402 : Requester Feli & Silvia 
+    		else if (comp == bToggleSort)
+    			cmd_bToggleSort();
+    		// END CODE ANDI - 20200402 : Requester Feli & Silvia 
+    		
+    		// BEGIN CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+    		else if (comp == bTogglePrint)
+    			cmd_bTogglePrint();
+    		// END CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
     		else if (comp == bRefresh)
     		{
     			Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
@@ -336,11 +444,80 @@ public class WWFActivity extends ADForm implements EventListener<Event>
     		}
     		else if (comp == bOK)
     		{
-    			Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
-    			Events.echoEvent("onOK", this, null);
+				// BEGIN CODE EDWARD : 20190212 - Pop Up Confirmation
+    			Component thistarget = this;
+    			Callback<Boolean> m_callback = new Callback<Boolean>() {
+    				@Override
+    				public void onCallback(Boolean result) {
+    					if ( result )
+    					{
+    						isClicked = true;
+    						Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
+    						Events.echoEvent("onOK", thistarget, null);
+    					}
+    				}
+    			};
+                // Edward 20190222 - harus input message - tambah validasi
+    			
+    			if ( fAnswerList.getSelectedItem() == null || ( fAnswerButton!=null && fAnswerButton.isVisible() ) )
+    			{
+        			Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
+        			Events.echoEvent("onOK", this, null);
+    			}
+    			else if ( fAnswerList.getSelectedItem().toString().equals("Y") )
+    			{
+    				Dialog.ask(m_WindowNo, null, "YakinApprove?", m_callback);
+    				isClicked = true;
+    			}
+    			else if ( fAnswerList.getSelectedItem().toString().equals("N") && m_activity.getNode().getAction().equalsIgnoreCase(MWFNode.ACTION_UserChoice) )
+    			{
+    				int AD_Client_ID = Env.getAD_Client_ID(Env.getCtx());
+    				
+    				// BEGIN CODE BY ANDI - 20190214 - Validasi kalau No, harus input Message
+    				if(fTextMsg.getValue().trim().equalsIgnoreCase("")) {
+//	    				FDialog.error(m_WindowNo, "Silahkan Mengisi Alasan Anda Di Kotak Messages");
+    					Dialog.error(m_WindowNo, Msg.getMsg(Env.getCtx(), "WFMessagesMandatory"));
+	    				return;
+    				}
+    				// END CODE BY ANDI - 20190214 - Validasi kalau No, harus input Message
+    				
+    				// BEGIN CODE JACKSON - 20200709 : #1808 - Messages di Workflow Activities tidak ada min / max karakter
+    				int AD_SysConfig_Min_ID = DB.getSQLValue(null, "SELECT Value::Integer FROM AD_SysConfig WHERE AD_Client_ID = ? AND LOWER(Name) = 'z-wwfactivity-mincharmsg' AND IsActive = 'Y'", AD_Client_ID);
+    				if(AD_SysConfig_Min_ID >= 0) {
+    					if(fTextMsg.getValue().length() < AD_SysConfig_Min_ID) {
+    	    				Dialog.error(m_WindowNo, "Isi Text Message Minimal "+ AD_SysConfig_Min_ID +" Karakter");
+    	    				return;
+    					}
+    				} else {
+        				// BEGIN CODE BY ANDI - 20190214 - Validasi kalau No, harus input Message
+    					if(fTextMsg.getValue().length() < 20) {
+//    	    				FDialog.error(m_WindowNo, "Isi Text Message Minimal 20 Karakter");
+    	    				Dialog.error(m_WindowNo, Msg.getMsg(Env.getCtx(), "WFMessagesMinChar"));
+    	    				return;
+        				}
+        				// END CODE BY ANDI - 20190214 - Validasi kalau No, harus input Message
+    				}
+    				// END CODE JACKSON - 20200709
+    				
+    				Dialog.ask(m_WindowNo, null, "YakinReject?", m_callback); 
+    			}
+    			else
+    			{
+        			Clients.showBusy(Msg.getMsg(Env.getCtx(), "Processing"));
+        			Events.echoEvent("onOK", this, null);
+    			}
+    			// END CODE EDWARD
     		}
-    		else if (comp == fAnswerButton)
+    		else if (comp == fAnswerButton) {
     			cmd_button();
+    		}
+    		
+    		// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+    		else if (comp == fAnswerCheckboxYes || comp == lYes)
+    			cmd_checkboxYes();
+        	else if (comp == fAnswerCheckboxNo || comp == lNo)
+    			cmd_checkboxNo();
+    		// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
         } 
         else if (Events.ON_SELECT.equals(eventName) && comp == listbox)
         {
@@ -352,6 +529,18 @@ public class WWFActivity extends ADForm implements EventListener<Event>
         {
     		super.onEvent(event);
         }
+	}
+	
+	public void cmd_checkboxYes() {
+		fAnswerList.setSelectedIndex(1);
+		fAnswerCheckboxYes.setChecked(true);
+		fAnswerCheckboxNo.setChecked(false);
+	}
+	
+	public void cmd_checkboxNo() {
+		fAnswerList.setSelectedIndex(0);
+		fAnswerCheckboxYes.setChecked(false);
+		fAnswerCheckboxNo.setChecked(true);
 	}
 
 	/**
@@ -392,11 +581,42 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		List<MWFActivity> list = new ArrayList<MWFActivity>();
 		while (it.hasNext()) {
 			MWFActivity activity = it.next();
+			
+			// BEGIN CODE ANDI : 20181026  - Requester Feli - Menambahkan organisasi di WF Activity
+			String tablename = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = ?", activity.getAD_Table_ID());
+			String orgname = "";
+			String summary = activity.getSummary();
+			
+			if(tablename != null) {
+				orgname = DB.getSQLValueString(null, "SELECT name FROM ad_org WHERE ad_org_id IN (SELECT ad_org_id FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
+			}
+			if(orgname == null) {
+				orgname = "";
+			}
+			
+			// BEGIN CODE ALBERT (2022/09/20) - #8516 : Approval Bank Account
+			if(tablename.equalsIgnoreCase("C_BP_BankAccount"))
+			{
+				String NamaAccount = DB.getSQLValueString(null, "SELECT A_Name FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
+				String NomorAccount = DB.getSQLValueString(null, "SELECT COALESCE(z_account_no_vendor, z_virtualaccount) FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
+				String BankName = DB.getSQLValueString(null, "SELECT name FROM C_Bank WHERE C_Bank_ID = (SELECT C_Bank_ID FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
+				summary = NamaAccount + " - " + NomorAccount + " ("+BankName+")";
+			}
+			// END CODE ALBERT
+			
+			SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");//dd/MM/yyyy
+			String created_nice_format = sdfDate.format(activity.getCreated()); 
+			// 
+			// END CODE ANDI : 20181026
+			
 			list.add (activity);
 			List<Object> rowData = new ArrayList<Object>();
-			rowData.add(activity.getPriority());
+//			rowData.add(activity.getPriority()); // Commented By Andi : 20181026 - Requester Pak Sugi
+//			rowData.add(activity.getSummary());
+			rowData.add(created_nice_format); // ADDED BY ANDI : 20181026 - requester Feli
+			rowData.add(orgname); // ADDED BY ANDI : 20181026 - requester Feli
+			rowData.add(summary); // MODIFY BY ALBERT : 20220920 - #8516 : Summary Bank Account
 			rowData.add(activity.getNodeName());
-			rowData.add(activity.getSummary());
 			model.add(rowData);
 			if (list.size() > MAX_ACTIVITIES_IN_LIST && MAX_ACTIVITIES_IN_LIST > 0)
 			{
@@ -411,20 +631,45 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 			+ "(" + (System.currentTimeMillis()-start) + "ms)");
 		m_index = 0;
 
-		String[] columns = new String[]{Msg.translate(Env.getCtx(), "Priority"),
-				Msg.translate(Env.getCtx(), "AD_WF_Node_ID"),
-				Msg.translate(Env.getCtx(), "Summary")};
+		String[] columns = new String[]{
+				// Msg.translate(Env.getCtx(), "Priority"), // Commented By Andi : 20181026 - Requester Pak Sugi
+//				Msg.translate(Env.getCtx(), "Summary")
+				Msg.translate(Env.getCtx(), "Created"),
+				Msg.translate(Env.getCtx(), "AD_Org_ID"),
+				Msg.translate(Env.getCtx(), "Summary"),
+				Msg.translate(Env.getCtx(), "AD_WF_Node_ID")};
 
 		WListItemRenderer renderer = new WListItemRenderer(Arrays.asList(columns));
+		
 		ListHeader header = new ListHeader();
-		ZKUpdateUtil.setWidth(header, "60px");
+		
+//		ZKUpdateUtil.setWidth(header, "60px");
+//		renderer.setListHeader(0, header);
+		
+//		header = new ListHeader();
+//		ZKUpdateUtil.setWidth(header, null);
+//		renderer.setListHeader(1, header);
+		
+//		header = new ListHeader();
+//		ZKUpdateUtil.setWidth(header, null);
+//		renderer.setListHeader(2, header);
+		
+		ZKUpdateUtil.setWidth(header, "150px");
+//		ZKUpdateUtil.setWidth(header, null);
 		renderer.setListHeader(0, header);
+		
 		header = new ListHeader();
 		ZKUpdateUtil.setWidth(header, null);
 		renderer.setListHeader(1, header);
+		
 		header = new ListHeader();
 		ZKUpdateUtil.setWidth(header, null);
 		renderer.setListHeader(2, header);
+		
+		header = new ListHeader();
+		ZKUpdateUtil.setWidth(header, null);
+		renderer.setListHeader(3, header);
+		
 		renderer.addTableValueChangeListener(listbox);
 		model.setNoColumns(columns.length);
 		listbox.setModel(model);
@@ -444,6 +689,14 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 	{
 		fAnswerText.setVisible(false);
 		fAnswerList.setVisible(false);
+		
+		// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+		fAnswerCheckboxYes.setVisible(false);
+		fAnswerCheckboxNo.setVisible(false);
+		lYes.setVisible(false);
+		lNo.setVisible(false);
+		// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+		
 		fAnswerButton.setVisible(false);
 		if (ThemeManager.isUseFontIconForImage())
 			fAnswerButton.setIconSclass("z-icon-Window");
@@ -467,13 +720,18 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		//	Nothing to show
 		if (m_activity == null)
 		{
-			fNode.setText ("");
-			fDescription.setText ("");
-			fHelp.setText ("");
+//			fNode.setText ("");
+//			fDescription.setText ("");
+//			fHelp.setText ("");
 			fHistory.setContent(HISTORY_DIV_START_TAG + "&nbsp;</div>");
 			statusBar.setStatusDB("0/" + m_activities.length);
 			statusBar.setStatusLine(Msg.getMsg(Env.getCtx(), "WFNoActivities"));
 		}
+		
+		// BEGIN CODE ANDI - 20200911
+		bTogglePrint.setEnabled(selIndex >= 0 && isTabHasPrintProcess());
+		// END CODE ANDI - 20200911
+				
 		return m_activity;
 	}	//	resetDisplay
 
@@ -492,9 +750,9 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 			return;
 		}
 		//	Display Activity
-		fNode.setText (m_activity.getNodeName());
-		fDescription.setValue (m_activity.getNodeDescription());
-		fHelp.setValue (m_activity.getNodeHelp());
+//		fNode.setText (m_activity.getNodeName());
+//		fDescription.setValue (m_activity.getNodeDescription());
+//		fHelp.setValue (m_activity.getNodeHelp());
 		//
 		fHistory.setContent (HISTORY_DIV_START_TAG+m_activity.getHistoryHTML()+"</div>");
 
@@ -515,7 +773,17 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 					{
 						fAnswerList.appendItem(values[i].getName(), values[i].getValue());
 					}
-					fAnswerList.setVisible(true);
+//					fAnswerList.setVisible(true); // COMMENTED BY ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+					
+					// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+					lYes.setVisible(true);
+					fAnswerCheckboxYes.setChecked(false);
+					fAnswerCheckboxYes.setVisible(true);
+					
+					lNo.setVisible(true);
+					fAnswerCheckboxNo.setChecked(true);
+					fAnswerCheckboxNo.setVisible(true);
+					// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
 				}
 				else if (DisplayType.isList(dt))
 				{
@@ -524,7 +792,15 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 					{
 						fAnswerList.appendItem(values[i].getName(), values[i].getValue());
 					}
-					fAnswerList.setVisible(true);
+//					fAnswerList.setVisible(true); // COMMENTED BY ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+					
+					// BEGIN CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
+					fAnswerCheckboxNo.setChecked(true);
+					fAnswerCheckboxYes.setVisible(true);
+					fAnswerCheckboxNo.setVisible(true);
+					lYes.setVisible(true);
+					lNo.setVisible(true);
+					// END CODE ANDI - 20200414 : Opsi Answer menggunakan checkbox Yes No - Requester Pak Sugi
 				}
 				else	//	other display types come here
 				{
@@ -547,8 +823,111 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 
 		statusBar.setStatusDB((m_index+1) + "/" + m_activities.length);
 		statusBar.setStatusLine(Msg.getMsg(Env.getCtx(), "WFActivities"));
+		
+		// BEGIN CODE ANDI - 20190218 - Clear Message Setiap Ganti Baris
+		fTextMsg.setValue ("");
+		// END CODE ANDI - 20190218
 	}	//	display
+	
+	// BEGIN CODE ANDI - 20200402 : Requester Feli & Silvia
+	private void cmd_bToggleSort() {
+		
+		String value = fSortList.getSelectedItem().getValue();
+//		System.out.println("\n\n >>> value : " + value);
+		
+		if(value.equalsIgnoreCase("Created")) {
+			orderByCrated = true;
+		} else {
+			orderByCrated = false;
+		}
+		
+		loadActivities();
+		display(-1);
+	}
+	// END CODE ANDI - 20200402 : Requester Feli & Silvia
 
+	// BEGIN CODE ANDI - 20200827 : #1486 - Workflow Activities. kalau 1 line di click, otomatis muncul preview print out
+	private Boolean isTabHasPrintProcess() {
+		if (m_activity == null)
+			return false;
+		
+		int AD_Table_ID = m_activity.getAD_Table_ID();
+		int Record_ID = m_activity.getRecord_ID();
+		
+		int AD_Window_ID = Env.getZoomWindowID(AD_Table_ID, Record_ID);
+		System.out.println("\n\n >>> AD_Window_ID : " + AD_Window_ID);
+		if(AD_Window_ID < 0) {
+			return false;
+		}
+		
+		MWindow obW = new MWindow(Env.getCtx(), AD_Window_ID, null);
+		MTab []arrOfTab = obW.getTabs(true, null);
+		
+		int AD_Process_ID = arrOfTab[0].getAD_Process_ID(); //1000036;
+		
+		return (AD_Process_ID > 0);
+	}
+	
+	private void cmd_bTogglePrint() {
+		
+		System.out.println("\n\n >>> masuk ke Function cmd_bTogglePrint()");
+
+		if (m_activity == null)
+			return;
+		
+		int AD_Table_ID = m_activity.getAD_Table_ID();
+		int Record_ID = m_activity.getRecord_ID();
+		
+		int AD_Window_ID = Env.getZoomWindowID(AD_Table_ID, Record_ID);
+		System.out.println("\n\n >>> AD_Window_ID : " + AD_Window_ID);
+		if(AD_Window_ID < 0) {
+			return;
+		}
+		
+		MWindow obW = new MWindow(Env.getCtx(), AD_Window_ID, null);
+		MTab []arrOfTab = obW.getTabs(true, null);
+		
+		int AD_Process_ID = arrOfTab[0].getAD_Process_ID(); //1000036;
+		System.out.println("\n\n >>> AD_Process_ID : " + AD_Process_ID);
+		
+		if(arrOfTab[0].getEntityType().equalsIgnoreCase("D")) {
+			
+			// Check kalau ada Print Format untuk Purchase Order, Requis, dll, selama Tab nya tidak custom
+			String TableName = DB.getSQLValueString(null, "SELECT TableName FROM AD_Table WHERE AD_Table_ID = ?", AD_Table_ID); // hanya cari override Print Format, kalau Table nya sudah bawaah idempiere EntityType = Dictionary (D)
+			System.out.println("\n\n >>> TableName : " + TableName);
+			if(TableName != null) {
+				int AD_Table_Print = DB.getSQLValue(null, "SELECT AD_Table_ID FROM AD_Table WHERE TableName = '"+TableName+"_Header_v'"); // C_Order_Header_v / Order Header Print
+				System.out.println("\n\n >>> AD_Table_Print : " + AD_Table_Print);
+				if(AD_Table_Print > 0) {
+					System.out.println("\n\n >>> query : "+"SELECT JasperProcess_ID FROM AD_PrintFormat WHERE isActive = 'Y' AND AD_Table_ID = "+AD_Table_Print+" AND AD_Client_ID = "+Env.getAD_Client_ID(Env.getCtx()));
+					int JasperProcess_ID = DB.getSQLValue(null, "SELECT JasperProcess_ID FROM AD_PrintFormat WHERE isActive = 'Y' AND AD_Table_ID = ? AND AD_Client_ID = ?", AD_Table_Print, Env.getAD_Client_ID(Env.getCtx()));
+					if(JasperProcess_ID > 0) {
+						AD_Process_ID = JasperProcess_ID;
+						System.out.println("\n\n >>> JasperProcess_ID : " + JasperProcess_ID);
+					}
+				}
+			}
+			
+		}
+		
+		if(AD_Process_ID > 0) {
+		
+			MProcess process = MProcess.get(Env.getCtx(), AD_Process_ID);
+			//
+			MPInstance pInstance = new MPInstance(process, Record_ID);
+			//
+			ProcessInfo pi = new ProcessInfo (process.getName(), process.getAD_Process_ID(), AD_Table_ID, Record_ID);
+			pi.setAD_User_ID(Env.getAD_User_ID(Env.getCtx()));
+			pi.setAD_Client_ID(Env.getAD_Client_ID(Env.getCtx()));
+			pi.setAD_PInstance_ID(pInstance.getAD_PInstance_ID());
+			pi.setIsBatch(false);
+			
+			Trx TrxName = Trx.get(Trx.createTrxName(), true);
+			ProcessUtil.startJavaProcess(Env.getCtx(), pi, TrxName);
+			
+		}
+	}
+	// END CODE ANDI - 20200827 : #1486
 
 	/**
 	 * Zoom to workflow activity window
@@ -558,6 +937,31 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		if (log.isLoggable(Level.CONFIG)) log.config("Activity=" + m_activity);
 		if (m_activity == null)
 			return;
+		
+		// BEGIN CODE ANDI - 20180109 -- Perbaikan Bug WF Activity, saat click open, untuk SPPA bukanya malah window Sales Order
+		if(m_activity.getAD_Table_ID() == 259) { // kalau table c_order
+			
+			String doctype_name = DB.getSQLValueString(null, "SELECT c_doctype.name FROM c_doctype JOIN c_order ON c_order.c_doctypetarget_id = c_doctype.c_doctype_id WHERE c_order_id = ?", m_activity.getRecord_ID());
+		
+			if(doctype_name != null && doctype_name.startsWith("SPPA")) { // IF BEGIN WITH SPPA%
+				
+				int AD_Window_ID = DB.getSQLValue(null, "SELECT ad_window_id FROM ad_window WHERE name = 'SPPA'");
+				
+				if(AD_Window_ID > 0) {
+					MTable table = MTable.get(Env.getCtx(), m_activity.getAD_Table_ID());
+					MQuery query = MQuery.getEqualQuery(table.getKeyColumns()[0], m_activity.getRecord_ID());
+					query.setZoomTableName(table.getTableName());
+					query.setZoomColumnName(table.getKeyColumns()[0]);
+					query.setZoomValue(m_activity.getRecord_ID());
+					
+					SessionManager.getAppDesktop().showZoomWindow(AD_Window_ID, query);
+					
+					return;
+				}
+			}
+		}
+		// END CODE ANDI - 20180109 -- Perbaikan Bug WF Activity, saat click open, untuk SPPA bukanya malah window Sales Order
+		
 		AEnv.zoom(m_activity.getAD_Table_ID(), m_activity.getRecord_ID());
 	}	//	cmd_zoom
 
@@ -617,6 +1021,16 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 		MWFNode node = m_activity.getNode();
 
 		Object forward = fForward.getValue();
+		
+		// BEGIN CODE BY ANDI - 20200616 - Validasi supaya tidak langsung enter #403
+		if ( m_activity.getNode().getAction().equalsIgnoreCase(MWFNode.ACTION_UserChoice) )
+		{
+			if(!isClicked) {
+				Dialog.error(m_WindowNo, "Silahkan menggunakan tombol OK untuk menjawab pilihan Anda");
+				return;
+			}
+		}
+		// END CODE BY ANDI - 20200616 - Validasi supaya tidak langsung enter #403
 
 		// ensure activity is ran within a transaction - [ 1953628 ]
 		Trx trx = null;
@@ -669,6 +1083,7 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 				try
 				{
 					m_activity.setUserChoice(AD_User_ID, value, dt, textMsg);
+					fTextMsg.setValue(null); // added by Andi - 20200616 : Supaya setiap kali selesai proses, field messages kosong lagi. 
 					MWFProcess wfpr = new MWFProcess(m_activity.getCtx(), m_activity.getAD_WF_Process_ID(), m_activity.get_TrxName());
 					wfpr.checkCloseActivities(m_activity.get_TrxName());
 					
@@ -687,6 +1102,44 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 			//	User Action
 			else
 			{
+			// BEGIN CODE ANDI - 20181218 - Validasi SPPA -> Menunggu realisasi harus isi Realisi & Sudah Di Print
+				
+				System.out.println("\n\n >>> User Action : " + m_activity.getNodeName());
+				
+				int ad_wf_process_id = m_activity.getAD_WF_Process_ID();
+				MWFProcess objMWFProcess = new MWFProcess(null, ad_wf_process_id, null);
+				MTable objMTable = new MTable(null, objMWFProcess.getAD_Table_ID(), null);
+				
+				if(objMTable.getTableName().equalsIgnoreCase(MOrder.Table_Name) && (
+							m_activity.getNode().getValue().equalsIgnoreCase("(Menunggu Realisasi)") || m_activity.getNode().getValue().equalsIgnoreCase("(Menunggu Print)")
+						)) {
+					int ad_sysconfig_id = DB.getSQLValue(null, "SELECT ad_sysconfig_id FROM ad_sysconfig WHERE name = 'Z-WWFAcitivity-SPPA-MenungguRealisasi' AND ad_client_id = ?", m_activity.getAD_Client_ID());
+					if(ad_sysconfig_id > 0) { // if found sysconfig for this client
+						
+						String isPrinted = DB.getSQLValueString(m_activity.get_TrxName(), "SELECT isPrinted FROM c_order WHERE c_order_id = ?", objMWFProcess.getRecord_ID());
+						System.out.println("\n\n >>> isPrinted : " + isPrinted);
+						if(isPrinted.equalsIgnoreCase("N")) {
+//							Dialog.error(m_WindowNo, this, "Error", "SPPA belum di print");
+							Dialog.error(m_WindowNo, "Error", "SPPA belum di print");
+							trx.rollback();
+							trx.close();
+							return;
+						}
+						
+						int sum_of_qty_ekor_real = DB.getSQLValue(m_activity.get_TrxName(), "SELECT SUM(z_qty_ekor_real) FROM c_orderline WHERE c_order_id = ?", objMWFProcess.getRecord_ID());
+						System.out.println("\n\n >>> sum_of_qty_real : " + sum_of_qty_ekor_real);
+						if(sum_of_qty_ekor_real <= 0) {
+//							Dialog.error(m_WindowNo, this, "Error", "SPPA belum diisi Realisasi nya");
+							Dialog.error(m_WindowNo, "Error", "SPPA belum diisi Realisasi nya");
+							trx.rollback();
+							trx.close();
+							return;
+						}
+					}
+				}
+				
+			// END CODE ANDI - 20181218 - Validasi SPPA -> Menunggu realisasi harus isi Realisi & Sudah Di Print
+				
 				if (log.isLoggable(Level.CONFIG)) log.config("Action=" + node.getAction() + " - " + textMsg);
 				try
 				{

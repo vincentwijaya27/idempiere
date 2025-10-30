@@ -184,6 +184,27 @@ public class MDocumentStatus extends X_PA_DocumentStatus implements ImmutablePOS
 		return retValue;
 	}	//	getDocumentStatusIndicators
 
+	private static String getWhereActivities(int AD_User_ID, int AD_Client_ID) {
+		final String where =
+				"AD_WF_Activity.Processed='N' AND AD_WF_Activity.WFState='OS' AND ("
+				//	Owner of Activity
+				+ " AD_WF_Activity.AD_User_ID="+AD_User_ID	//	#1
+				//	Invoker (if no invoker = all)
+				+ " OR EXISTS (SELECT * FROM AD_WF_Responsible r WHERE AD_WF_Activity.AD_WF_Responsible_ID=r.AD_WF_Responsible_ID"
+				+ " AND r.ResponsibleType='H' AND COALESCE(r.AD_User_ID,0)=0 AND COALESCE(r.AD_Role_ID,0)=0 AND (AD_WF_Activity.AD_User_ID="+AD_User_ID+" OR AD_WF_Activity.AD_User_ID IS NULL))"	//	#2
+				//  Responsible User
+				+ " OR EXISTS (SELECT * FROM AD_WF_Responsible r WHERE AD_WF_Activity.AD_WF_Responsible_ID=r.AD_WF_Responsible_ID"
+				+ " AND r.ResponsibleType='H' AND r.AD_User_ID="+AD_User_ID+")"		//	#3
+				//	Responsible Role
+				+ " OR EXISTS (SELECT * FROM AD_WF_Responsible r INNER JOIN AD_User_Roles ur ON (r.AD_Role_ID=ur.AD_Role_ID)"
+				+ " WHERE AD_WF_Activity.AD_WF_Responsible_ID=r.AD_WF_Responsible_ID AND r.ResponsibleType='R' AND ur.AD_User_ID="+AD_User_ID+" AND ur.isActive = 'Y')"	//	#4
+				///* Manual Responsible */ 
+				+ " OR EXISTS (SELECT * FROM AD_WF_ActivityApprover r "
+				+ " WHERE AD_WF_Activity.AD_WF_Activity_ID=r.AD_WF_Activity_ID AND r.AD_User_ID="+AD_User_ID+" AND r.isActive = 'Y')" 
+				+ ") AND AD_WF_Activity.AD_Client_ID="+AD_Client_ID;	//	#5
+		return where;
+	}
+	
 	/**
 	 * @param documentStatus
 	 * @return number of matching records
@@ -192,10 +213,41 @@ public class MDocumentStatus extends X_PA_DocumentStatus implements ImmutablePOS
 		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM ");
 		String tableName = MTable.getTableName(Env.getCtx(), documentStatus.getAD_Table_ID());
 		sql.append(tableName);
-		String where = getWhereClause(documentStatus);
-		if (where != null && where.trim().length() > 0)
-			sql.append(" WHERE " ).append(where);
-		String sqlS = MRole.getDefault().addAccessSQL(sql.toString(), tableName, false, true);
+		
+		// COMMENTED BY Andi - 20180814
+//		String where = getWhereClause(documentStatus);
+//		if (where != null && where.trim().length() > 0)
+//			sql.append(" WHERE " ).append(where);
+//		String sqlS = MRole.getDefault().addAccessSQL(sql.toString(), tableName, false, true);
+// BEGIN CODE BY ANDI - 201870814
+		// Reason : karena query untuk dapatkan list workflow -- pakai getWhereActivities(), berbeda dengan counting standard bawaan iDempiere di documentStatus -- pakai getWhereClause(documentStatus)
+		
+			String where = "";
+			String sqlS = "";
+			
+//					System.out.println("\n\n >>> tableName : " + tableName);
+			
+			if(tableName.equalsIgnoreCase("AD_WF_Activity")) {
+				
+				where = getWhereActivities(Env.getAD_User_ID(Env.getCtx()), Env.getAD_Client_ID(Env.getCtx()));
+				if (where != null && where.trim().length() > 0) {
+					sql.append(" WHERE " ).append(where);
+				}
+				MRole role = MRole.get(Env.getCtx(), Env.getAD_Role_ID(Env.getCtx()));
+				sqlS = role.addAccessSQL(sql.toString(), tableName, true, false);
+//						System.out.println("\n\n >>> sqlS adwf : " + sqlS);
+				
+			} else {
+				
+				where = getWhereClause(documentStatus);
+				if (where != null && where.trim().length() > 0) {
+					sql.append(" WHERE " ).append(where);
+				}
+				sqlS = MRole.getDefault().addAccessSQL(sql.toString(), tableName, false, true);
+//						System.out.println("\n\n >>> sqlS : " + sqlS);
+			}
+		
+		// END CODE BY ANDI - 20180814
 		return DB.getSQLValue(null, sqlS);
 	}
 
