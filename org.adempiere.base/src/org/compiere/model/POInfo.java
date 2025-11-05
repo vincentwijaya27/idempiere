@@ -203,10 +203,19 @@ public class POInfo implements Serializable
 				//
 				m_AccessLevel = rs.getString(18);
 				String ColumnSQL = rs.getString(19);
-				if (ColumnSQL != null && ColumnSQL.length() > 0 && (ColumnSQL.startsWith(MColumn.VIRTUAL_UI_COLUMN_PREFIX) || ColumnSQL.startsWith(MColumn.VIRTUAL_SEARCH_COLUMN_PREFIX)))
-					ColumnSQL = "NULL";
-				if (ColumnSQL != null && ColumnSQL.contains("@"))
-					ColumnSQL = Env.parseContext(Env.getCtx(), -1, ColumnSQL, false, true);
+
+				//BEGIN CODE BY VINCENT WIJAYA 04/09/2025 - REQ BY PAK SUGI. AGAR TIDAK ADA ERROR COLUMNNAME WAS NOUT FOUND IN RESULTSET
+				if(ColumnSQL != null && ColumnSQL.length() > 0) {
+					continue;
+				}
+
+				// if (ColumnSQL != null && ColumnSQL.length() > 0 && (ColumnSQL.startsWith(MColumn.VIRTUAL_UI_COLUMN_PREFIX) || ColumnSQL.startsWith(MColumn.VIRTUAL_SEARCH_COLUMN_PREFIX)))
+				// 	ColumnSQL = "NULL";
+				// if (ColumnSQL != null && ColumnSQL.contains("@"))
+				// 	ColumnSQL = Env.parseContext(Env.getCtx(), -1, ColumnSQL, false, true);
+				
+				//END CODE BY VINCENT WIJAYA 04/09/2025 - REQ BY PAK SUGI. AGAR TIDAK ADA ERROR COLUMNNAME WAS NOUT FOUND IN RESULTSET
+
 				boolean IsEncrypted = "Y".equals(rs.getString(20));
 				boolean IsAllowLogging = "Y".equals(rs.getString(21));
 				boolean IsAllowCopy = "Y".equals(rs.getString(22));

@@ -376,11 +376,39 @@ public final class FactLine extends X_Fact_Acct
 		StringBuilder description = new StringBuilder().append(m_doc.getDocumentNo());
 		if (m_docLine != null)
 		{
+			//BEGIN BAWAAN CORE IDEMPIERE12
+			// description.append(" #").append(m_docLine.getLine());
+			// if (m_docLine.getDescription() != null)
+			// 	description.append(" (").append(m_docLine.getDescription()).append(")");
+			// else if (m_doc.getDescription() != null && m_doc.getDescription().length() > 0)
+			// 	description.append(" (").append(m_doc.getDescription()).append(")");
+			//END BAWAAN CORE IDEMPIERE12
+
 			description.append(" #").append(m_docLine.getLine());
-			if (m_docLine.getDescription() != null)
-				description.append(" (").append(m_docLine.getDescription()).append(")");
-			else if (m_doc.getDescription() != null && m_doc.getDescription().length() > 0)
-				description.append(" (").append(m_doc.getDescription()).append(")");		
+			
+			// BEGIN COMMMENTED BY ANDI - 20190905 - Fact Accounting untuk reverse, harus tetap mengandung arrow (<- atau ->) supaya bisa di exclude by report
+			
+//			if (m_docLine.getDescription() != null)
+//				description.append(" (").append(m_docLine.getDescription()).append(")");
+//			else if (m_doc.getDescription() != null && m_doc.getDescription().length() > 0)
+//				description.append(" (").append(m_doc.getDescription()).append(")");		
+			
+			// END COMMMENTED BY ANDI - 20190905 - Fact Accounting untuk reverse, harus tetap mengandung arrow (<- atau ->) supaya bisa di exclude by report
+			
+			
+			
+			// --
+			// BEGIN CODE ANDI - 20190905 - Fact Accounting untuk reverse, harus tetap mengandung arrow (<- atau ->) supaya bisa di exclude by report
+				
+				if(m_doc.getDescription() != null) {
+					description.append(" (").append(m_doc.getDescription()).append(")");
+				}
+				
+				if (m_docLine.getDescription() != null) {
+					description.append(" (").append(m_docLine.getDescription()).append(")");
+				}
+			
+			// END CODE ANDI - 20190905 - Fact Accounting untuk reverse, harus tetap mengandung arrow (<- atau ->) supaya bisa di exclude by report
 		}
 		else if (m_doc.getDescription() != null && m_doc.getDescription().length() > 0)
 			description.append(" (").append(m_doc.getDescription()).append(")");
@@ -823,6 +851,32 @@ public final class FactLine extends X_Fact_Acct
 			convDate = m_docLine.getDateConv();
 
 		BigDecimal currencyRate = null;
+		
+		//BEGIN CODE NicholasDjaja - 20220818 - #8174 - (Breeder) IV dan MR ambil currencyRate dari PO
+		if(m_doc != null) {
+			if(m_doc.get_TableName().equalsIgnoreCase("C_Invoice") || 
+				m_doc.get_TableName().equalsIgnoreCase("M_InOut") || 
+				m_doc.get_TableName().equalsIgnoreCase("M_Inventory")
+			  ) {
+				BigDecimal z_exchangerate = null;
+				if(m_doc.get_TableName().equalsIgnoreCase("M_Inventory")) {
+					z_exchangerate = DB.getSQLValueBD(null, "SELECT co.z_exchangerate FROM "+m_doc.get_TableName()+" tbl\r\n"
+							+ "LEFT JOIN m_inout mit ON mit.documentno = tbl.poreference\r\n"
+							+ "LEFT JOIN c_order co ON co.c_order_id = mit.c_order_id \r\n"
+							+ "WHERE  tbl."+m_doc.get_TableName()+"_id = ? ",  m_doc.get_ID());
+				}else {					
+					z_exchangerate = DB.getSQLValueBD(null, "SELECT co.z_exchangerate FROM "+m_doc.get_TableName()+" tbl "
+							+ "LEFT JOIN c_order co ON tbl.c_order_id = co.c_order_id "
+							+ "WHERE tbl."+m_doc.get_TableName()+"_id = ?", m_doc.get_ID());
+				}
+				
+				if(z_exchangerate != null) {
+					currencyRate = z_exchangerate;
+				}
+			}
+		}
+		//END CODE NicholasDjaja - 20220818 - #8174 - (Breeder) IV dan MR ambil currencyRate dari PO
+
 		if (m_docLine != null && m_docLine.getCurrencyRate() != null && m_docLine.getCurrencyRate().signum() > 0) 
 		{
 			currencyRate = m_docLine.getCurrencyRate();
