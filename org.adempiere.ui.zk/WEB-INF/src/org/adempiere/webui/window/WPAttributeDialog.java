@@ -1108,7 +1108,7 @@ public class WPAttributeDialog extends Window implements EventListener<Event>
 			}
 			
 			// BEGIN CODE ANDI - 20210216 : #3129 - Atribut Set Instance
-			Boolean ASI_integration = MSysConfig.getBooleanValue("Z_IsOverwriteASIOrg_Integration_NOCACHE", false, Env.getAD_Client_ID(Env.getCtx()));
+			Boolean ASI_integration = MSysConfig.getBooleanValue("Z_IsOverwriteASIOrg_NOCACHE", false, Env.getAD_Client_ID(Env.getCtx()));
 			System.out.println(">>> ASI_integration : "+ASI_integration);
 			if(ASI_integration) {
 				int AD_Org_ID = Env.getContextAsInt(Env.getCtx(), m_WindowNoParent, 0, "AD_Org_ID");

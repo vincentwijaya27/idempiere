@@ -13,6 +13,8 @@
  *****************************************************************************/
 package org.adempiere.webui.apps.wf;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -572,58 +574,120 @@ public class WWFActivity extends ADForm implements EventListener<Event>
 
 		int AD_User_ID = Env.getAD_User_ID(Env.getCtx());
 		int AD_Client_ID = Env.getAD_Client_ID(Env.getCtx());
-		Iterator<MWFActivity> it = new Query(Env.getCtx(), MWFActivity.Table_Name, MWFActivity.getWhereUserPendingActivities(), null)
-				.setApplyAccessFilter(true, false)
-				.setParameters(AD_User_ID, AD_User_ID, AD_User_ID, AD_User_ID, AD_User_ID, AD_Client_ID)
-				.setOrderBy("AD_WF_Activity.Priority DESC, AD_WF_Activity.Created")
-				.iterate();
 
-		List<MWFActivity> list = new ArrayList<MWFActivity>();
-		while (it.hasNext()) {
-			MWFActivity activity = it.next();
-			
-			// BEGIN CODE ANDI : 20181026  - Requester Feli - Menambahkan organisasi di WF Activity
-			String tablename = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = ?", activity.getAD_Table_ID());
-			String orgname = "";
-			String summary = activity.getSummary();
-			
-			if(tablename != null) {
-				orgname = DB.getSQLValueString(null, "SELECT name FROM ad_org WHERE ad_org_id IN (SELECT ad_org_id FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
-			}
-			if(orgname == null) {
-				orgname = "";
-			}
-			
-			// BEGIN CODE ALBERT (2022/09/20) - #8516 : Approval Bank Account
-			if(tablename.equalsIgnoreCase("C_BP_BankAccount"))
+//		DARI IDEMPIERE 8
+		MRole role = MRole.get(Env.getCtx(), Env.getAD_Role_ID(Env.getCtx()));
+		sql = role.addAccessSQL(sql, "a", true, false);
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			pstmt = DB.prepareStatement (sql, null);
+			pstmt.setInt (1, AD_User_ID);
+			pstmt.setInt (2, AD_User_ID);
+			pstmt.setInt (3, AD_User_ID);
+			pstmt.setInt (4, AD_User_ID);
+			pstmt.setInt (5, AD_User_ID);
+			pstmt.setInt (6, AD_Client_ID);
+            
+			rs = pstmt.executeQuery();
+			while (rs.next ())
 			{
-				String NamaAccount = DB.getSQLValueString(null, "SELECT A_Name FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
-				String NomorAccount = DB.getSQLValueString(null, "SELECT COALESCE(z_account_no_vendor, z_virtualaccount) FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
-				String BankName = DB.getSQLValueString(null, "SELECT name FROM C_Bank WHERE C_Bank_ID = (SELECT C_Bank_ID FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
-				summary = NamaAccount + " - " + NomorAccount + " ("+BankName+")";
-			}
-			// END CODE ALBERT
-			
-			SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");//dd/MM/yyyy
-			String created_nice_format = sdfDate.format(activity.getCreated()); 
-			// 
-			// END CODE ANDI : 20181026
-			
-			list.add (activity);
-			List<Object> rowData = new ArrayList<Object>();
-//			rowData.add(activity.getPriority()); // Commented By Andi : 20181026 - Requester Pak Sugi
-//			rowData.add(activity.getSummary());
-			rowData.add(created_nice_format); // ADDED BY ANDI : 20181026 - requester Feli
-			rowData.add(orgname); // ADDED BY ANDI : 20181026 - requester Feli
-			rowData.add(summary); // MODIFY BY ALBERT : 20220920 - #8516 : Summary Bank Account
-			rowData.add(activity.getNodeName());
-			model.add(rowData);
-			if (list.size() > MAX_ACTIVITIES_IN_LIST && MAX_ACTIVITIES_IN_LIST > 0)
-			{
-				log.warning("More than " + MAX_ACTIVITIES_IN_LIST + " Activities - ignored");
-				break;
+				MWFActivity activity = new MWFActivity(Env.getCtx(), rs, null);
+				
+				// BEGIN CODE ANDI : 20181026  - Requester Feli - Menambahkan organisasi di WF Activity
+				String tablename = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = ?", activity.getAD_Table_ID());
+				String orgname = "";
+				
+				if(tablename != null) {
+					orgname = DB.getSQLValueString(null, "SELECT name FROM ad_org WHERE ad_org_id IN (SELECT ad_org_id FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
+				}
+				if(orgname == null) {
+					orgname = "";
+				}
+				
+				SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");//dd/MM/yyyy
+				String created_nice_format = sdfDate.format(activity.getCreated()); 
+				// 
+				// END CODE ANDI : 20181026
+				
+				list.add (activity);
+				List<Object> rowData = new ArrayList<Object>();
+//				rowData.add(activity.getPriority()); // Commented By Andi : 20181026 - Requester Pak Sugi
+				rowData.add(created_nice_format); // ADDED BY ANDI : 20181026 - requester Feli
+				rowData.add(orgname); // ADDED BY ANDI : 20181026 - requester Feli
+				rowData.add(activity.getSummary());
+				rowData.add(activity.getNodeName());
+				model.add(rowData);
+				if (list.size() > MAX_ACTIVITIES_IN_LIST && MAX_ACTIVITIES_IN_LIST > 0)
+				{
+					log.warning("More then 200 Activities - ignored");
+					break;
+				}
 			}
 		}
+		catch (Exception e)
+		{
+			log.log(Level.SEVERE, sql, e);
+		}
+		finally
+		{
+			DB.close(rs, pstmt);
+			rs = null; pstmt = null;
+		}
+
+// 		Iterator<MWFActivity> it = new Query(Env.getCtx(), MWFActivity.Table_Name, MWFActivity.getWhereUserPendingActivities(), null)
+// 				.setApplyAccessFilter(true, false)
+// 				.setParameters(AD_User_ID, AD_User_ID, AD_User_ID, AD_User_ID, AD_User_ID, AD_Client_ID)
+// 				.setOrderBy("AD_WF_Activity.Priority DESC, AD_WF_Activity.Created")
+// 				.iterate();
+
+// 		List<MWFActivity> list = new ArrayList<MWFActivity>();
+// 		while (it.hasNext()) {
+// 			MWFActivity activity = it.next();
+			
+// 			// BEGIN CODE ANDI : 20181026  - Requester Feli - Menambahkan organisasi di WF Activity
+// 			String tablename = DB.getSQLValueString(null, "SELECT tablename FROM ad_table WHERE ad_table_id = ?", activity.getAD_Table_ID());
+// 			String orgname = "";
+// 			String summary = activity.getSummary();
+			
+// 			if(tablename != null) {
+// 				orgname = DB.getSQLValueString(null, "SELECT name FROM ad_org WHERE ad_org_id IN (SELECT ad_org_id FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
+// 			}
+// 			if(orgname == null) {
+// 				orgname = "";
+// 			}
+			
+// 			// BEGIN CODE ALBERT (2022/09/20) - #8516 : Approval Bank Account
+// 			if(tablename.equalsIgnoreCase("C_BP_BankAccount"))
+// 			{
+// 				String NamaAccount = DB.getSQLValueString(null, "SELECT A_Name FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
+// 				String NomorAccount = DB.getSQLValueString(null, "SELECT COALESCE(z_account_no_vendor, z_virtualaccount) FROM "+tablename+" WHERE "+tablename+"_id = ?", activity.getRecord_ID());
+// 				String BankName = DB.getSQLValueString(null, "SELECT name FROM C_Bank WHERE C_Bank_ID = (SELECT C_Bank_ID FROM "+tablename+" WHERE "+tablename+"_id = ?)", activity.getRecord_ID());
+// 				summary = NamaAccount + " - " + NomorAccount + " ("+BankName+")";
+// 			}
+// 			// END CODE ALBERT
+			
+// 			SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");//dd/MM/yyyy
+// 			String created_nice_format = sdfDate.format(activity.getCreated()); 
+// 			// 
+// 			// END CODE ANDI : 20181026
+			
+// 			list.add (activity);
+// 			List<Object> rowData = new ArrayList<Object>();
+// //			rowData.add(activity.getPriority()); // Commented By Andi : 20181026 - Requester Pak Sugi
+// //			rowData.add(activity.getSummary());
+// 			rowData.add(created_nice_format); // ADDED BY ANDI : 20181026 - requester Feli
+// 			rowData.add(orgname); // ADDED BY ANDI : 20181026 - requester Feli
+// 			rowData.add(summary); // MODIFY BY ALBERT : 20220920 - #8516 : Summary Bank Account
+// 			rowData.add(activity.getNodeName());
+// 			model.add(rowData);
+// 			if (list.size() > MAX_ACTIVITIES_IN_LIST && MAX_ACTIVITIES_IN_LIST > 0)
+// 			{
+// 				log.warning("More than " + MAX_ACTIVITIES_IN_LIST + " Activities - ignored");
+// 				break;
+// 			}
+// 		}
 		m_activities = new MWFActivity[list.size ()];
 		list.toArray (m_activities);
 		//
