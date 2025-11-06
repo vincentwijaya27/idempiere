@@ -67,6 +67,7 @@ public class MSysConfig extends X_AD_SysConfig
     public static final String APPLICATION_IMPLEMENTATION_VENDOR = "APPLICATION_IMPLEMENTATION_VENDOR";
     public static final String APPLICATION_IMPLEMENTATION_VENDOR_SHOWN = "APPLICATION_IMPLEMENTATION_VENDOR_SHOWN";
     public static final String APPLICATION_JVM_VERSION_SHOWN = "APPLICATION_JVM_VERSION_SHOWN";
+    public static final String APPLICATION_LOGIN_INFO_SHOWN = "APPLICATION_LOGIN_INFO_SHOWN";
     public static final String APPLICATION_LOGIN_LEFT_PANEL_SHOWN = "APPLICATION_LOGIN_LEFT_PANEL_SHOWN";
     public static final String APPLICATION_MAIN_VERSION = "APPLICATION_MAIN_VERSION";
     public static final String APPLICATION_MAIN_VERSION_SHOWN = "APPLICATION_MAIN_VERSION_SHOWN";
@@ -115,6 +116,7 @@ public class MSysConfig extends X_AD_SysConfig
     public static final String ENABLE_SSO = "ENABLE_SSO";
     public static final String ENABLE_SSO_OSGI_CONSOLE = "ENABLE_SSO_OSGI_CONSOLE";
     public static final String ENABLE_SSO_IDEMPIERE_MONITOR = "ENABLE_SSO_IDEMPIERE_MONITOR";
+	public static final String SSO_SHOW_LOGINPAGE = "SSO_SHOW_LOGINPAGE";
     public static final String EXPORT_BLOB_COLUMN_FOR_INSERT = "EXPORT_BLOB_COLUMN_FOR_INSERT";
     public static final String FEEDBACK_EMAIL_CC = "FEEDBACK_EMAIL_CC";
     public static final String FEEDBACK_EMAIL_TO = "FEEDBACK_EMAIL_TO";
@@ -219,6 +221,7 @@ public class MSysConfig extends X_AD_SysConfig
     public static final String USER_LOCKING_MAX_PASSWORD_AGE_DAY = "USER_LOCKING_MAX_PASSWORD_AGE_DAY";
     public static final String USER_LOCKING_PASSWORD_NOTIFY_DAY = "USER_LOCKING_PASSWORD_NOTIFY_DAY";
     public static final String USER_PASSWORD_HASH = "USER_PASSWORD_HASH";
+    public static final String USER_PASSWORD_HASH_ALGORITHM = "USER_PASSWORD_HASH_ALGORITHM";
     public static final String VALIDATE_MATCHING_PRODUCT_ON_SHIPMENT = "VALIDATE_MATCHING_PRODUCT_ON_SHIPMENT";
     public static final String VALIDATE_MATCHING_TO_ORDERED_QTY = "VALIDATE_MATCHING_TO_ORDERED_QTY";
     public static final String WEBUI_LOGOURL = "WEBUI_LOGOURL";
