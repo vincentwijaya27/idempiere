@@ -113,7 +113,7 @@
 }
 .font-icon-toolbar-button.toolbar-button:hover {
 	color: #fff;
-	background-color: #7ac8ff;
+	background-color: #a4bbd4;
 }
 .font-icon-toolbar-button.toolbar-button, .font-icon-toolbar-button.toolbar-button .z-toolbarbutton-content {
 	display:inline-flex;

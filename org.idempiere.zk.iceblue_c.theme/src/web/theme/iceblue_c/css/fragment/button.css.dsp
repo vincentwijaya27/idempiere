@@ -6,6 +6,7 @@
   justify-content: center;
   cursor: pointer;
   gap: 5px;
+  background-color: #a4bbd4;
 }
 .z-button-os {
 	border-radius: 4px;
@@ -49,7 +50,7 @@
 }
 
 .btn-cancel, .btn-help {
-    background: #abc5b6 !important;
+    background: #f1f1f1;
     color: #111111;
 }
 
