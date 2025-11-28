@@ -49,11 +49,11 @@ UPDATE AD_Field SET SeqNo=90, ColumnSpan=2,Updated=TO_TIMESTAMP('2016-03-03 11:3
 
 -- Mar 3, 2016 11:39:18 AM IST
 UPDATE AD_Field SET IsDisplayed='Y', SeqNo=100, XPosition=4, ColumnSpan=2,Updated=TO_TIMESTAMP('2016-03-03 11:39:18','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_Field_ID=204144
-;
-
--- Mar 3, 2016 11:40:04 AM IST
-INSERT INTO AD_Val_Rule (AD_Val_Rule_ID,Name,Type,Code,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,EntityType,AD_Val_Rule_UU) VALUES (200090,'AD_Reference Attribute','S','AD_Reference_ID IN (10,11,12,13,14,15,16,17,18,19,20,22,24,25,27,29,30,31,32,33,34,36,37,38,39,40)',0,0,'Y',TO_TIMESTAMP('2016-03-03 11:40:03','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2016-03-03 11:40:03','YYYY-MM-DD HH24:MI:SS'),100,'D','df9e32eb-59df-49b8-a7fa-a6fb9c1f6786')
-;
+;-- 
+-- 
+-- -- Mar 3, 2016 11:40:04 AM IST
+-- INSERT INTO AD_Val_Rule (AD_Val_Rule_ID,Name,Type,Code,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,EntityType,AD_Val_Rule_UU) VALUES (200090,'AD_Reference Attribute','S','AD_Reference_ID IN (10,11,12,13,14,15,16,17,18,19,20,22,24,25,27,29,30,31,32,33,34,36,37,38,39,40)',0,0,'Y',TO_TIMESTAMP('2016-03-03 11:40:03','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2016-03-03 11:40:03','YYYY-MM-DD HH24:MI:SS'),100,'D','df9e32eb-59df-49b8-a7fa-a6fb9c1f6786')
+-- ;
 
 -- Mar 3, 2016 11:40:25 AM IST
 UPDATE AD_Column SET AD_Val_Rule_ID=200090,Updated=TO_TIMESTAMP('2016-03-03 11:40:25','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_Column_ID=212643

@@ -188,7 +188,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Jun 2, 2021, 10:35:46 AM CEST
-CREATE UNIQUE INDEX ad_userdef_win_unq ON AD_UserDef_Win (AD_Window_ID,AD_Client_ID,AD_Org_ID,COALESCE(AD_User_ID,0),COALESCE(AD_Role_ID,0),COALESCE(AD_Language,''))
+--CREATE UNIQUE INDEX ad_userdef_win_unq ON AD_UserDef_Win (AD_Window_ID,AD_Client_ID,AD_Org_ID,COALESCE(AD_User_ID,0),COALESCE(AD_Role_ID,0),COALESCE(AD_Language,''))
 ;
 
 SELECT register_migration_script('202106021000_IDEMPIERE-4813.sql') FROM dual

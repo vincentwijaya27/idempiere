@@ -10,7 +10,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Sep 6, 2022, 6:39:52 PM CEST
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN Preferred_UserName VARCHAR(1000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN Preferred_UserName VARCHAR(1000) DEFAULT NULL 
 ;
 
 -- Sep 6, 2022, 7:36:38 PM CEST

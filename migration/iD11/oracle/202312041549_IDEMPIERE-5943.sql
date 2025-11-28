@@ -173,11 +173,11 @@ UPDATE AD_Field SET DisplayLogic='@IsPartition@=Y',Updated=TO_TIMESTAMP('2023-12
 
 -- Dec 4, 2023, 6:06:42 PM MYT
 INSERT INTO AD_Field (AD_Field_ID,Name,AD_Tab_ID,AD_Column_ID,IsDisplayed,DisplayLength,SeqNo,IsSameLine,IsHeading,IsFieldOnly,IsEncrypted,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,IsReadOnly,IsCentrallyMaintained,EntityType,AD_Field_UU,IsDisplayedGrid,SeqNoGrid,XPosition,ColumnSpan) VALUES (208082,'Partition Key',101,216286,'Y',1,530,'N','N','N','N',0,0,'Y',TO_TIMESTAMP('2023-12-04 18:06:41','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-12-04 18:06:41','YYYY-MM-DD HH24:MI:SS'),100,'N','Y','D','f37e6afb-66b4-4fc4-96b6-411675c109a8','Y',480,2,2)
-;
-
--- Dec 4, 2023, 6:08:21 PM MYT
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (216302,0,'Partition Key Sequence',101,'SeqNoPartition',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2023-12-04 18:08:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-12-04 18:08:20','YYYY-MM-DD HH24:MI:SS'),100,203886,'Y','N','D','N','N','N','Y','6fe55ecb-5be5-43bc-a347-15ba40b1e88e','Y',0,'N','N','N')
-;
+;-- 
+-- 
+-- -- Dec 4, 2023, 6:08:21 PM MYT
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (216302,0,'Partition Key Sequence',101,'SeqNoPartition',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2023-12-04 18:08:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-12-04 18:08:20','YYYY-MM-DD HH24:MI:SS'),100,203886,'Y','N','D','N','N','N','Y','6fe55ecb-5be5-43bc-a347-15ba40b1e88e','Y',0,'N','N','N')
+-- ;
 
 -- Dec 4, 2023, 6:08:28 PM MYT
 ALTER TABLE AD_Column ADD SeqNoPartition NUMBER(10) DEFAULT NULL 

@@ -304,11 +304,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnN
 
 -- Jul 28, 2017 6:17:18 PM CEST
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType) VALUES (213176,0.0,'Locked',200224,'IsLocked',1,'N','N','N','N','N','N',20,0,0,'Y',TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,200111,'N','N','D','Y','N','N','Y','20c17072-d8a5-4219-8671-56a00411c6e2','Y','N','N','N')
-;
-
--- Jul 28, 2017 6:17:18 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType) VALUES (213177,0.0,'Failed Login Count',200224,'FailedLoginCount',10,'N','N','N','N','N','N',11,0,0,'Y',TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,200113,'N','N','D','Y','N','N','Y','61388bc3-fd45-4939-bffa-a509acd0df8c','Y','N','N','N')
-;
+;-- 
+-- 
+-- -- Jul 28, 2017 6:17:18 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType) VALUES (213177,0.0,'Failed Login Count',200224,'FailedLoginCount',10,'N','N','N','N','N','N',11,0,0,'Y',TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-07-28 18:17:18','YYYY-MM-DD HH24:MI:SS'),100,200113,'N','N','D','Y','N','N','Y','61388bc3-fd45-4939-bffa-a509acd0df8c','Y','N','N','N')
+-- ;
 
 -- Jul 28, 2017 6:17:19 PM CEST
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType) VALUES (213178,0.0,'Date Password Changed',200224,'DatePasswordChanged',29,'N','N','N','N','N','N',15,0,0,'Y',TO_DATE('2017-07-28 18:17:19','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-07-28 18:17:19','YYYY-MM-DD HH24:MI:SS'),100,200114,'N','N','D','Y','N','N','Y','3ea804ee-b4b3-4fd0-bd91-62e6bdebeeb5','Y','N','N','N')

@@ -16,11 +16,11 @@ INSERT INTO PA_DashboardContent (Name,AD_Org_ID,Created,CreatedBy,UpdatedBy,IsAc
 
 -- Sep 16, 2021, 5:10:40 PM CEST
 INSERT INTO PA_DashboardContent_Access (PA_DashboardContent_Access_ID,PA_DashboardContent_Access_UU,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,PA_DashboardContent_ID,AD_Role_ID) VALUES (200000,'15ae66fe-34f6-4074-baa0-263813fb4dd0',0,0,'Y',TO_DATE('2021-09-16 17:10:40','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-09-16 17:10:40','YYYY-MM-DD HH24:MI:SS'),100,200005,0)
-;
-
--- Sep 16, 2021, 5:21:53 PM CEST
-INSERT INTO PA_DashboardContent_Access (PA_DashboardContent_Access_ID,PA_DashboardContent_Access_UU,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,PA_DashboardContent_ID,AD_Role_ID) VALUES (200001,'f6f929c1-4bb7-4c8b-83c9-33af1651a041',11,0,'Y',TO_DATE('2021-09-16 17:21:53','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-09-16 17:21:53','YYYY-MM-DD HH24:MI:SS'),100,200005,102)
-;
+;-- 
+-- 
+-- -- Sep 16, 2021, 5:21:53 PM CEST
+-- INSERT INTO PA_DashboardContent_Access (PA_DashboardContent_Access_ID,PA_DashboardContent_Access_UU,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,PA_DashboardContent_ID,AD_Role_ID) VALUES (200001,'f6f929c1-4bb7-4c8b-83c9-33af1651a041',11,0,'Y',TO_DATE('2021-09-16 17:21:53','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-09-16 17:21:53','YYYY-MM-DD HH24:MI:SS'),100,200005,102)
+-- ;
 
 SELECT register_migration_script('202109161712_IDEMPIERE-4906.sql') FROM dual
 ;

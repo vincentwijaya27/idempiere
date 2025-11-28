@@ -12,7 +12,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Oct 5, 2021, 4:32:55 PM CEST
-CREATE UNIQUE INDEX ad_userdef_field_unique ON AD_UserDef_Field (AD_UserDef_Tab_ID,AD_Field_ID)
+--CREATE UNIQUE INDEX ad_userdef_field_unique ON AD_UserDef_Field (AD_UserDef_Tab_ID,AD_Field_ID)
 ;
 
 -- Oct 5, 2021, 4:33:13 PM CEST
@@ -28,7 +28,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Oct 5, 2021, 4:33:33 PM CEST
-CREATE UNIQUE INDEX ad_userdef_infocolumn_unique ON AD_UserDef_Info_Column (AD_UserDef_Info_ID,AD_InfoColumn_ID)
+--CREATE UNIQUE INDEX ad_userdef_infocolumn_unique ON AD_UserDef_Info_Column (AD_UserDef_Info_ID,AD_InfoColumn_ID)
 ;
 
 -- Oct 5, 2021, 4:33:41 PM CEST
@@ -44,7 +44,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Oct 5, 2021, 4:33:52 PM CEST
-CREATE UNIQUE INDEX ad_userdef_procparam_unique ON AD_UserDef_Proc_Parameter (AD_UserDef_Proc_ID,AD_Process_Para_ID)
+--CREATE UNIQUE INDEX ad_userdef_procparam_unique ON AD_UserDef_Proc_Parameter (AD_UserDef_Proc_ID,AD_Process_Para_ID)
 ;
 
 -- Oct 5, 2021, 4:50:43 PM CEST
@@ -60,7 +60,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Oct 5, 2021, 4:50:54 PM CEST
-CREATE UNIQUE INDEX ad_userdef_tab_unique ON AD_UserDef_Tab (AD_UserDef_Win_ID,AD_Tab_ID)
+--CREATE UNIQUE INDEX ad_userdef_tab_unique ON AD_UserDef_Tab (AD_UserDef_Win_ID,AD_Tab_ID)
 ;
 
 SELECT register_migration_script('202110051700_IDEMPIERE-4985.sql') FROM dual

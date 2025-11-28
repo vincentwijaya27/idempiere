@@ -66,7 +66,7 @@ INSERT INTO PP_PRODUCT_BOMLINE
 UPDATE PP_PRODUCT_BOMLINE SET PP_PRODUCT_BOMLINE_UU = generate_uuid() WHERE pp_product_bomline_uu IS NULL
 ;
 
-ALTER TABLE m_product_bom RENAME TO m_product_bom_old
+--ALTER TABLE m_product_bom RENAME TO m_product_bom_old
 ;
 
 CREATE OR REPLACE VIEW m_product_bom

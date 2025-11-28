@@ -242,9 +242,9 @@ UPDATE AD_TreeNodeMM SET Parent_ID=155, SeqNo=29,Updated=TO_TIMESTAMP('2023-03-1
 
 -- Mar 17, 2023, 7:37:47 PM CET
 INSERT INTO TestUU (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUU_UU,Value,Name) VALUES (0,0,TO_TIMESTAMP('2023-03-17 19:37:47','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-03-17 19:37:47','YYYY-MM-DD HH24:MI:SS'),100,'Y','4e148b89-bdd9-48a6-8a8a-7609092f965c','TRS','Test Record in System')
-;
-
--- Mar 17, 2023, 7:38:31 PM CET
-INSERT INTO TestUU (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUU_UU,Value,Name) VALUES (11,0,TO_TIMESTAMP('2023-03-17 19:38:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-03-17 19:38:31','YYYY-MM-DD HH24:MI:SS'),100,'Y','8858ecc2-cf1d-405f-987f-793536037e76','TRGW','Test Record in GardenWorld')
-;
+;-- 
+-- 
+-- -- Mar 17, 2023, 7:38:31 PM CET
+-- --INSERT INTO TestUU (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUU_UU,Value,Name) VALUES (11,0,TO_TIMESTAMP('2023-03-17 19:38:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-03-17 19:38:31','YYYY-MM-DD HH24:MI:SS'),100,'Y','8858ecc2-cf1d-405f-987f-793536037e76','TRGW','Test Record in GardenWorld')
+-- ;
 

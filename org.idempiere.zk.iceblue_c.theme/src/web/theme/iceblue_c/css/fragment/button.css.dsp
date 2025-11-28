@@ -49,7 +49,7 @@
 }
 
 .btn-cancel, .btn-help {
-    background: #f1f1f1;
+    background: #abc5b6 !important;
     color: #111111;
 }
 

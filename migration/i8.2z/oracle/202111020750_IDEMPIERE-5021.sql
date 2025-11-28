@@ -69,11 +69,11 @@ If the document type of your document has no automatic document sequence defined
 
 -- Nov 1, 2021, 4:12:28 PM MYT
 UPDATE AD_Table SET IsDeleteable='N', IsChangeLog='N',Updated=TO_DATE('2021-11-01 16:12:28','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_Table_ID=200281
-;
-
--- Nov 1, 2021, 4:13:54 PM MYT
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214608,0,'Line','Line No',200281,'LineNo',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-11-01 16:13:53','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-11-01 16:13:53','YYYY-MM-DD HH24:MI:SS'),100,2945,'N','N','D','N','N','N','N','cdaa2197-58a5-4d46-a7ed-b972f18302df','N',0,'N','N','N')
-;
+;-- 
+-- 
+-- -- Nov 1, 2021, 4:13:54 PM MYT
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214608,0,'Line','Line No',200281,'LineNo',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-11-01 16:13:53','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-11-01 16:13:53','YYYY-MM-DD HH24:MI:SS'),100,2945,'N','N','D','N','N','N','N','cdaa2197-58a5-4d46-a7ed-b972f18302df','N',0,'N','N','N')
+-- ;
 
 -- Nov 1, 2021, 4:14:41 PM MYT
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214609,0,'Table','Database Table information','The Database Table provides the information of the table definition',200281,'AD_Table_ID',10,'N','N','Y','N','N',0,'N',19,0,0,'Y',TO_DATE('2021-11-01 16:14:40','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-11-01 16:14:40','YYYY-MM-DD HH24:MI:SS'),100,126,'N','N','D','N','N','N','N','cf77d300-4ed4-4a01-a2f2-3d893c1e10de','N',0,'N','N','N','N')

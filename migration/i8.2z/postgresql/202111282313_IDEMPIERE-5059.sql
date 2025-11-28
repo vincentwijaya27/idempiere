@@ -50305,7 +50305,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:44:35 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212308,'e5c2e131-7cd9-4928-a41d-452240c7b994',TO_TIMESTAMP('2021-11-28 22:44:35','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:35','YYYY-MM-DD HH24:MI:SS'),100,200097,'QtyRequiered','round(obl.qtyrequiered, 4)',380)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212308,'e5c2e131-7cd9-4928-a41d-452240c7b994',TO_TIMESTAMP('2021-11-28 22:44:35','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:35','YYYY-MM-DD HH24:MI:SS'),100,200097,'QtyRequired','round(obl.qtyrequired, 4)',380)
 ;
 
 -- Nov 28, 2021, 10:44:36 PM CET
@@ -50333,7 +50333,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:44:38 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212315,'56ec798b-0a6a-4739-863e-4608630ba123',TO_TIMESTAMP('2021-11-28 22:44:37','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:37','YYYY-MM-DD HH24:MI:SS'),100,200097,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequiered / o.qtybatchs, 4) END',450)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212315,'56ec798b-0a6a-4739-863e-4608630ba123',TO_TIMESTAMP('2021-11-28 22:44:37','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:37','YYYY-MM-DD HH24:MI:SS'),100,200097,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequired / o.qtybatchs, 4) END',450)
 ;
 
 -- Nov 28, 2021, 10:44:38 PM CET
@@ -50489,7 +50489,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:44:51 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212354,'4301698e-a984-4d40-aff0-952b0612e313',TO_TIMESTAMP('2021-11-28 22:44:50','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:50','YYYY-MM-DD HH24:MI:SS'),100,200098,'QtyRequiered','round(obl.qtyrequiered, 4)',390)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212354,'4301698e-a984-4d40-aff0-952b0612e313',TO_TIMESTAMP('2021-11-28 22:44:50','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:50','YYYY-MM-DD HH24:MI:SS'),100,200098,'QtyRequired','round(obl.qtyrequired, 4)',390)
 ;
 
 -- Nov 28, 2021, 10:44:51 PM CET
@@ -50517,7 +50517,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:44:53 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212361,'302b5180-77f4-4fab-ae1e-56824a0c7593',TO_TIMESTAMP('2021-11-28 22:44:53','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:53','YYYY-MM-DD HH24:MI:SS'),100,200098,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequiered / o.qtybatchs, 4) END',460)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212361,'302b5180-77f4-4fab-ae1e-56824a0c7593',TO_TIMESTAMP('2021-11-28 22:44:53','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:44:53','YYYY-MM-DD HH24:MI:SS'),100,200098,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequired / o.qtybatchs, 4) END',460)
 ;
 
 -- Nov 28, 2021, 10:44:53 PM CET
@@ -51129,7 +51129,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:45:44 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212514,'e70a6c78-1849-40a3-8857-e7f9f5503694',TO_TIMESTAMP('2021-11-28 22:45:44','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:44','YYYY-MM-DD HH24:MI:SS'),100,200101,'DurationRequiered','onode.durationrequiered',210)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212514,'e70a6c78-1849-40a3-8857-e7f9f5503694',TO_TIMESTAMP('2021-11-28 22:45:44','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:44','YYYY-MM-DD HH24:MI:SS'),100,200101,'DurationRequired','onode.durationrequired',210)
 ;
 
 -- Nov 28, 2021, 10:45:44 PM CET
@@ -51173,7 +51173,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:45:48 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212525,'01723253-f120-4a1f-80d4-7de496594399',TO_TIMESTAMP('2021-11-28 22:45:47','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:47','YYYY-MM-DD HH24:MI:SS'),100,200101,'QtyRequiered','onode.qtyrequiered',320)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212525,'01723253-f120-4a1f-80d4-7de496594399',TO_TIMESTAMP('2021-11-28 22:45:47','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:47','YYYY-MM-DD HH24:MI:SS'),100,200101,'QtyRequired','onode.qtyrequired',320)
 ;
 
 -- Nov 28, 2021, 10:45:48 PM CET
@@ -51305,7 +51305,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:45:59 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212558,'f81c4f32-5a9b-478f-90e3-1c136be0587b',TO_TIMESTAMP('2021-11-28 22:45:59','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:59','YYYY-MM-DD HH24:MI:SS'),100,200102,'DurationRequiered','onode.durationrequiered',210)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212558,'f81c4f32-5a9b-478f-90e3-1c136be0587b',TO_TIMESTAMP('2021-11-28 22:45:59','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:45:59','YYYY-MM-DD HH24:MI:SS'),100,200102,'DurationRequired','onode.durationrequired',210)
 ;
 
 -- Nov 28, 2021, 10:46:02 PM CET
@@ -51349,7 +51349,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 10:46:05 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212569,'c383648b-753e-4b0a-a9c1-c9724b2097e5',TO_TIMESTAMP('2021-11-28 22:46:05','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:46:05','YYYY-MM-DD HH24:MI:SS'),100,200102,'QtyRequiered','onode.qtyrequiered',320)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,212569,'c383648b-753e-4b0a-a9c1-c9724b2097e5',TO_TIMESTAMP('2021-11-28 22:46:05','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 22:46:05','YYYY-MM-DD HH24:MI:SS'),100,200102,'QtyRequired','onode.qtyrequired',320)
 ;
 
 -- Nov 28, 2021, 10:46:05 PM CET
@@ -63449,7 +63449,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:08 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215594,'7382f633-31b8-4ddb-98d2-bb4598da62ad',TO_TIMESTAMP('2021-11-28 23:03:08','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:08','YYYY-MM-DD HH24:MI:SS'),100,200160,'DurationRequiered','n.durationrequiered',120)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215594,'7382f633-31b8-4ddb-98d2-bb4598da62ad',TO_TIMESTAMP('2021-11-28 23:03:08','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:08','YYYY-MM-DD HH24:MI:SS'),100,200160,'DurationRequired','n.durationrequired',120)
 ;
 
 -- Nov 28, 2021, 11:03:09 PM CET
@@ -63457,7 +63457,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:09 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215596,'53566d1a-90a4-4874-aa51-281596c35ac4',TO_TIMESTAMP('2021-11-28 23:03:09','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:09','YYYY-MM-DD HH24:MI:SS'),100,200160,'Duration','n.durationrequiered - n.durationreal',140)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215596,'53566d1a-90a4-4874-aa51-281596c35ac4',TO_TIMESTAMP('2021-11-28 23:03:09','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:09','YYYY-MM-DD HH24:MI:SS'),100,200160,'Duration','n.durationrequired - n.durationreal',140)
 ;
 
 -- Nov 28, 2021, 11:03:09 PM CET
@@ -63773,7 +63773,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:36 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215675,'555a4fda-eee8-4d01-b15f-4de09b5778db',TO_TIMESTAMP('2021-11-28 23:03:35','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:35','YYYY-MM-DD HH24:MI:SS'),100,200162,'QtyRequiered','round(obl.qtyrequiered, 4)',150)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215675,'555a4fda-eee8-4d01-b15f-4de09b5778db',TO_TIMESTAMP('2021-11-28 23:03:35','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:35','YYYY-MM-DD HH24:MI:SS'),100,200162,'QtyRequired','round(obl.qtyrequired, 4)',150)
 ;
 
 -- Nov 28, 2021, 11:03:36 PM CET
@@ -63805,7 +63805,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:38 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215683,'d33241b9-1948-4447-9772-d3139eb157ac',TO_TIMESTAMP('2021-11-28 23:03:38','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:38','YYYY-MM-DD HH24:MI:SS'),100,200162,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequiered / o.qtybatchs, 4) END',230)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215683,'d33241b9-1948-4447-9772-d3139eb157ac',TO_TIMESTAMP('2021-11-28 23:03:38','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:38','YYYY-MM-DD HH24:MI:SS'),100,200162,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequired / o.qtybatchs, 4) END',230)
 ;
 
 -- Nov 28, 2021, 11:03:39 PM CET
@@ -63845,7 +63845,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:42 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215693,'078cbf97-ef69-4996-b1e5-1d57c0b54562',TO_TIMESTAMP('2021-11-28 23:03:41','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:41','YYYY-MM-DD HH24:MI:SS'),100,200163,'QtyRequiered','obl.qtyrequiered',100)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215693,'078cbf97-ef69-4996-b1e5-1d57c0b54562',TO_TIMESTAMP('2021-11-28 23:03:41','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:41','YYYY-MM-DD HH24:MI:SS'),100,200163,'QtyRequired','obl.qtyrequired',100)
 ;
 
 -- Nov 28, 2021, 11:03:42 PM CET
@@ -63893,7 +63893,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:46 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215705,'1ae30c16-c68c-4bd3-8ec8-b57c26b98d34',TO_TIMESTAMP('2021-11-28 23:03:45','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:45','YYYY-MM-DD HH24:MI:SS'),100,200163,'qtyopen','mos.qtyrequiered - obl.qtydelivered',220)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215705,'1ae30c16-c68c-4bd3-8ec8-b57c26b98d34',TO_TIMESTAMP('2021-11-28 23:03:45','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:45','YYYY-MM-DD HH24:MI:SS'),100,200163,'qtyopen','mos.qtyrequired - obl.qtydelivered',220)
 ;
 
 -- Nov 28, 2021, 11:03:46 PM CET
@@ -63961,11 +63961,11 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:03:52 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215722,'f3ea21ed-8faf-41d5-a863-200ce759c45b',TO_TIMESTAMP('2021-11-28 23:03:51','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:51','YYYY-MM-DD HH24:MI:SS'),100,200164,'QtyRequiered','round(obl.qtyrequiered, 4)',160)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215722,'f3ea21ed-8faf-41d5-a863-200ce759c45b',TO_TIMESTAMP('2021-11-28 23:03:51','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:51','YYYY-MM-DD HH24:MI:SS'),100,200164,'QtyRequired','round(obl.qtyrequired, 4)',160)
 ;
 
 -- Nov 28, 2021, 11:03:52 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215723,'b9423083-84e2-4cd6-b3c2-1a5774d8c6aa',TO_TIMESTAMP('2021-11-28 23:03:52','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:52','YYYY-MM-DD HH24:MI:SS'),100,200164,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequiered / o.qtybatchs, 4) END',170)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215723,'b9423083-84e2-4cd6-b3c2-1a5774d8c6aa',TO_TIMESTAMP('2021-11-28 23:03:52','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:03:52','YYYY-MM-DD HH24:MI:SS'),100,200164,'QtyBatchSize','CASE WHEN o.qtybatchs = 0 THEN 1 ELSE round(obl.qtyrequired / o.qtybatchs, 4) END',170)
 ;
 
 -- Nov 28, 2021, 11:03:52 PM CET
@@ -64161,7 +64161,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:04:09 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215772,'86d388c4-a5bd-4755-89d4-614af4d8eefc',TO_TIMESTAMP('2021-11-28 23:04:08','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:04:08','YYYY-MM-DD HH24:MI:SS'),100,200166,'DurationRequiered','n.durationrequiered',140)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215772,'86d388c4-a5bd-4755-89d4-614af4d8eefc',TO_TIMESTAMP('2021-11-28 23:04:08','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:04:08','YYYY-MM-DD HH24:MI:SS'),100,200166,'DurationRequired','n.durationrequired',140)
 ;
 
 -- Nov 28, 2021, 11:04:09 PM CET
@@ -64169,7 +64169,7 @@ INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn
 ;
 
 -- Nov 28, 2021, 11:04:09 PM CET
-INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215774,'9f660f32-c6d7-4ee8-9214-190a3afe1a1c',TO_TIMESTAMP('2021-11-28 23:04:09','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:04:09','YYYY-MM-DD HH24:MI:SS'),100,200166,'Duration','n.durationrequiered - n.durationreal',160)
+INSERT INTO AD_ViewColumn (AD_Client_ID,AD_Org_ID,AD_ViewColumn_ID,AD_ViewColumn_UU,Created,CreatedBy,EntityType,IsActive,Updated,UpdatedBy,AD_ViewComponent_ID,ColumnName,ColumnSQL,SeqNo) VALUES (0,0,215774,'9f660f32-c6d7-4ee8-9214-190a3afe1a1c',TO_TIMESTAMP('2021-11-28 23:04:09','YYYY-MM-DD HH24:MI:SS'),100,'D','Y',TO_TIMESTAMP('2021-11-28 23:04:09','YYYY-MM-DD HH24:MI:SS'),100,200166,'Duration','n.durationrequired - n.durationreal',160)
 ;
 
 -- Nov 28, 2021, 11:04:10 PM CET

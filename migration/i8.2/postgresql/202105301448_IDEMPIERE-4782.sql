@@ -240,11 +240,11 @@ ALTER TABLE MFA_Method ADD COLUMN MFAIssuer VARCHAR(2000) DEFAULT NULL
 
 -- May 30, 2021, 2:44:37 PM CEST
 INSERT INTO AD_Element (AD_Element_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ColumnName,Name,PrintName,EntityType,AD_Element_UU) VALUES (203494,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:36','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:36','YYYY-MM-DD HH24:MI:SS'),100,'MFAAllowedTimeDiscrepancy','Allowed Time Period Discrepancy','Allowed Time Period Discrepancy','D','5aab867e-1e0c-4e50-93d0-bf3a9a37c5e8')
-;
-
--- May 30, 2021, 2:44:37 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214444,0,'Allowed Time Period Discrepancy',200273,'MFAAllowedTimeDiscrepancy',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:37','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:37','YYYY-MM-DD HH24:MI:SS'),100,203494,'Y','N','D','Y','N','N','Y','64c621a3-580a-4d16-85c6-7429ab6147dd','Y',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- May 30, 2021, 2:44:37 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214444,0,'Allowed Time Period Discrepancy',200273,'MFAAllowedTimeDiscrepancy',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:37','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:37','YYYY-MM-DD HH24:MI:SS'),100,203494,'Y','N','D','Y','N','N','Y','64c621a3-580a-4d16-85c6-7429ab6147dd','Y',0,'N','N','N','N')
+-- ;
 
 -- May 30, 2021, 2:44:37 PM CEST
 ALTER TABLE MFA_Method ADD COLUMN MFAAllowedTimeDiscrepancy NUMERIC(10) DEFAULT NULL 
@@ -288,11 +288,11 @@ ALTER TABLE MFA_Method ADD COLUMN MFATimeServer VARCHAR(255) DEFAULT NULL
 
 -- May 30, 2021, 2:44:40 PM CEST
 INSERT INTO AD_Element (AD_Element_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ColumnName,Name,PrintName,EntityType,AD_Element_UU) VALUES (203497,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:39','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:39','YYYY-MM-DD HH24:MI:SS'),100,'ExpireInMinutes','Expire in Minutes','Expire in Minutes','D','e57c156c-7823-4cba-9658-b4ef76f5288f')
-;
-
--- May 30, 2021, 2:44:40 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214447,0,'Expire in Minutes',200273,'ExpireInMinutes',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:40','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:40','YYYY-MM-DD HH24:MI:SS'),100,203497,'Y','N','D','Y','N','N','Y','cb8ddae6-cd0b-41a1-a5d1-cc7f3abed025','Y',0,'N','N','N')
-;
+;-- 
+-- 
+-- -- May 30, 2021, 2:44:40 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214447,0,'Expire in Minutes',200273,'ExpireInMinutes',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-05-30 14:44:40','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-05-30 14:44:40','YYYY-MM-DD HH24:MI:SS'),100,203497,'Y','N','D','Y','N','N','Y','cb8ddae6-cd0b-41a1-a5d1-cc7f3abed025','Y',0,'N','N','N')
+-- ;
 
 -- May 30, 2021, 2:44:40 PM CEST
 ALTER TABLE MFA_Method ADD COLUMN ExpireInMinutes NUMERIC(10) DEFAULT NULL 

@@ -7,15 +7,15 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnN
 
 -- Oct 11, 2022, 5:21:04 PM CEST
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (215624,0,'Multiplier','Type Multiplier (Credit = -1)',448,'Multiplier',14,'N','N','N','N','N',0,'N',22,0,0,'Y',TO_TIMESTAMP('2022-10-11 17:21:04','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-10-11 17:21:04','YYYY-MM-DD HH24:MI:SS'),100,1525,'N','N','D','N','N','N','Y','714062d2-e95a-41e1-af63-3b61c2a7c3c3','Y',0,'N','N','N','N')
-;
-
--- Oct 11, 2022, 5:21:18 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (215625,0,'Round Factor',446,'RoundFactor',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-10-11 17:21:17','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-10-11 17:21:17','YYYY-MM-DD HH24:MI:SS'),100,200145,'Y','N','D','N','N','N','Y','4afbd87d-edf2-4dea-932e-9b9fabd13fed','Y',0,'N','N','N')
-;
-
--- Oct 11, 2022, 5:21:25 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (215626,0,'Round Factor',448,'RoundFactor',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-10-11 17:21:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-10-11 17:21:24','YYYY-MM-DD HH24:MI:SS'),100,200145,'Y','N','D','N','N','N','Y','827ddc6d-2b3c-42b3-a921-2f3d13c34c35','Y',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- Oct 11, 2022, 5:21:18 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (215625,0,'Round Factor',446,'RoundFactor',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-10-11 17:21:17','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-10-11 17:21:17','YYYY-MM-DD HH24:MI:SS'),100,200145,'Y','N','D','N','N','N','Y','4afbd87d-edf2-4dea-932e-9b9fabd13fed','Y',0,'N','N','N')
+-- ;-- 
+-- 
+-- -- Oct 11, 2022, 5:21:25 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (215626,0,'Round Factor',448,'RoundFactor',14,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-10-11 17:21:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-10-11 17:21:24','YYYY-MM-DD HH24:MI:SS'),100,200145,'Y','N','D','N','N','N','Y','827ddc6d-2b3c-42b3-a921-2f3d13c34c35','Y',0,'N','N','N','N')
+-- ;
 
 -- Oct 11, 2022, 5:21:32 PM CEST
 ALTER TABLE PA_ReportColumn ADD COLUMN RoundFactor NUMERIC(10) DEFAULT NULL 

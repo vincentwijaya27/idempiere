@@ -63,7 +63,7 @@ UPDATE AD_Column SET IsUpdateable='N', FKConstraintName='ADUser_ADTreeFavorite',
 ;
 
 -- Jun 7, 2017 5:27:57 PM IST
-CREATE TABLE AD_Tree_Favorite (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_UU VARCHAR(36) DEFAULT NULL , AD_User_ID NUMERIC(10) NOT NULL, Created TIMESTAMP DEFAULT statement_timestamp(), CreatedBy NUMERIC(10) DEFAULT NULL , IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp(), UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_Tree_Favorite_Key PRIMARY KEY (AD_Tree_Favorite_ID), CONSTRAINT AD_Tree_Favorite_UU_idx UNIQUE (AD_Tree_Favorite_UU))
+--CREATE TABLE AD_Tree_Favorite (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_UU VARCHAR(36) DEFAULT NULL , AD_User_ID NUMERIC(10) NOT NULL, Created TIMESTAMP DEFAULT statement_timestamp(), CreatedBy NUMERIC(10) DEFAULT NULL , IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp(), UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_Tree_Favorite_Key PRIMARY KEY (AD_Tree_Favorite_ID), CONSTRAINT AD_Tree_Favorite_UU_idx UNIQUE (AD_Tree_Favorite_UU))
 ;
 
 -- Jun 7, 2017 5:27:57 PM IST
@@ -182,7 +182,7 @@ UPDATE AD_Column SET IsUpdateable='N', FKConstraintName='ADTreeFavorite_ADTreeFa
 ;
 
 -- Jun 12, 2017 12:55:53 PM IST
-CREATE TABLE AD_Tree_Favorite_Node (AD_Client_ID NUMERIC(10) NOT NULL, AD_Menu_ID NUMERIC(10) DEFAULT NULL , AD_Org_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_Node_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_Node_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, IsCollapsible CHAR(1) DEFAULT 'Y' CHECK (IsCollapsible IN ('Y','N')) NOT NULL, IsSummary CHAR(1) DEFAULT 'N' CHECK (IsSummary IN ('Y','N')) NOT NULL, Name VARCHAR(120) DEFAULT NULL , Parent_ID NUMERIC(10) DEFAULT NULL , SeqNo NUMERIC(10) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_Tree_Favorite_Node_Key PRIMARY KEY (AD_Tree_Favorite_Node_ID), CONSTRAINT AD_Tree_Favorite_Node_UU_idx UNIQUE (AD_Tree_Favorite_Node_UU))
+--CREATE TABLE AD_Tree_Favorite_Node (AD_Client_ID NUMERIC(10) NOT NULL, AD_Menu_ID NUMERIC(10) DEFAULT NULL , AD_Org_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_Node_ID NUMERIC(10) NOT NULL, AD_Tree_Favorite_Node_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, IsCollapsible CHAR(1) DEFAULT 'Y' CHECK (IsCollapsible IN ('Y','N')) NOT NULL, IsSummary CHAR(1) DEFAULT 'N' CHECK (IsSummary IN ('Y','N')) NOT NULL, Name VARCHAR(120) DEFAULT NULL , Parent_ID NUMERIC(10) DEFAULT NULL , SeqNo NUMERIC(10) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_Tree_Favorite_Node_Key PRIMARY KEY (AD_Tree_Favorite_Node_ID), CONSTRAINT AD_Tree_Favorite_Node_UU_idx UNIQUE (AD_Tree_Favorite_Node_UU))
 ;
 
 -- Jun 12, 2017 12:55:54 PM IST

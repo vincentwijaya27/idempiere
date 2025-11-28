@@ -94,13 +94,13 @@ UPDATE AD_Tab SET AD_Process_ID=200153,Updated=TO_TIMESTAMP('2023-06-10 17:30:29
 
 -- Jun 10, 2023, 5:31:48 PM CEST
 UPDATE TestUU SET Description='Lorem ipsum dolor sit amet', Help='consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut',Updated=TO_TIMESTAMP('2023-06-10 17:31:48','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE TestUU_UU='8858ecc2-cf1d-405f-987f-793536037e76'
-;
-
--- Jun 10, 2023, 5:32:02 PM CEST
-INSERT INTO TestUUDet (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUUDet_UU,Name,TestUU_UU) VALUES (11,0,TO_TIMESTAMP('2023-06-10 17:32:02','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-06-10 17:32:02','YYYY-MM-DD HH24:MI:SS'),100,'Y','d1f6b029-7d24-4ec6-bfc7-99d5a1e997c2','Detail One','8858ecc2-cf1d-405f-987f-793536037e76')
-;
-
--- Jun 10, 2023, 5:32:09 PM CEST
-INSERT INTO TestUUDet (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUUDet_UU,Name,TestUU_UU) VALUES (11,0,TO_TIMESTAMP('2023-06-10 17:32:09','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-06-10 17:32:09','YYYY-MM-DD HH24:MI:SS'),100,'Y','b341e80b-841c-41c8-9643-d4299155db09','Detail Two','8858ecc2-cf1d-405f-987f-793536037e76')
-;
+;-- 
+-- 
+-- -- Jun 10, 2023, 5:32:02 PM CEST
+-- --INSERT INTO TestUUDet (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUUDet_UU,Name,TestUU_UU) VALUES (11,0,TO_TIMESTAMP('2023-06-10 17:32:02','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-06-10 17:32:02','YYYY-MM-DD HH24:MI:SS'),100,'Y','d1f6b029-7d24-4ec6-bfc7-99d5a1e997c2','Detail One','8858ecc2-cf1d-405f-987f-793536037e76')
+-- ;-- 
+-- 
+-- -- Jun 10, 2023, 5:32:09 PM CEST
+-- --INSERT INTO TestUUDet (AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,IsActive,TestUUDet_UU,Name,TestUU_UU) VALUES (11,0,TO_TIMESTAMP('2023-06-10 17:32:09','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2023-06-10 17:32:09','YYYY-MM-DD HH24:MI:SS'),100,'Y','b341e80b-841c-41c8-9643-d4299155db09','Detail Two','8858ecc2-cf1d-405f-987f-793536037e76')
+-- ;
 

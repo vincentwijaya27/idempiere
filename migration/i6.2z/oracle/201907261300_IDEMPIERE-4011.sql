@@ -4,11 +4,11 @@ SET DEFINE OFF
 -- IDEMPIERE-4011 Define paging size per Info Window
 -- 07/26/2019 12:42:03
 INSERT INTO AD_Element (AD_Element_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ColumnName,Name,PrintName,EntityType,AD_Element_UU) VALUES (203349,0,0,'Y',TO_DATE('2019-07-26 12:42:03','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2019-07-26 12:42:03','YYYY-MM-DD HH24:MI:SS'),0,'PagingSize','Paging Size','Paging Size','D','590fb8ad-1c7f-4aaf-b6e2-d1c511915ac0')
-;
-
--- 07/26/2019 12:42:24
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (213968,1,'Paging Size',895,'PagingSize','0',10,'N','N','Y','N','N',0,'N',11,0,0,'Y',TO_DATE('2019-07-26 12:42:23','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2019-07-26 12:42:23','YYYY-MM-DD HH24:MI:SS'),0,203349,'Y','N','D','N','N','N','Y','8d207399-bf0e-45a0-a16d-883e723393af','Y',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- 07/26/2019 12:42:24
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (213968,1,'Paging Size',895,'PagingSize','0',10,'N','N','Y','N','N',0,'N',11,0,0,'Y',TO_DATE('2019-07-26 12:42:23','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2019-07-26 12:42:23','YYYY-MM-DD HH24:MI:SS'),0,203349,'Y','N','D','N','N','N','Y','8d207399-bf0e-45a0-a16d-883e723393af','Y',0,'N','N','N','N')
+-- ;
 
 -- 07/26/2019 12:42:27
 ALTER TABLE AD_InfoWindow ADD PagingSize NUMBER(10) DEFAULT 0 NOT NULL

@@ -36,7 +36,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:18 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
@@ -44,7 +44,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
@@ -52,7 +52,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
@@ -60,7 +60,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:19 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:20 PM CET
@@ -68,7 +68,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:20 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN Description VARCHAR(255) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN Description VARCHAR(255) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:20 PM CET
@@ -76,7 +76,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:20 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:21 PM CET
@@ -87,7 +87,7 @@ There are two reasons for de-activating and not deleting records:
 ;
 
 -- Feb 17, 2021, 10:08:21 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:21 PM CET
@@ -99,11 +99,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN AD_AuthorizationProvider_UU VARCHAR(36) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN AD_AuthorizationProvider_UU VARCHAR(36) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD CONSTRAINT AD_AuthorizationProvider_uuidx UNIQUE (AD_AuthorizationProvider_UU)
+--ALTER TABLE ad_authorizationprovider ADD CONSTRAINT AD_AuthorizationProvider_uuidx UNIQUE (AD_AuthorizationProvider_UU)
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
@@ -111,7 +111,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN Name VARCHAR(60) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN Name VARCHAR(60) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
@@ -119,7 +119,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:22 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:23 PM CET
@@ -127,7 +127,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:23 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:23 PM CET
@@ -139,7 +139,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:24 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN AuthorizationEndpoint VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN AuthorizationEndpoint VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:24 PM CET
@@ -151,7 +151,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:24 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN TokenEndpoint VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN TokenEndpoint VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:25 PM CET
@@ -163,7 +163,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:25 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN RevokeEndpoint VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE ad_authorizationprovider ADD COLUMN RevokeEndpoint VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:26 PM CET
@@ -187,7 +187,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:27 PM CET
-ALTER TABLE AD_AuthorizationProvider ADD COLUMN AD_AuthorizationType VARCHAR(10) NOT NULL
+--ALTER TABLE ad_authorizationprovider ADD COLUMN AD_AuthorizationType VARCHAR(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:28 PM CET
@@ -278,7 +278,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:35 PM CET
-CREATE TABLE AD_AuthorizationScopeProv (AD_AuthorizationScopeProv_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationScopeProv_Key PRIMARY KEY (AD_AuthorizationScopeProv_ID))
+--CREATE TABLE AD_AuthorizationScopeProv (AD_AuthorizationScopeProv_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationScopeProv_Key PRIMARY KEY (AD_AuthorizationScopeProv_ID))
 ;
 
 -- Feb 17, 2021, 10:08:35 PM CET
@@ -286,7 +286,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:35 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:35 PM CET
@@ -294,7 +294,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:35 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
@@ -302,7 +302,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
@@ -310,7 +310,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
@@ -321,7 +321,7 @@ There are two reasons for de-activating and not deleting records:
 ;
 
 -- Feb 17, 2021, 10:08:36 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:37 PM CET
@@ -333,11 +333,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:37 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationScopeProv_UU VARCHAR(36) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationScopeProv_UU VARCHAR(36) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:37 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD CONSTRAINT AD_AuthorizationScopeProvuuidx UNIQUE (AD_AuthorizationScopeProv_UU)
+--ALTER TABLE AD_AuthorizationScopeProv ADD CONSTRAINT AD_AuthorizationScopeProvuuidx UNIQUE (AD_AuthorizationScopeProv_UU)
 ;
 
 -- Feb 17, 2021, 10:08:37 PM CET
@@ -345,7 +345,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:37 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:38 PM CET
@@ -353,7 +353,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:38 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:38 PM CET
@@ -361,7 +361,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:38 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationProvider_ID NUMERIC(10) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationProvider_ID NUMERIC(10) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:39 PM CET
@@ -397,7 +397,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:41 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationScope VARCHAR(10) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN AD_AuthorizationScope VARCHAR(10) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:41 PM CET
@@ -409,7 +409,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:42 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN ScopeURL VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationScopeProv ADD COLUMN ScopeURL VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:42 PM CET
@@ -488,7 +488,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:47 PM CET
-CREATE TABLE AD_AuthorizationCredential (AD_AuthorizationCredential_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationCredential_Key PRIMARY KEY (AD_AuthorizationCredential_ID))
+--CREATE TABLE AD_AuthorizationCredential (AD_AuthorizationCredential_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationCredential_Key PRIMARY KEY (AD_AuthorizationCredential_ID))
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
@@ -496,7 +496,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
@@ -504,7 +504,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
@@ -512,7 +512,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:48 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:49 PM CET
@@ -520,7 +520,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:49 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:49 PM CET
@@ -528,7 +528,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:49 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:50 PM CET
@@ -539,7 +539,7 @@ There are two reasons for de-activating and not deleting records:
 ;
 
 -- Feb 17, 2021, 10:08:50 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:50 PM CET
@@ -551,11 +551,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:50 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationCredential_UU VARCHAR(36) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationCredential_UU VARCHAR(36) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:50 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD CONSTRAINT AD_AuthorizationCredentiauuidx UNIQUE (AD_AuthorizationCredential_UU)
+--ALTER TABLE AD_AuthorizationCredential ADD CONSTRAINT AD_AuthorizationCredentiauuidx UNIQUE (AD_AuthorizationCredential_UU)
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
@@ -563,7 +563,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN Name VARCHAR(60) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN Name VARCHAR(60) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
@@ -571,7 +571,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
@@ -579,7 +579,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:08:51 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:52 PM CET
@@ -591,7 +591,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:52 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationClientId VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationClientId VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:52 PM CET
@@ -603,7 +603,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:53 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationClientSecret VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationClientSecret VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:53 PM CET
@@ -615,7 +615,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:53 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationRedirectURL VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AuthorizationRedirectURL VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:08:54 PM CET
@@ -623,7 +623,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:08:54 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationProvider_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationProvider_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:08:54 PM CET
@@ -639,7 +639,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Feb 17, 2021, 10:08:55 PM CET
-CREATE UNIQUE INDEX AD_AuthorizationCredential_Unq ON AD_AuthorizationCredential (AD_Client_ID,Name)
+--CREATE UNIQUE INDEX AD_AuthorizationCredential_Unq ON AD_AuthorizationCredential (AD_Client_ID,Name)
 ;
 
 -- Feb 17, 2021, 10:08:55 PM CET
@@ -710,7 +710,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:00 PM CET
-CREATE TABLE AD_AuthorizationAccount (AD_AuthorizationAccount_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationAccount_Key PRIMARY KEY (AD_AuthorizationAccount_ID))
+--CREATE TABLE AD_AuthorizationAccount (AD_AuthorizationAccount_ID NUMERIC(10) NOT NULL, CONSTRAINT AD_AuthorizationAccount_Key PRIMARY KEY (AD_AuthorizationAccount_ID))
 ;
 
 -- Feb 17, 2021, 10:09:00 PM CET
@@ -718,7 +718,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:09:00 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_Client_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:01 PM CET
@@ -726,7 +726,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD
 ;
 
 -- Feb 17, 2021, 10:09:01 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_Org_ID NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:01 PM CET
@@ -734,7 +734,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:01 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
@@ -742,7 +742,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN CreatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
@@ -750,7 +750,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN Help VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
@@ -761,7 +761,7 @@ There are two reasons for de-activating and not deleting records:
 ;
 
 -- Feb 17, 2021, 10:09:02 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:03 PM CET
@@ -773,7 +773,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:03 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationAccount_UU VARCHAR(36) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationAccount_UU VARCHAR(36) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:03 PM CET
@@ -785,7 +785,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:04 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:04 PM CET
@@ -793,7 +793,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:04 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN UpdatedBy NUMERIC(10) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:04 PM CET
@@ -801,7 +801,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:04 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN EMail VARCHAR(200) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN EMail VARCHAR(200) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:05 PM CET
@@ -813,7 +813,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:05 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AccessToken VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AccessToken VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:06 PM CET
@@ -825,7 +825,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:06 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN RefreshToken VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN RefreshToken VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:06 PM CET
@@ -837,7 +837,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:07 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN ExpireInSeconds NUMERIC DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN ExpireInSeconds NUMERIC DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:07 PM CET
@@ -845,7 +845,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:07 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationScope VARCHAR(10) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationScope VARCHAR(10) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:07 PM CET
@@ -857,7 +857,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:08 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AccessTokenTimestamp TIMESTAMP DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AccessTokenTimestamp TIMESTAMP DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:08 PM CET
@@ -869,7 +869,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultV
 ;
 
 -- Feb 17, 2021, 10:09:08 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsAuthorized CHAR(1) DEFAULT 'N' CHECK (IsAuthorized IN ('Y','N')) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsAuthorized CHAR(1) DEFAULT 'N' CHECK (IsAuthorized IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:09 PM CET
@@ -877,7 +877,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 17, 2021, 10:09:09 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationCredential_ID NUMERIC(10) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationCredential_ID NUMERIC(10) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:09 PM CET
@@ -889,7 +889,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultV
 ;
 
 -- Feb 17, 2021, 10:09:09 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsAccessRevoked CHAR(1) DEFAULT 'N' CHECK (IsAccessRevoked IN ('Y','N')) NOT NULL
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN IsAccessRevoked CHAR(1) DEFAULT 'N' CHECK (IsAccessRevoked IN ('Y','N')) NOT NULL
 ;
 
 -- Feb 17, 2021, 10:09:10 PM CET
@@ -897,7 +897,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 ;
 
 -- Feb 17, 2021, 10:09:10 PM CET
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_User_ID NUMERIC(10) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_User_ID NUMERIC(10) DEFAULT NULL 
 ;
 
 -- Feb 17, 2021, 10:09:10 PM CET
@@ -992,11 +992,11 @@ INSERT INTO AD_TREENODEMM(AD_Client_ID, AD_Org_ID, CreatedBy, UpdatedBy, Parent_
 ;
 
 -- Feb 17, 2021, 10:09:17 PM CET
-ALTER TABLE AD_AuthorizationScopeProv ADD CONSTRAINT ADAuthorizationProvAuthScopePr FOREIGN KEY (AD_AuthorizationProvider_ID) REFERENCES ad_authorizationprovider(ad_authorizationprovider_id) DEFERRABLE INITIALLY DEFERRED
+--ALTER TABLE AD_AuthorizationScopeProv ADD CONSTRAINT ADAuthorizationProvAuthScopePr FOREIGN KEY (AD_AuthorizationProvider_ID) REFERENCES ad_authorizationprovider(ad_authorizationprovider_id) DEFERRABLE INITIALLY DEFERRED
 ;
 
 -- Feb 17, 2021, 10:09:18 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD CONSTRAINT ADAuthorizationProvider_ADAuth FOREIGN KEY (AD_AuthorizationProvider_ID) REFERENCES ad_authorizationprovider(ad_authorizationprovider_id) DEFERRABLE INITIALLY DEFERRED
+--ALTER TABLE AD_AuthorizationCredential ADD CONSTRAINT ADAuthorizationProvider_ADAuth FOREIGN KEY (AD_AuthorizationProvider_ID) REFERENCES ad_authorizationprovider(ad_authorizationprovider_id) DEFERRABLE INITIALLY DEFERRED
 ;
 
 -- Feb 17, 2021, 10:09:18 PM CET
@@ -1028,7 +1028,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- Feb 24, 2021, 7:23:40 PM CET
-ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationScopeList VARCHAR(2000) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationCredential ADD COLUMN AD_AuthorizationScopeList VARCHAR(2000) DEFAULT NULL 
 ;
 
 -- Feb 24, 2021, 7:23:49 PM CET

@@ -76,7 +76,7 @@ UPDATE AD_Column SET FKConstraintName='ADUser_ADWlistboxCustomization', FKConstr
 ;
 
 -- Sep 27, 2021, 11:54:39 AM CEST
-CREATE TABLE AD_Wlistbox_Customization (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_User_ID NUMERIC(10) NOT NULL, AD_Wlistbox_Customization_ID NUMERIC(10) NOT NULL, AD_Wlistbox_Customization_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, Custom VARCHAR(2000) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, WlistboxName VARCHAR(80) NOT NULL, CONSTRAINT AD_Wlistbox_Customization_Key PRIMARY KEY (AD_Wlistbox_Customization_ID), CONSTRAINT AD_Wlistbox_Customizationuuidx UNIQUE (AD_Wlistbox_Customization_UU))
+--CREATE TABLE AD_Wlistbox_Customization (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_User_ID NUMERIC(10) NOT NULL, AD_Wlistbox_Customization_ID NUMERIC(10) NOT NULL, AD_Wlistbox_Customization_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, Custom VARCHAR(2000) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, WlistboxName VARCHAR(80) NOT NULL, CONSTRAINT AD_Wlistbox_Customization_Key PRIMARY KEY (AD_Wlistbox_Customization_ID), CONSTRAINT AD_Wlistbox_Customizationuuidx UNIQUE (AD_Wlistbox_Customization_UU))
 ;
 
 -- Sep 27, 2021, 11:54:39 AM CEST
@@ -92,7 +92,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
 
 -- Sep 27, 2021, 11:58:00 AM CEST
-CREATE UNIQUE INDEX ad_wlistbox_customization_uu_idx ON AD_Wlistbox_Customization (AD_Wlistbox_Customization_UU)
+--CREATE UNIQUE INDEX ad_wlistbox_customization_uu_idx ON AD_Wlistbox_Customization (AD_Wlistbox_Customization_UU)
 ;
 -- IDEMPIERE-4863 Enable save column width in WListBox
 -- Oct 8, 2021, 9:36:28 PM MYT
@@ -112,7 +112,7 @@ INSERT INTO AD_IndexColumn (AD_Client_ID,AD_Org_ID,AD_IndexColumn_ID,AD_IndexCol
 ;
  
 -- Oct 8, 2021, 9:37:22 PM MYT
-CREATE UNIQUE INDEX ad_wlistbox_custom_name_idx ON AD_Wlistbox_Customization (AD_Client_ID,AD_User_ID,WlistboxName)
+--CREATE UNIQUE INDEX ad_wlistbox_custom_name_idx ON AD_Wlistbox_Customization (AD_Client_ID,AD_User_ID,WlistboxName)
 ;
 
 SELECT register_migration_script('202110081200_IDEMPIERE-4863.sql') FROM dual;	

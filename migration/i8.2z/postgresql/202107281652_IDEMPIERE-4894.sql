@@ -98,7 +98,7 @@ INSERT INTO AD_TreeNode (AD_Client_ID,AD_Org_ID, IsActive,Created,CreatedBy,Upda
 ;
 
 -- July 28, 2021 5:04:17 PM SGT
-CREATE TABLE AD_PrintHeaderFooter (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_PrintHeaderFooter_ID NUMERIC(10) NOT NULL, AD_PrintHeaderFooter_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Name VARCHAR(60) NOT NULL, SourceClassName VARCHAR(255) DEFAULT NULL , Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_PrintHeaderFooter_Key PRIMARY KEY (AD_PrintHeaderFooter_ID), CONSTRAINT AD_PrintHeaderFooter_UU_idx UNIQUE (AD_PrintHeaderFooter_UU))
+--CREATE TABLE AD_PrintHeaderFooter (AD_Client_ID NUMERIC(10) NOT NULL, AD_Org_ID NUMERIC(10) NOT NULL, AD_PrintHeaderFooter_ID NUMERIC(10) NOT NULL, AD_PrintHeaderFooter_UU VARCHAR(36) DEFAULT NULL , Created TIMESTAMP DEFAULT statement_timestamp() NOT NULL, CreatedBy NUMERIC(10) NOT NULL, IsActive CHAR(1) DEFAULT 'Y' CHECK (IsActive IN ('Y','N')) NOT NULL, Name VARCHAR(60) NOT NULL, SourceClassName VARCHAR(255) DEFAULT NULL , Updated TIMESTAMP DEFAULT statement_timestamp() NOT NULL, UpdatedBy NUMERIC(10) NOT NULL, CONSTRAINT AD_PrintHeaderFooter_Key PRIMARY KEY (AD_PrintHeaderFooter_ID), CONSTRAINT AD_PrintHeaderFooter_UU_idx UNIQUE (AD_PrintHeaderFooter_UU))
 ;
 
 -- July 28, 2021 5:04:58 PM SGT

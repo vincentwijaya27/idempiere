@@ -8,11 +8,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnN
 
 -- Oct 27, 2020, 1:09:53 PM IST
 ALTER TABLE AD_Tree_Favorite_Node ADD IsFavourite CHAR(1) DEFAULT 'N' CHECK (IsFavourite IN ('Y','N')) NOT NULL
-;
-
--- Oct 27, 2020, 1:10:41 PM IST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214330,0,'Login automatic open sequence','Determine the order items will be automatically opened when user logs in',200221,'LoginOpenSeqNo',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2020-10-27 13:10:40','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2020-10-27 13:10:40','YYYY-MM-DD HH24:MI:SS'),100,202959,'Y','N','D','N','N','N','Y','011087cb-d674-410d-80dc-aed66be6c9e7','Y',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- Oct 27, 2020, 1:10:41 PM IST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214330,0,'Login automatic open sequence','Determine the order items will be automatically opened when user logs in',200221,'LoginOpenSeqNo',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2020-10-27 13:10:40','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2020-10-27 13:10:40','YYYY-MM-DD HH24:MI:SS'),100,202959,'Y','N','D','N','N','N','Y','011087cb-d674-410d-80dc-aed66be6c9e7','Y',0,'N','N','N','N')
+-- ;
 
 -- Oct 27, 2020, 1:10:42 PM IST
 ALTER TABLE AD_Tree_Favorite_Node ADD LoginOpenSeqNo NUMBER(10) DEFAULT NULL 
@@ -529,43 +529,43 @@ INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsAc
 
 -- Nov 9, 2020, 10:24:57 PM IST
 INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (0,0,TO_DATE('2020-11-09 22:24:56','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:24:56','YYYY-MM-DD HH24:MI:SS'),100,200016,'12920433-60c4-43cf-810d-93ba5fe7f4cc',200001,'N',383,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:28:51 PM IST
-INSERT INTO AD_Tree_Favorite (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_ID,AD_Tree_Favorite_UU,AD_User_ID) VALUES (11,0,TO_DATE('2020-11-09 22:28:50','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:28:50','YYYY-MM-DD HH24:MI:SS'),101,200002,'499eb45d-a86c-4928-9693-4459284362e9',101)
-;
-
--- Nov 9, 2020, 10:28:54 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:28:54','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:28:54','YYYY-MM-DD HH24:MI:SS'),101,200017,'e1bee68a-f3c5-4295-ab84-466a2b41d8b5',200002,'N',129,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:29:01 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:29:00','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:29:00','YYYY-MM-DD HH24:MI:SS'),101,200018,'a3402da1-78ff-4c7c-b3c4-cc1bf56b8bb2',200002,'N',110,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:29:11 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:29:10','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:29:10','YYYY-MM-DD HH24:MI:SS'),101,200019,'34491aef-871a-43cb-971d-b014e64f4464',200002,'N',126,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:30:13 PM IST
-INSERT INTO AD_Tree_Favorite (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_ID,AD_Tree_Favorite_UU,AD_User_ID) VALUES (11,11,TO_DATE('2020-11-09 22:30:12','YYYY-MM-DD HH24:MI:SS'),102,'Y',TO_DATE('2020-11-09 22:30:12','YYYY-MM-DD HH24:MI:SS'),102,200003,'83ea3b9e-ba2e-4ec0-b08c-9f88733eb070',102)
-;
-
--- Nov 9, 2020, 10:30:17 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,11,TO_DATE('2020-11-09 22:30:16','YYYY-MM-DD HH24:MI:SS'),102,'Y',TO_DATE('2020-11-09 22:30:16','YYYY-MM-DD HH24:MI:SS'),102,200020,'8400f944-d7d3-4a6f-96d2-612b84d5d9c0',200003,'N',129,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:59:30 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:28','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:28','YYYY-MM-DD HH24:MI:SS'),100,200021,'2ec4e36c-9749-41d4-8b97-8e69a2bc39e1',200001,'N',129,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:59:37 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:36','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:36','YYYY-MM-DD HH24:MI:SS'),100,200022,'08dd130d-403b-464b-be39-60a22414d46f',200001,'N',110,0,'Y','Y')
-;
-
--- Nov 9, 2020, 10:59:49 PM IST
-INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:48','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:48','YYYY-MM-DD HH24:MI:SS'),100,200023,'99f0d2ce-2e5e-43b4-be3a-41fe4554f5f7',200001,'N',126,0,'Y','Y')
-;
+;-- 
+-- 
+-- -- Nov 9, 2020, 10:28:51 PM IST
+-- INSERT INTO AD_Tree_Favorite (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_ID,AD_Tree_Favorite_UU,AD_User_ID) VALUES (11,0,TO_DATE('2020-11-09 22:28:50','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:28:50','YYYY-MM-DD HH24:MI:SS'),101,200002,'499eb45d-a86c-4928-9693-4459284362e9',101)
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:28:54 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:28:54','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:28:54','YYYY-MM-DD HH24:MI:SS'),101,200017,'e1bee68a-f3c5-4295-ab84-466a2b41d8b5',200002,'N',129,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:29:01 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:29:00','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:29:00','YYYY-MM-DD HH24:MI:SS'),101,200018,'a3402da1-78ff-4c7c-b3c4-cc1bf56b8bb2',200002,'N',110,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:29:11 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:29:10','YYYY-MM-DD HH24:MI:SS'),101,'Y',TO_DATE('2020-11-09 22:29:10','YYYY-MM-DD HH24:MI:SS'),101,200019,'34491aef-871a-43cb-971d-b014e64f4464',200002,'N',126,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:30:13 PM IST
+-- INSERT INTO AD_Tree_Favorite (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_ID,AD_Tree_Favorite_UU,AD_User_ID) VALUES (11,11,TO_DATE('2020-11-09 22:30:12','YYYY-MM-DD HH24:MI:SS'),102,'Y',TO_DATE('2020-11-09 22:30:12','YYYY-MM-DD HH24:MI:SS'),102,200003,'83ea3b9e-ba2e-4ec0-b08c-9f88733eb070',102)
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:30:17 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,11,TO_DATE('2020-11-09 22:30:16','YYYY-MM-DD HH24:MI:SS'),102,'Y',TO_DATE('2020-11-09 22:30:16','YYYY-MM-DD HH24:MI:SS'),102,200020,'8400f944-d7d3-4a6f-96d2-612b84d5d9c0',200003,'N',129,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:59:30 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:28','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:28','YYYY-MM-DD HH24:MI:SS'),100,200021,'2ec4e36c-9749-41d4-8b97-8e69a2bc39e1',200001,'N',129,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:59:37 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:36','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:36','YYYY-MM-DD HH24:MI:SS'),100,200022,'08dd130d-403b-464b-be39-60a22414d46f',200001,'N',110,0,'Y','Y')
+-- ;-- 
+-- 
+-- -- Nov 9, 2020, 10:59:49 PM IST
+-- INSERT INTO AD_Tree_Favorite_Node (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,Updated,UpdatedBy,AD_Tree_Favorite_Node_ID,AD_Tree_Favorite_Node_UU,AD_Tree_Favorite_ID,IsSummary,AD_Menu_ID,SeqNo,IsCollapsible,IsFavourite) VALUES (11,0,TO_DATE('2020-11-09 22:59:48','YYYY-MM-DD HH24:MI:SS'),100,'Y',TO_DATE('2020-11-09 22:59:48','YYYY-MM-DD HH24:MI:SS'),100,200023,'99f0d2ce-2e5e-43b4-be3a-41fe4554f5f7',200001,'N',126,0,'Y','Y')
+-- ;
 
 -- Nov 10, 2020, 1:14:16 PM IST
 INSERT INTO AD_Message (MsgType,MsgText,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Message_ID,Value,EntityType,AD_Message_UU) VALUES ('I','Current folder selected',0,0,'Y',TO_DATE('2020-11-10 13:14:15','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2020-11-10 13:14:15','YYYY-MM-DD HH24:MI:SS'),100,200652,'CurrentFolderSelected','D','7a7df360-8175-4fe2-a729-77a526582cd2')

@@ -133,7 +133,7 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 ;
 
 -- May 11, 2021, 11:59:39 AM MYT
-ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationScopes VARCHAR(255) DEFAULT NULL 
+--ALTER TABLE AD_AuthorizationAccount ADD COLUMN AD_AuthorizationScopes VARCHAR(255) DEFAULT NULL 
 ;
 
 -- May 11, 2021, 12:00:20 PM MYT

@@ -33,11 +33,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLen
 
 -- Jun 7, 2021, 9:04:21 PM CEST
 ALTER TABLE MFA_Registration ADD COLUMN LastFailure TIMESTAMP DEFAULT NULL 
-;
-
--- Jun 7, 2021, 9:04:56 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214503,0,'Failed Login Count',200275,'FailedLoginCount',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-06-07 21:04:56','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-06-07 21:04:56','YYYY-MM-DD HH24:MI:SS'),100,200113,'N','N','D','N','N','N','Y','ab6cf862-137c-4b10-939a-f97b19dc3943','Y',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- Jun 7, 2021, 9:04:56 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214503,0,'Failed Login Count',200275,'FailedLoginCount',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2021-06-07 21:04:56','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2021-06-07 21:04:56','YYYY-MM-DD HH24:MI:SS'),100,200113,'N','N','D','N','N','N','Y','ab6cf862-137c-4b10-939a-f97b19dc3943','Y',0,'N','N','N','N')
+-- ;
 
 -- Jun 7, 2021, 9:04:58 PM CEST
 ALTER TABLE MFA_Registration ADD COLUMN FailedLoginCount NUMERIC(10) DEFAULT NULL 

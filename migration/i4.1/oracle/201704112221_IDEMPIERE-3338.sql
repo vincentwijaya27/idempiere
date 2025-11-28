@@ -496,15 +496,15 @@ UPDATE AD_Column SET AD_Reference_Value_ID=267,Updated=TO_DATE('2017-04-11 19:05
 
 -- 11/04/2017 19h5min49s BRT
 UPDATE AD_Column SET AD_Reference_Value_ID=267,Updated=TO_DATE('2017-04-11 19:05:49','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_Column_ID=213000
-;
-
--- 11/04/2017 19h6min40s BRT
-INSERT INTO PA_DocumentStatus (PA_DocumentStatus_ID,AD_Client_ID,AD_Org_ID,AD_Role_ID,AD_User_ID,Created,CreatedBy,Updated,UpdatedBy,Name,IsActive,SeqNo,name_printcolor_id,name_printfont_id,number_printcolor_id,number_printfont_id,AD_Table_ID,WhereClause,AD_Window_ID,PA_DocumentStatus_UU) VALUES (200000,11,0,null,null,TO_DATE('2017-04-11 19:06:39','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-04-11 19:06:39','YYYY-MM-DD HH24:MI:SS'),100,'Sales Orders received today','Y',50,100,129,102,129,259,'C_Order.IsSoTrx=''Y'' and c_Order.DateOrdered > SYSDATE-1',143,'07fa8eef-2ad7-476a-b1ce-ebc6a5caf6fc')
-;
-
--- 11/04/2017 19h7min35s BRT
-INSERT INTO PA_DocumentStatus (PA_DocumentStatus_ID,AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,Name,IsActive,SeqNo,name_printcolor_id,name_printfont_id,number_printcolor_id,number_printfont_id,AD_Table_ID,WhereClause,AD_Window_ID,PA_DocumentStatus_UU) VALUES (200001,11,0,TO_DATE('2017-04-11 19:07:35','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-04-11 19:07:35','YYYY-MM-DD HH24:MI:SS'),100,'Pending Customer Shipments','Y',60,100,129,102,129,319,'M_InOut.IsSOTrx=''Y'' AND M_InOut.Processed=''N''',169,'e6df3b28-7ba1-4277-99e8-fa4ff9bfd082')
-;
+;-- 
+-- 
+-- -- 11/04/2017 19h6min40s BRT
+-- INSERT INTO PA_DocumentStatus (PA_DocumentStatus_ID,AD_Client_ID,AD_Org_ID,AD_Role_ID,AD_User_ID,Created,CreatedBy,Updated,UpdatedBy,Name,IsActive,SeqNo,name_printcolor_id,name_printfont_id,number_printcolor_id,number_printfont_id,AD_Table_ID,WhereClause,AD_Window_ID,PA_DocumentStatus_UU) VALUES (200000,11,0,null,null,TO_DATE('2017-04-11 19:06:39','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-04-11 19:06:39','YYYY-MM-DD HH24:MI:SS'),100,'Sales Orders received today','Y',50,100,129,102,129,259,'C_Order.IsSoTrx=''Y'' and c_Order.DateOrdered > SYSDATE-1',143,'07fa8eef-2ad7-476a-b1ce-ebc6a5caf6fc')
+-- ;-- 
+-- 
+-- -- 11/04/2017 19h7min35s BRT
+-- INSERT INTO PA_DocumentStatus (PA_DocumentStatus_ID,AD_Client_ID,AD_Org_ID,Created,CreatedBy,Updated,UpdatedBy,Name,IsActive,SeqNo,name_printcolor_id,name_printfont_id,number_printcolor_id,number_printfont_id,AD_Table_ID,WhereClause,AD_Window_ID,PA_DocumentStatus_UU) VALUES (200001,11,0,TO_DATE('2017-04-11 19:07:35','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2017-04-11 19:07:35','YYYY-MM-DD HH24:MI:SS'),100,'Pending Customer Shipments','Y',60,100,129,102,129,319,'M_InOut.IsSOTrx=''Y'' AND M_InOut.Processed=''N''',169,'e6df3b28-7ba1-4277-99e8-fa4ff9bfd082')
+-- ;
 
 -- 11/04/2017 19h7min49s BRT
 UPDATE AD_Column SET DefaultValue='-1',Updated=TO_DATE('2017-04-11 19:07:49','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_Column_ID=212986

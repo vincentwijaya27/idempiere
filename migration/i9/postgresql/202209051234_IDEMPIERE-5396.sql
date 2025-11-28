@@ -84,11 +84,11 @@ CREATE OR REPLACE VIEW M_RMA_CreateFrom_v(M_InOutLine_ID, Line, M_Product_ID, C_
 
 -- Sep 5, 2022, 1:33:33 PM SGT
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsAlwaysUpdateable,AD_Column_UU,IsToolbarButton,FKConstraintType) VALUES (215198,0.0,'Shipment/Receipt Line','Line on Shipment or Receipt document','The Shipment/Receipt Line indicates a unique line in a Shipment/Receipt document',200356,'M_InOutLine_ID',10,'N','N','N','N','N','N',30,0,0,'Y',TO_TIMESTAMP('2022-09-05 13:33:32','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-09-05 13:33:32','YYYY-MM-DD HH24:MI:SS'),100,1026,'N','N','D','N','60bf1a3e-1624-43ac-bd50-9f2e53ae64af','N','N')
-;
-
--- Sep 5, 2022, 1:33:34 PM SGT
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsAlwaysUpdateable,AD_Column_UU,IsToolbarButton) VALUES (215199,0.0,'Line No','Unique line for this document','Indicates the unique line for a document.  It will also control the display order of the lines within a document.',200356,'Line',10,'N','N','N','N','N','N',11,0,0,'Y',TO_TIMESTAMP('2022-09-05 13:33:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-09-05 13:33:33','YYYY-MM-DD HH24:MI:SS'),100,439,'N','N','D','N','6cb98d33-8133-462a-b496-bf345621df61','N')
-;
+;-- 
+-- 
+-- -- Sep 5, 2022, 1:33:34 PM SGT
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsAlwaysUpdateable,AD_Column_UU,IsToolbarButton) VALUES (215199,0.0,'Line No','Unique line for this document','Indicates the unique line for a document.  It will also control the display order of the lines within a document.',200356,'Line',10,'N','N','N','N','N','N',11,0,0,'Y',TO_TIMESTAMP('2022-09-05 13:33:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-09-05 13:33:33','YYYY-MM-DD HH24:MI:SS'),100,439,'N','N','D','N','6cb98d33-8133-462a-b496-bf345621df61','N')
+-- ;
 
 -- Sep 5, 2022, 1:33:36 PM SGT
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,AD_Val_Rule_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsAlwaysUpdateable,AD_Column_UU,IsToolbarButton,FKConstraintType) VALUES (215200,0.0,'Product','Product, Service, Item','Identifies an item which is either purchased or sold in this organization.',200356,231,'M_Product_ID',10,'N','N','N','N','N','N',30,0,0,'Y',TO_TIMESTAMP('2022-09-05 13:33:35','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-09-05 13:33:35','YYYY-MM-DD HH24:MI:SS'),100,454,'N','N','D','N','538cb16c-21eb-4e60-a07b-b56ea471bc17','N','N')

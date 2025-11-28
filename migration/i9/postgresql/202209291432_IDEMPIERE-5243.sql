@@ -6,7 +6,7 @@ UPDATE AD_Column SET FieldLength=4000, AD_Reference_ID=10,Updated=TO_TIMESTAMP('
 ;
 
 -- Sep 29, 2022, 2:32:45 PM CEST
-INSERT INTO t_alter_column values('ad_val_rule','Code','VARCHAR(4000)',null,'NULL')
+--INSERT INTO t_alter_column values('ad_val_rule','Code','VARCHAR(4000)',null,'NULL')
 ;
 
 -- Sep 29, 2022, 2:33:03 PM CEST

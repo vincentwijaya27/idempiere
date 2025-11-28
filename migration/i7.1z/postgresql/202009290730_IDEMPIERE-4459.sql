@@ -362,11 +362,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,Co
 
 -- Sep 29, 2020, 7:26:57 AM CEST
 ALTER TABLE AD_UserDef_Info_Column ADD COLUMN QueryFunction VARCHAR(2000) DEFAULT NULL 
-;
-
--- Sep 29, 2020, 7:26:57 AM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214300,0.0,'Selection Column Sequence','Selection Column Sequence','For ordering sequence of selection column',200268,'SeqNoSelection','0',10,'N','N','N','N','N','N',11,0,0,'Y',TO_TIMESTAMP('2020-09-29 07:26:57','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-09-29 07:26:57','YYYY-MM-DD HH24:MI:SS'),100,200096,'Y','N','D','Y','N','N','Y','4248b59c-2f42-47f9-8f7c-65c8a0aa591b','Y','N','N','N','N')
-;
+;-- 
+-- 
+-- -- Sep 29, 2020, 7:26:57 AM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (214300,0.0,'Selection Column Sequence','Selection Column Sequence','For ordering sequence of selection column',200268,'SeqNoSelection','0',10,'N','N','N','N','N','N',11,0,0,'Y',TO_TIMESTAMP('2020-09-29 07:26:57','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-09-29 07:26:57','YYYY-MM-DD HH24:MI:SS'),100,200096,'Y','N','D','Y','N','N','Y','4248b59c-2f42-47f9-8f7c-65c8a0aa591b','Y','N','N','N','N')
+-- ;
 
 -- Sep 29, 2020, 7:26:57 AM CEST
 ALTER TABLE AD_UserDef_Info_Column ADD COLUMN SeqNoSelection NUMERIC(10) DEFAULT '0' 

@@ -110,11 +110,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnN
 
 -- Jul 20, 2021, 8:20:39 AM CEST
 INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,Help,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214561,0,'Mail Host','Hostname of Mail Server for SMTP and IMAP','The host name of the Mail Server for this client with SMTP services to send mail, and IMAP to process incoming mail.',200280,'SMTPHost',60,'N','N','N','N','N',0,'N',10,0,0,'Y',TO_DATE('2021-07-20 08:20:38','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2021-07-20 08:20:38','YYYY-MM-DD HH24:MI:SS'),0,1253,'Y','N','D','N','N','N','Y','8b6cac01-c49d-46df-b937-276ffe868c82','Y',0,'N','N','N')
-;
-
--- Jul 20, 2021, 8:20:46 AM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214562,0,'SMTP Port','SMTP Port Number',200280,'SMTPPort',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-07-20 08:20:45','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2021-07-20 08:20:45','YYYY-MM-DD HH24:MI:SS'),0,200170,'Y','N','D','N','N','N','Y','4523d5ec-1ab4-4e86-b80d-5752a84648ef','Y',0,'N','N','N')
-;
+;-- 
+-- 
+-- -- Jul 20, 2021, 8:20:46 AM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214562,0,'SMTP Port','SMTP Port Number',200280,'SMTPPort',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-07-20 08:20:45','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2021-07-20 08:20:45','YYYY-MM-DD HH24:MI:SS'),0,200170,'Y','N','D','N','N','N','Y','4523d5ec-1ab4-4e86-b80d-5752a84648ef','Y',0,'N','N','N')
+-- ;
 
 -- Jul 20, 2021, 8:21:06 AM CEST
 INSERT INTO AD_Element (AD_Element_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ColumnName,Name,Description,Help,PrintName,EntityType,AD_Element_UU) VALUES (203527,0,0,'Y',TO_DATE('2021-07-20 08:20:53','YYYY-MM-DD HH24:MI:SS'),0,TO_DATE('2021-07-20 08:20:53','YYYY-MM-DD HH24:MI:SS'),0,'UsedByEmailOrDomain','Used by email or domain',NULL,NULL,'Used by email or domain','D','a1d45340-7b37-4a20-aecb-7520ed02e32c')

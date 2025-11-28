@@ -580,11 +580,11 @@ Underpayments (positive) is a partial payment for the invoice. You do not write 
 
 -- Apr 3, 2022 3:36:33 PM SGT
 INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205737,'N',14,'N','N',0,'Y','N','A Project allows you to track and control internal or external activities.',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),'Financial Project','Project','217a99c9-1c7e-4d33-a7c7-f46c47f148a1','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',8554,'D',200256)
-;
-
--- Apr 3, 2022 3:36:33 PM SGT
-INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205785,'N',11,'N','N',0,'Y','N','The Charge Amount indicates the amount for an additional charge.',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),'Charge Amount','Charge amount','8854eb7d-c74e-44dc-8b44-451960e8014b','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',8980,'D',200256)
-;
+;-- 
+-- 
+-- -- Apr 3, 2022 3:36:33 PM SGT
+-- INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205785,'N',11,'N','N',0,'Y','N','The Charge Amount indicates the amount for an additional charge.',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),'Charge Amount','Charge amount','8854eb7d-c74e-44dc-8b44-451960e8014b','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',8980,'D',200256)
+-- ;
 
 -- Apr 3, 2022 3:36:33 PM SGT
 INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205727,'N',20,'N','N',0,'Y','N','The Authorization Code indicates the code returned from the electronic transmission.',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),'Authorization Code Delayed Capture returned','Authorization Code (DC)','c80e2a2e-a1d4-4630-b274-c7f3a1897380','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:33','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',8981,'D',200256)
@@ -651,15 +651,15 @@ INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading
 
 -- Apr 3, 2022 3:36:35 PM SGT
 INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205728,'N',20,'N','N',0,'Y','N','The Credit Card number indicates the number on the credit card, without blanks or spaces.',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),'Credit Card Number ','Number','a8054e21-5a65-4d52-a85a-82cb17701133','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3870,'D',200256)
-;
-
--- Apr 3, 2022 3:36:36 PM SGT
-INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205730,'N',11,'N','N',0,'Y','N','The Expiry Month indicates the expiry month for this credit card.',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),'Expiry Month','Exp. Month','a2429bca-2d39-410e-8f89-71a94dcfa29a','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3871,'D',200256)
-;
-
--- Apr 3, 2022 3:36:36 PM SGT
-INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205739,'N',11,'N','N',0,'Y','N','The Expiry Year indicates the expiry year for this credit card.',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),'Expiry Year','Exp. Year','eedc8e0f-6c7b-494c-ac91-759534191c42','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3872,'D',200256)
-;
+;-- 
+-- 
+-- -- Apr 3, 2022 3:36:36 PM SGT
+-- INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205730,'N',11,'N','N',0,'Y','N','The Expiry Month indicates the expiry month for this credit card.',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),'Expiry Month','Exp. Month','a2429bca-2d39-410e-8f89-71a94dcfa29a','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:35','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3871,'D',200256)
+-- ;-- 
+-- 
+-- -- Apr 3, 2022 3:36:36 PM SGT
+-- INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205739,'N',11,'N','N',0,'Y','N','The Expiry Year indicates the expiry year for this credit card.',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),'Expiry Year','Exp. Year','eedc8e0f-6c7b-494c-ac91-759534191c42','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3872,'D',200256)
+-- ;
 
 -- Apr 3, 2022 3:36:36 PM SGT
 INSERT INTO AD_Field (AD_Field_ID,IsEncrypted,DisplayLength,IsSameLine,IsHeading,SeqNo,IsCentrallyMaintained,IsReadOnly,Help,AD_Org_ID,Updated,Description,Name,AD_Field_UU,IsDisplayed,IsFieldOnly,CreatedBy,UpdatedBy,IsActive,IsDisplayedGrid,SeqNoGrid,XPosition,IsQuickEntry,AD_Client_ID,Created,ColumnSpan,NumLines,IsAdvancedField,IsDefaultFocus,AD_Column_ID,EntityType,AD_Tab_ID) VALUES (205733,'N',20,'N','N',0,'Y','N','The Bank Routing Number (ABA Number) identifies a legal Bank.  It is used in routing checks and electronic transactions.',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),'Bank Routing Number','Routing No','a3da052d-37b6-4bc5-a07b-3635bb2d92c8','N','N',100,100,'Y','N',0,1,'N',0,TO_DATE('2022-04-03 15:36:36','YYYY-MM-DD HH24:MI:SS'),2,1,'N','N',3873,'D',200256)

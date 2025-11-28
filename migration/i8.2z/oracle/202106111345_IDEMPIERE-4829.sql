@@ -1,9 +1,9 @@
-SET SQLBLANKLINES ON
-SET DEFINE OFF
-
--- Jun 11, 2021, 1:31:49 PM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214504,0,'Grid Sequence No',464,'SeqNoGrid','0',22,'N','N','Y','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-06-11 13:31:48','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-06-11 13:31:48','YYYY-MM-DD HH24:MI:SS'),100,200084,'Y','N','D','N','N','N','Y','0df84ed3-d2cc-4fbf-96da-e866c997417c','Y',0,'N','N','N')
-;
+-- SET SQLBLANKLINES ON
+-- SET DEFINE OFF
+-- 
+-- -- Jun 11, 2021, 1:31:49 PM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214504,0,'Grid Sequence No',464,'SeqNoGrid','0',22,'N','N','Y','N','N',0,'N',11,0,0,'Y',TO_DATE('2021-06-11 13:31:48','YYYY-MM-DD HH24:MI:SS'),100,TO_DATE('2021-06-11 13:31:48','YYYY-MM-DD HH24:MI:SS'),100,200084,'Y','N','D','N','N','N','Y','0df84ed3-d2cc-4fbf-96da-e866c997417c','Y',0,'N','N','N')
+-- ;
 
 -- Jun 11, 2021, 1:32:01 PM CEST
 ALTER TABLE AD_UserDef_Field ADD SeqNoGrid NUMBER(10) DEFAULT 0 NOT NULL

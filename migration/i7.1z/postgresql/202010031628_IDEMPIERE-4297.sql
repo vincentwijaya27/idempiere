@@ -1,231 +1,231 @@
--- IDEMPIERE-4297 Improve test data
--- Oct 3, 2020, 3:53:25 PM CEST
-INSERT INTO C_AcctSchema (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,Name,GAAP,IsAccrual,CostingMethod,C_Currency_ID,AutoPeriodControl,C_Period_ID,Period_OpenHistory,Period_OpenFuture,Separator,HasAlias,HasCombination,IsTradeDiscountPosted,IsDiscountCorrectsTax,M_CostType_ID,CostingLevel,IsAdjustCOGS,IsPostServices,IsExplicitCostAdjustment,CommitmentType,Processing,TaxCorrectionType,IsAllowNegativePosting,IsPostIfClearingEqual,C_AcctSchema_UU) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:53:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:53:24','YYYY-MM-DD HH24:MI:SS'),100,'GardenWorld Euro','UN','Y','A',102,'Y',200104,10000,100,'-','Y','N','N','N',100,'C','N','N','N','N','N','N','Y','Y','546a277d-0ad3-4935-bf2a-7eb6d348b978')
-;
+-- -- IDEMPIERE-4297 Improve test data
+-- -- Oct 3, 2020, 3:53:25 PM CEST
+-- INSERT INTO C_AcctSchema (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,Name,GAAP,IsAccrual,CostingMethod,C_Currency_ID,AutoPeriodControl,C_Period_ID,Period_OpenHistory,Period_OpenFuture,Separator,HasAlias,HasCombination,IsTradeDiscountPosted,IsDiscountCorrectsTax,M_CostType_ID,CostingLevel,IsAdjustCOGS,IsPostServices,IsExplicitCostAdjustment,CommitmentType,Processing,TaxCorrectionType,IsAllowNegativePosting,IsPostIfClearingEqual,C_AcctSchema_UU) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:53:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:53:24','YYYY-MM-DD HH24:MI:SS'),100,'GardenWorld Euro','UN','Y','A',102,'Y',200104,10000,100,'-','Y','N','N','N',100,'C','N','N','N','N','N','N','Y','Y','546a277d-0ad3-4935-bf2a-7eb6d348b978')
+-- ;
 
 -- Oct 3, 2020, 3:54:19 PM CEST
 UPDATE C_AcctSchema SET Name='Second Schema GardenWorld Euro',Updated=TO_TIMESTAMP('2020-10-03 15:54:19','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_AcctSchema_ID=200000
-;
-
--- Oct 3, 2020, 3:54:49 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,Org_ID,C_AcctSchema_Element_UU) VALUES (200000,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:54:49','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:54:49','YYYY-MM-DD HH24:MI:SS'),100,'OT','Organization',10,'Y','Y',11,'7bdfbc07-9f1c-44ce-ba65-67210574b473')
-;
-
--- Oct 3, 2020, 3:55:17 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,C_Element_ID,IsBalanced,IsMandatory,C_ElementValue_ID,C_AcctSchema_Element_UU) VALUES (200001,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:55:17','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:55:17','YYYY-MM-DD HH24:MI:SS'),100,'AC','Account',20,105,'N','Y',697,'d41a7fae-bd50-47c8-9c2e-aafb487c66a8')
-;
-
--- Oct 3, 2020, 3:55:48 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,M_Product_ID,C_AcctSchema_Element_UU) VALUES (200002,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:55:47','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:55:47','YYYY-MM-DD HH24:MI:SS'),100,'PR','Product',30,'N','N',122,'ae46e546-54ef-4552-8273-e06b969fd7d7')
-;
-
--- Oct 3, 2020, 3:56:07 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_BPartner_ID,C_AcctSchema_Element_UU) VALUES (200003,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:06','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:06','YYYY-MM-DD HH24:MI:SS'),100,'BP','Bus.Partner',40,'N','N',112,'b0954a50-1a6e-4dbc-b65a-47b17a92e24e')
-;
-
--- Oct 3, 2020, 3:56:23 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_Project_ID,C_AcctSchema_Element_UU) VALUES (200004,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:23','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:23','YYYY-MM-DD HH24:MI:SS'),100,'PJ','Project',50,'N','N',100,'4082da45-d7b8-4ab2-9cb5-d89b5b0e12e1')
-;
-
--- Oct 3, 2020, 3:56:34 PM CEST
-INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_Campaign_ID,C_AcctSchema_Element_UU) VALUES (200005,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:34','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:34','YYYY-MM-DD HH24:MI:SS'),100,'MC','Campaign',60,'N','N',101,'cb032bf7-a8ad-45f9-ac04-7c3ccc18eff8')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 3:54:49 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,Org_ID,C_AcctSchema_Element_UU) VALUES (200000,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:54:49','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:54:49','YYYY-MM-DD HH24:MI:SS'),100,'OT','Organization',10,'Y','Y',11,'7bdfbc07-9f1c-44ce-ba65-67210574b473')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 3:55:17 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,C_Element_ID,IsBalanced,IsMandatory,C_ElementValue_ID,C_AcctSchema_Element_UU) VALUES (200001,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:55:17','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:55:17','YYYY-MM-DD HH24:MI:SS'),100,'AC','Account',20,105,'N','Y',697,'d41a7fae-bd50-47c8-9c2e-aafb487c66a8')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 3:55:48 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,M_Product_ID,C_AcctSchema_Element_UU) VALUES (200002,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:55:47','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:55:47','YYYY-MM-DD HH24:MI:SS'),100,'PR','Product',30,'N','N',122,'ae46e546-54ef-4552-8273-e06b969fd7d7')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 3:56:07 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_BPartner_ID,C_AcctSchema_Element_UU) VALUES (200003,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:06','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:06','YYYY-MM-DD HH24:MI:SS'),100,'BP','Bus.Partner',40,'N','N',112,'b0954a50-1a6e-4dbc-b65a-47b17a92e24e')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 3:56:23 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_Project_ID,C_AcctSchema_Element_UU) VALUES (200004,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:23','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:23','YYYY-MM-DD HH24:MI:SS'),100,'PJ','Project',50,'N','N',100,'4082da45-d7b8-4ab2-9cb5-d89b5b0e12e1')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 3:56:34 PM CEST
+-- INSERT INTO C_AcctSchema_Element (C_AcctSchema_Element_ID,C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,ElementType,Name,SeqNo,IsBalanced,IsMandatory,C_Campaign_ID,C_AcctSchema_Element_UU) VALUES (200005,200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 15:56:34','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 15:56:34','YYYY-MM-DD HH24:MI:SS'),100,'MC','Campaign',60,'N','N',101,'cb032bf7-a8ad-45f9-ac04-7c3ccc18eff8')
+-- ;
 
 -- Oct 3, 2020, 3:58:53 PM CEST
 UPDATE C_AcctSchema_Element SET ElementType='OO',Updated=TO_TIMESTAMP('2020-10-03 15:58:53','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_AcctSchema_Element_ID=200000
-;
-
--- Oct 3, 2020, 4:00:05 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200018,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:05','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:05','YYYY-MM-DD HH24:MI:SS'),100,200000,600,'HQ-21800-_-_-_-_','Y','HQ-Intercompany Due To-_-_-_-_','40d3d702-d97c-4b39-aa11-fa8187b6001c')
-;
-
--- Oct 3, 2020, 4:00:31 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200019,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:31','YYYY-MM-DD HH24:MI:SS'),100,200000,698,'HQ-79200-_-_-_-_','Y','HQ-Suspense balancing-_-_-_-_','7f4b4950-b672-415d-b6cb-ddf836648d95')
-;
-
--- Oct 3, 2020, 4:00:44 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200020,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:44','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:44','YYYY-MM-DD HH24:MI:SS'),100,200000,724,'HQ-82550-_-_-_-_','Y','HQ-Currency balancing-_-_-_-_','e6f6a427-1432-4a2e-941b-9dce02ae40d8')
-;
-
--- Oct 3, 2020, 4:00:55 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200021,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:55','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:55','YYYY-MM-DD HH24:MI:SS'),100,200000,635,'HQ-58300-_-_-_-_','Y','HQ-Purchase price variance Offset-_-_-_-_','b648cc53-e419-42dd-b4e4-1efdb38d3c2e')
-;
-
--- Oct 3, 2020, 4:01:13 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200022,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:13','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:13','YYYY-MM-DD HH24:MI:SS'),100,200000,736,'HQ-952-_-_-_-_','Y','HQ-PO Commitment-_-_-_-_','ba56155d-8206-4eb0-b90e-ddca2823dbea')
-;
-
--- Oct 3, 2020, 4:01:21 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200023,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:20','YYYY-MM-DD HH24:MI:SS'),100,200000,50000,'HQ-953-_-_-_-_','Y','HQ-SO Commitment-_-_-_-_','8cf2d42e-2cff-4213-b7ed-34cfa92eeb97')
-;
-
--- Oct 3, 2020, 4:01:35 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200024,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:35','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:35','YYYY-MM-DD HH24:MI:SS'),100,200000,741,'HQ-12800-_-_-_-_','Y','HQ-Intercompany Due From-_-_-_-_','cc8d50db-5fcc-44ab-ac63-f932c2ae0c25')
-;
-
--- Oct 3, 2020, 4:01:50 PM CEST
-INSERT INTO C_AcctSchema_GL (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,UseSuspenseBalancing,SuspenseBalancing_Acct,UseSuspenseError,UseCurrencyBalancing,CurrencyBalancing_Acct,IntercompanyDueTo_Acct,IntercompanyDueFrom_Acct,PPVOffset_Acct,CommitmentOffset_Acct,CommitmentOffsetSales_Acct,C_AcctSchema_GL_UU) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 16:01:50','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:50','YYYY-MM-DD HH24:MI:SS'),100,'Y',200019,'N','Y',200020,200018,200024,200021,200022,200023,'70fa4a86-c404-459e-b81f-aee6ab558e31')
-;
-
--- Oct 3, 2020, 4:03:00 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200025,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:02:59','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:02:59','YYYY-MM-DD HH24:MI:SS'),100,200000,712,'HQ-80530-_-_-_-_','Y','HQ-Unrealized gain-_-_-_-_','a70553f0-ce3d-468e-9947-a51734c501a0')
-;
-
--- Oct 3, 2020, 4:03:20 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200026,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:20','YYYY-MM-DD HH24:MI:SS'),100,200000,722,'HQ-82530-_-_-_-_','Y','HQ-Unrealized loss-_-_-_-_','11d0be92-c065-438d-b42c-18a745f0257d')
-;
-
--- Oct 3, 2020, 4:03:34 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200027,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:33','YYYY-MM-DD HH24:MI:SS'),100,200000,767,'HQ-80540-_-_-_-_','Y','HQ-Realized gain-_-_-_-_','9f873f6b-e61c-4a69-b186-77c675d719a8')
-;
-
--- Oct 3, 2020, 4:03:47 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200028,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:47','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:47','YYYY-MM-DD HH24:MI:SS'),100,200000,723,'HQ-82540-_-_-_-_','Y','HQ-Realized loss-_-_-_-_','4fcef44a-e500-42fc-82af-4daf76a63616')
-;
-
--- Oct 3, 2020, 4:07:13 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200029,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:12','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:12','YYYY-MM-DD HH24:MI:SS'),100,200000,587,'HQ-21190-_-_-_-_','Y','HQ-Not invoiced receipts-_-_-_-_','1dc6e167-52b1-472f-aee1-839c96da387a')
-;
-
--- Oct 3, 2020, 4:07:24 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200030,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:24','YYYY-MM-DD HH24:MI:SS'),100,200000,423,'HQ-47000-_-_-_-_','Y','HQ-Unearned revenue-_-_-_-_','0b842408-a127-4df6-b2d3-f67e31818228')
-;
-
--- Oct 3, 2020, 4:07:37 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200031,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:37','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:37','YYYY-MM-DD HH24:MI:SS'),100,200000,427,'HQ-59201-_-_-_-_','Y','HQ-Payment discount revenue-_-_-_-_','212854c7-4edc-4c1d-ab32-7e11e09d3489')
-;
-
--- Oct 3, 2020, 4:07:51 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200032,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:51','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:51','YYYY-MM-DD HH24:MI:SS'),100,200000,448,'HQ-59200-_-_-_-_','Y','HQ-Payment discount revenue-_-_-_-_','708fbab9-1b54-4a07-ac7c-31f9fbfddbef')
-;
-
--- Oct 3, 2020, 4:08:06 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200033,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:06','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:06','YYYY-MM-DD HH24:MI:SS'),100,200000,765,'HQ-78100-_-_-_-_','Y','HQ-Bad Debts Write-off-_-_-_-_','ee46799d-9304-46bc-b055-f1b84cd50ddb')
-;
-
--- Oct 3, 2020, 4:08:21 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200034,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:21','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:21','YYYY-MM-DD HH24:MI:SS'),100,200000,518,'HQ-12110-_-_-_-_','Y','HQ-Accounts Receivable - Trade-_-_-_-_','5383b624-ce7f-499d-9812-bfaf45a8485b')
-;
-
--- Oct 3, 2020, 4:08:33 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200035,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:33','YYYY-MM-DD HH24:MI:SS'),100,200000,749,'HQ-21100-_-_-_-_','Y','HQ-Accounts Payable Trade-_-_-_-_','bee3b4d9-13ef-492b-9df6-d46cd46f56e7')
-;
-
--- Oct 3, 2020, 4:08:46 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200036,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:46','YYYY-MM-DD HH24:MI:SS'),100,200000,750,'HQ-21510-_-_-_-_','Y','HQ-Customer Prepayments-_-_-_-_','b2993096-d684-4ca9-a926-ebca3bac2b50')
-;
-
--- Oct 3, 2020, 4:09:00 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200037,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:59','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:59','YYYY-MM-DD HH24:MI:SS'),100,200000,532,'HQ-12510-_-_-_-_','Y','HQ-Vendor prepayment-_-_-_-_','aeadc31e-dbe9-447a-a7b5-f5eddad22ee9')
-;
-
--- Oct 3, 2020, 4:09:15 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200038,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:15','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:15','YYYY-MM-DD HH24:MI:SS'),100,200000,742,'HQ-14120-_-_-_-_','Y','HQ-Product asset-_-_-_-_','17814a17-f4e2-4e05-9efc-00e32f1626aa')
-;
-
--- Oct 3, 2020, 4:09:28 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200039,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:27','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:27','YYYY-MM-DD HH24:MI:SS'),100,200000,431,'HQ-51200-_-_-_-_','Y','HQ-Product Expense-_-_-_-_','9471ceea-438a-4200-895e-a4b56973ee3c')
-;
-
--- Oct 3, 2020, 4:09:38 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200040,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:38','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:38','YYYY-MM-DD HH24:MI:SS'),100,200000,781,'HQ-51300-_-_-_-_','Y','HQ-Cost Adjustments-_-_-_-_','85b2df15-9430-42d5-b4e6-9f9e2bc9e4e9')
-;
-
--- Oct 3, 2020, 4:09:46 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200041,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:46','YYYY-MM-DD HH24:MI:SS'),100,200000,780,'HQ-51400-_-_-_-_','Y','HQ-Inventory Clearing-_-_-_-_','549543cf-703a-4314-ad5f-b5b408810a2d')
-;
-
--- Oct 3, 2020, 4:09:58 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200042,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:58','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:58','YYYY-MM-DD HH24:MI:SS'),100,200000,430,'HQ-51100-_-_-_-_','Y','HQ-Product CoGs-_-_-_-_','5afcef6c-6ad4-4630-a38f-9a6ca2bde601')
-;
-
--- Oct 3, 2020, 4:10:08 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200043,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:07','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:07','YYYY-MM-DD HH24:MI:SS'),100,200000,758,'HQ-41000-_-_-_-_','Y','HQ-Trade Revenue-_-_-_-_','4c1ad149-bcc7-467d-8bfc-67e1c74567b2')
-;
-
--- Oct 3, 2020, 4:10:18 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200044,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:18','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:18','YYYY-MM-DD HH24:MI:SS'),100,200000,445,'HQ-58200-_-_-_-_','Y','HQ-Purchase price variance-_-_-_-_','5274fc63-f567-4933-89be-91a50acf8ea5')
-;
-
--- Oct 3, 2020, 4:10:30 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200045,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:29','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:29','YYYY-MM-DD HH24:MI:SS'),100,200000,444,'HQ-58100-_-_-_-_','Y','HQ-Invoice price variance-_-_-_-_','9b74a853-ad13-4792-acf9-ce1f5a7067c3')
-;
-
--- Oct 3, 2020, 4:10:41 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200046,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:41','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:41','YYYY-MM-DD HH24:MI:SS'),100,200000,447,'HQ-59100-_-_-_-_','Y','HQ-Trade discounts received-_-_-_-_','652d73a1-2c47-4d91-89b3-b93c129398ed')
-;
-
--- Oct 3, 2020, 4:10:49 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200047,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:49','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:49','YYYY-MM-DD HH24:MI:SS'),100,200000,426,'HQ-59101-_-_-_-_','Y','HQ-Trade Discounts-_-_-_-_','0bcd8912-0b84-4f64-af24-382cf15c6735')
-;
-
--- Oct 3, 2020, 4:11:00 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200048,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:00','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:00','YYYY-MM-DD HH24:MI:SS'),100,200000,50003,'HQ-58600-_-_-_-_','Y','HQ-Rate Variance-_-_-_-_','43e17565-7f42-4ed6-a47f-9c43d8ecd398')
-;
-
--- Oct 3, 2020, 4:11:11 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200049,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:11','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:11','YYYY-MM-DD HH24:MI:SS'),100,200000,50017,'HQ-58800-_-_-_-_','Y','HQ-Average Cost Variance-_-_-_-_','928a6f49-b982-42af-be0a-45aa1249fded')
-;
-
--- Oct 3, 2020, 4:11:22 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200050,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:22','YYYY-MM-DD HH24:MI:SS'),100,200000,200000,'HQ-58900-_-_-_-_','Y','HQ-Landed Cost Clearing-_-_-_-_','9fe2d70e-2f09-4c7d-b75d-4ee5a5fb0df9')
-;
-
--- Oct 3, 2020, 4:11:33 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200051,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:33','YYYY-MM-DD HH24:MI:SS'),100,200000,439,'HQ-56100-_-_-_-_','Y','HQ-Inventory Shrinkage-_-_-_-_','9debdae9-349c-4bc6-9e44-a60f018d0429')
-;
-
--- Oct 3, 2020, 4:11:46 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200052,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:46','YYYY-MM-DD HH24:MI:SS'),100,200000,508,'HQ-11100-_-_-_-_','Y','HQ-Checking Account-_-_-_-_','e68d8be4-24ff-425b-96d0-dfba116b48b4')
-;
-
--- Oct 3, 2020, 4:11:58 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200053,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:58','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:58','YYYY-MM-DD HH24:MI:SS'),100,200000,509,'HQ-11110-_-_-_-_','Y','HQ-Checking In-Transfer-_-_-_-_','5c4a96a2-ddc6-444e-a2fe-d9f148c7e7fd')
-;
-
--- Oct 3, 2020, 4:12:14 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200054,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:14','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:14','YYYY-MM-DD HH24:MI:SS'),100,200000,589,'HQ-21300-_-_-_-_','Y','HQ-Payment selection-_-_-_-_','3898e168-a978-4e3c-9c5b-03ec7d7daa89')
-;
-
--- Oct 3, 2020, 4:12:27 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200055,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:27','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:27','YYYY-MM-DD HH24:MI:SS'),100,200000,511,'HQ-11130-_-_-_-_','Y','HQ-Checking Unallocated Receipts-_-_-_-_','64afd8d6-f875-43f1-972d-21eb7cc99d92')
-;
-
--- Oct 3, 2020, 4:12:39 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200056,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:38','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:38','YYYY-MM-DD HH24:MI:SS'),100,200000,717,'HQ-82100-_-_-_-_','Y','HQ-Interest Expense-_-_-_-_','ae0acc58-fcbb-4931-800b-f99a37e06238')
-;
-
--- Oct 3, 2020, 4:12:48 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200057,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:48','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:48','YYYY-MM-DD HH24:MI:SS'),100,200000,705,'HQ-80100-_-_-_-_','Y','HQ-Interest Income-_-_-_-_','c1f1a68e-4b3d-4096-a2fa-269626d91c6b')
-;
-
--- Oct 3, 2020, 4:13:00 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200058,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:00','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:00','YYYY-MM-DD HH24:MI:SS'),100,200000,596,'HQ-21610-_-_-_-_','Y','HQ-Tax due-_-_-_-_','7c62099c-2acb-4fe6-b0af-9ab11e57f34e')
-;
-
--- Oct 3, 2020, 4:13:12 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200059,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:12','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:12','YYYY-MM-DD HH24:MI:SS'),100,200000,534,'HQ-12610-_-_-_-_','Y','HQ-Tax credit A/R-_-_-_-_','1a4c6b05-ebb7-424b-8090-bfa982c9da5e')
-;
-
--- Oct 3, 2020, 4:13:22 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200060,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:22','YYYY-MM-DD HH24:MI:SS'),100,200000,760,'HQ-74100-_-_-_-_','Y','HQ-Tax expense-_-_-_-_','edaed71e-9e74-46ca-b7fb-96bae8cb72d1')
-;
-
--- Oct 3, 2020, 4:13:32 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200061,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:31','YYYY-MM-DD HH24:MI:SS'),100,200000,702,'HQ-79600-_-_-_-_','Y','HQ-Charge expense-_-_-_-_','56955cff-fc23-46ef-a9a9-677457733b1e')
-;
-
--- Oct 3, 2020, 4:13:43 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200062,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:43','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:43','YYYY-MM-DD HH24:MI:SS'),100,200000,567,'HQ-17710-_-_-_-_','Y','HQ-Project asset-_-_-_-_','0ed7c0c8-57dd-4410-84a9-bed51045f3d6')
-;
-
--- Oct 3, 2020, 4:13:55 PM CEST
-INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200063,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:55','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:55','YYYY-MM-DD HH24:MI:SS'),100,200000,568,'HQ-17720-_-_-_-_','Y','HQ-Project WIP-_-_-_-_','7da2f078-2d87-4da0-9768-c8aee0ab9307')
-;
-
--- Oct 3, 2020, 4:14:01 PM CEST
-INSERT INTO C_AcctSchema_Default (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,W_Differences_Acct,P_Revenue_Acct,P_Expense_Acct,P_Asset_Acct,P_COGS_Acct,C_Receivable_Acct,C_Prepayment_Acct,V_Liability_Acct,V_Prepayment_Acct,PJ_Asset_Acct,NotInvoicedReceipts_Acct,Processing,P_PurchasePriceVariance_Acct,PayDiscount_Exp_Acct,WriteOff_Acct,PayDiscount_Rev_Acct,UnrealizedGain_Acct,UnrealizedLoss_Acct,RealizedGain_Acct,RealizedLoss_Acct,PJ_WIP_Acct,T_Expense_Acct,T_Due_Acct,T_Credit_Acct,B_InTransit_Acct,B_Asset_Acct,B_InterestRev_Acct,B_InterestExp_Acct,Ch_Expense_Acct,UnEarnedRevenue_Acct,P_InvoicePriceVariance_Acct,P_TradeDiscountRec_Acct,P_TradeDiscountGrant_Acct,B_PaymentSelect_Acct,B_UnallocatedCash_Acct,P_InventoryClearing_Acct,P_CostAdjustment_Acct,P_RateVariance_Acct,P_AverageCostVariance_Acct,C_AcctSchema_Default_UU,P_LandedCostClearing_Acct) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 16:14:01','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:14:01','YYYY-MM-DD HH24:MI:SS'),100,200051,200043,200039,200038,200042,200034,200036,200035,200037,200062,200029,'N',200044,200031,200033,200032,200025,200026,200027,200028,200063,200060,200058,200059,200053,200052,200057,200056,200061,200030,200045,200046,200047,200054,200055,200041,200040,200048,200049,'05255bb9-df82-47c1-82d5-6af8d5106bdf',200050)
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 4:00:05 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200018,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:05','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:05','YYYY-MM-DD HH24:MI:SS'),100,200000,600,'HQ-21800-_-_-_-_','Y','HQ-Intercompany Due To-_-_-_-_','40d3d702-d97c-4b39-aa11-fa8187b6001c')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:00:31 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200019,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:31','YYYY-MM-DD HH24:MI:SS'),100,200000,698,'HQ-79200-_-_-_-_','Y','HQ-Suspense balancing-_-_-_-_','7f4b4950-b672-415d-b6cb-ddf836648d95')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:00:44 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200020,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:44','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:44','YYYY-MM-DD HH24:MI:SS'),100,200000,724,'HQ-82550-_-_-_-_','Y','HQ-Currency balancing-_-_-_-_','e6f6a427-1432-4a2e-941b-9dce02ae40d8')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:00:55 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200021,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:00:55','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:00:55','YYYY-MM-DD HH24:MI:SS'),100,200000,635,'HQ-58300-_-_-_-_','Y','HQ-Purchase price variance Offset-_-_-_-_','b648cc53-e419-42dd-b4e4-1efdb38d3c2e')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:01:13 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200022,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:13','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:13','YYYY-MM-DD HH24:MI:SS'),100,200000,736,'HQ-952-_-_-_-_','Y','HQ-PO Commitment-_-_-_-_','ba56155d-8206-4eb0-b90e-ddca2823dbea')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:01:21 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200023,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:20','YYYY-MM-DD HH24:MI:SS'),100,200000,50000,'HQ-953-_-_-_-_','Y','HQ-SO Commitment-_-_-_-_','8cf2d42e-2cff-4213-b7ed-34cfa92eeb97')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:01:35 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200024,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:01:35','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:35','YYYY-MM-DD HH24:MI:SS'),100,200000,741,'HQ-12800-_-_-_-_','Y','HQ-Intercompany Due From-_-_-_-_','cc8d50db-5fcc-44ab-ac63-f932c2ae0c25')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:01:50 PM CEST
+-- INSERT INTO C_AcctSchema_GL (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,UseSuspenseBalancing,SuspenseBalancing_Acct,UseSuspenseError,UseCurrencyBalancing,CurrencyBalancing_Acct,IntercompanyDueTo_Acct,IntercompanyDueFrom_Acct,PPVOffset_Acct,CommitmentOffset_Acct,CommitmentOffsetSales_Acct,C_AcctSchema_GL_UU) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 16:01:50','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:01:50','YYYY-MM-DD HH24:MI:SS'),100,'Y',200019,'N','Y',200020,200018,200024,200021,200022,200023,'70fa4a86-c404-459e-b81f-aee6ab558e31')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:03:00 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200025,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:02:59','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:02:59','YYYY-MM-DD HH24:MI:SS'),100,200000,712,'HQ-80530-_-_-_-_','Y','HQ-Unrealized gain-_-_-_-_','a70553f0-ce3d-468e-9947-a51734c501a0')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:03:20 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200026,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:20','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:20','YYYY-MM-DD HH24:MI:SS'),100,200000,722,'HQ-82530-_-_-_-_','Y','HQ-Unrealized loss-_-_-_-_','11d0be92-c065-438d-b42c-18a745f0257d')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:03:34 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200027,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:33','YYYY-MM-DD HH24:MI:SS'),100,200000,767,'HQ-80540-_-_-_-_','Y','HQ-Realized gain-_-_-_-_','9f873f6b-e61c-4a69-b186-77c675d719a8')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:03:47 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200028,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:03:47','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:03:47','YYYY-MM-DD HH24:MI:SS'),100,200000,723,'HQ-82540-_-_-_-_','Y','HQ-Realized loss-_-_-_-_','4fcef44a-e500-42fc-82af-4daf76a63616')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:07:13 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200029,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:12','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:12','YYYY-MM-DD HH24:MI:SS'),100,200000,587,'HQ-21190-_-_-_-_','Y','HQ-Not invoiced receipts-_-_-_-_','1dc6e167-52b1-472f-aee1-839c96da387a')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:07:24 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200030,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:24','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:24','YYYY-MM-DD HH24:MI:SS'),100,200000,423,'HQ-47000-_-_-_-_','Y','HQ-Unearned revenue-_-_-_-_','0b842408-a127-4df6-b2d3-f67e31818228')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:07:37 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200031,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:37','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:37','YYYY-MM-DD HH24:MI:SS'),100,200000,427,'HQ-59201-_-_-_-_','Y','HQ-Payment discount revenue-_-_-_-_','212854c7-4edc-4c1d-ab32-7e11e09d3489')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:07:51 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200032,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:07:51','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:07:51','YYYY-MM-DD HH24:MI:SS'),100,200000,448,'HQ-59200-_-_-_-_','Y','HQ-Payment discount revenue-_-_-_-_','708fbab9-1b54-4a07-ac7c-31f9fbfddbef')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:08:06 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200033,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:06','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:06','YYYY-MM-DD HH24:MI:SS'),100,200000,765,'HQ-78100-_-_-_-_','Y','HQ-Bad Debts Write-off-_-_-_-_','ee46799d-9304-46bc-b055-f1b84cd50ddb')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:08:21 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200034,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:21','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:21','YYYY-MM-DD HH24:MI:SS'),100,200000,518,'HQ-12110-_-_-_-_','Y','HQ-Accounts Receivable - Trade-_-_-_-_','5383b624-ce7f-499d-9812-bfaf45a8485b')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:08:33 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200035,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:33','YYYY-MM-DD HH24:MI:SS'),100,200000,749,'HQ-21100-_-_-_-_','Y','HQ-Accounts Payable Trade-_-_-_-_','bee3b4d9-13ef-492b-9df6-d46cd46f56e7')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:08:46 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200036,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:46','YYYY-MM-DD HH24:MI:SS'),100,200000,750,'HQ-21510-_-_-_-_','Y','HQ-Customer Prepayments-_-_-_-_','b2993096-d684-4ca9-a926-ebca3bac2b50')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:00 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200037,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:08:59','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:08:59','YYYY-MM-DD HH24:MI:SS'),100,200000,532,'HQ-12510-_-_-_-_','Y','HQ-Vendor prepayment-_-_-_-_','aeadc31e-dbe9-447a-a7b5-f5eddad22ee9')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:15 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200038,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:15','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:15','YYYY-MM-DD HH24:MI:SS'),100,200000,742,'HQ-14120-_-_-_-_','Y','HQ-Product asset-_-_-_-_','17814a17-f4e2-4e05-9efc-00e32f1626aa')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:28 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200039,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:27','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:27','YYYY-MM-DD HH24:MI:SS'),100,200000,431,'HQ-51200-_-_-_-_','Y','HQ-Product Expense-_-_-_-_','9471ceea-438a-4200-895e-a4b56973ee3c')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:38 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200040,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:38','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:38','YYYY-MM-DD HH24:MI:SS'),100,200000,781,'HQ-51300-_-_-_-_','Y','HQ-Cost Adjustments-_-_-_-_','85b2df15-9430-42d5-b4e6-9f9e2bc9e4e9')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:46 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200041,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:46','YYYY-MM-DD HH24:MI:SS'),100,200000,780,'HQ-51400-_-_-_-_','Y','HQ-Inventory Clearing-_-_-_-_','549543cf-703a-4314-ad5f-b5b408810a2d')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:09:58 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200042,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:09:58','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:09:58','YYYY-MM-DD HH24:MI:SS'),100,200000,430,'HQ-51100-_-_-_-_','Y','HQ-Product CoGs-_-_-_-_','5afcef6c-6ad4-4630-a38f-9a6ca2bde601')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:10:08 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200043,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:07','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:07','YYYY-MM-DD HH24:MI:SS'),100,200000,758,'HQ-41000-_-_-_-_','Y','HQ-Trade Revenue-_-_-_-_','4c1ad149-bcc7-467d-8bfc-67e1c74567b2')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:10:18 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200044,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:18','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:18','YYYY-MM-DD HH24:MI:SS'),100,200000,445,'HQ-58200-_-_-_-_','Y','HQ-Purchase price variance-_-_-_-_','5274fc63-f567-4933-89be-91a50acf8ea5')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:10:30 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200045,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:29','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:29','YYYY-MM-DD HH24:MI:SS'),100,200000,444,'HQ-58100-_-_-_-_','Y','HQ-Invoice price variance-_-_-_-_','9b74a853-ad13-4792-acf9-ce1f5a7067c3')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:10:41 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200046,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:41','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:41','YYYY-MM-DD HH24:MI:SS'),100,200000,447,'HQ-59100-_-_-_-_','Y','HQ-Trade discounts received-_-_-_-_','652d73a1-2c47-4d91-89b3-b93c129398ed')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:10:49 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200047,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:10:49','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:10:49','YYYY-MM-DD HH24:MI:SS'),100,200000,426,'HQ-59101-_-_-_-_','Y','HQ-Trade Discounts-_-_-_-_','0bcd8912-0b84-4f64-af24-382cf15c6735')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:00 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200048,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:00','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:00','YYYY-MM-DD HH24:MI:SS'),100,200000,50003,'HQ-58600-_-_-_-_','Y','HQ-Rate Variance-_-_-_-_','43e17565-7f42-4ed6-a47f-9c43d8ecd398')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:11 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200049,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:11','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:11','YYYY-MM-DD HH24:MI:SS'),100,200000,50017,'HQ-58800-_-_-_-_','Y','HQ-Average Cost Variance-_-_-_-_','928a6f49-b982-42af-be0a-45aa1249fded')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:22 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200050,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:22','YYYY-MM-DD HH24:MI:SS'),100,200000,200000,'HQ-58900-_-_-_-_','Y','HQ-Landed Cost Clearing-_-_-_-_','9fe2d70e-2f09-4c7d-b75d-4ee5a5fb0df9')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:33 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200051,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:33','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:33','YYYY-MM-DD HH24:MI:SS'),100,200000,439,'HQ-56100-_-_-_-_','Y','HQ-Inventory Shrinkage-_-_-_-_','9debdae9-349c-4bc6-9e44-a60f018d0429')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:46 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200052,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:46','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:46','YYYY-MM-DD HH24:MI:SS'),100,200000,508,'HQ-11100-_-_-_-_','Y','HQ-Checking Account-_-_-_-_','e68d8be4-24ff-425b-96d0-dfba116b48b4')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:11:58 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200053,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:11:58','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:11:58','YYYY-MM-DD HH24:MI:SS'),100,200000,509,'HQ-11110-_-_-_-_','Y','HQ-Checking In-Transfer-_-_-_-_','5c4a96a2-ddc6-444e-a2fe-d9f148c7e7fd')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:12:14 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200054,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:14','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:14','YYYY-MM-DD HH24:MI:SS'),100,200000,589,'HQ-21300-_-_-_-_','Y','HQ-Payment selection-_-_-_-_','3898e168-a978-4e3c-9c5b-03ec7d7daa89')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:12:27 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200055,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:27','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:27','YYYY-MM-DD HH24:MI:SS'),100,200000,511,'HQ-11130-_-_-_-_','Y','HQ-Checking Unallocated Receipts-_-_-_-_','64afd8d6-f875-43f1-972d-21eb7cc99d92')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:12:39 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200056,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:38','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:38','YYYY-MM-DD HH24:MI:SS'),100,200000,717,'HQ-82100-_-_-_-_','Y','HQ-Interest Expense-_-_-_-_','ae0acc58-fcbb-4931-800b-f99a37e06238')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:12:48 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200057,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:12:48','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:12:48','YYYY-MM-DD HH24:MI:SS'),100,200000,705,'HQ-80100-_-_-_-_','Y','HQ-Interest Income-_-_-_-_','c1f1a68e-4b3d-4096-a2fa-269626d91c6b')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:00 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200058,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:00','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:00','YYYY-MM-DD HH24:MI:SS'),100,200000,596,'HQ-21610-_-_-_-_','Y','HQ-Tax due-_-_-_-_','7c62099c-2acb-4fe6-b0af-9ab11e57f34e')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:12 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200059,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:12','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:12','YYYY-MM-DD HH24:MI:SS'),100,200000,534,'HQ-12610-_-_-_-_','Y','HQ-Tax credit A/R-_-_-_-_','1a4c6b05-ebb7-424b-8090-bfa982c9da5e')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:22 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200060,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:22','YYYY-MM-DD HH24:MI:SS'),100,200000,760,'HQ-74100-_-_-_-_','Y','HQ-Tax expense-_-_-_-_','edaed71e-9e74-46ca-b7fb-96bae8cb72d1')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:32 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200061,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:31','YYYY-MM-DD HH24:MI:SS'),100,200000,702,'HQ-79600-_-_-_-_','Y','HQ-Charge expense-_-_-_-_','56955cff-fc23-46ef-a9a9-677457733b1e')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:43 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200062,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:43','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:43','YYYY-MM-DD HH24:MI:SS'),100,200000,567,'HQ-17710-_-_-_-_','Y','HQ-Project asset-_-_-_-_','0ed7c0c8-57dd-4410-84a9-bed51045f3d6')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:13:55 PM CEST
+-- INSERT INTO C_ValidCombination (C_ValidCombination_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_AcctSchema_ID,Account_ID,Combination,IsFullyQualified,Description,C_ValidCombination_UU) VALUES (200063,11,11,'Y',TO_TIMESTAMP('2020-10-03 16:13:55','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:13:55','YYYY-MM-DD HH24:MI:SS'),100,200000,568,'HQ-17720-_-_-_-_','Y','HQ-Project WIP-_-_-_-_','7da2f078-2d87-4da0-9768-c8aee0ab9307')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 4:14:01 PM CEST
+-- INSERT INTO C_AcctSchema_Default (C_AcctSchema_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,W_Differences_Acct,P_Revenue_Acct,P_Expense_Acct,P_Asset_Acct,P_COGS_Acct,C_Receivable_Acct,C_Prepayment_Acct,V_Liability_Acct,V_Prepayment_Acct,PJ_Asset_Acct,NotInvoicedReceipts_Acct,Processing,P_PurchasePriceVariance_Acct,PayDiscount_Exp_Acct,WriteOff_Acct,PayDiscount_Rev_Acct,UnrealizedGain_Acct,UnrealizedLoss_Acct,RealizedGain_Acct,RealizedLoss_Acct,PJ_WIP_Acct,T_Expense_Acct,T_Due_Acct,T_Credit_Acct,B_InTransit_Acct,B_Asset_Acct,B_InterestRev_Acct,B_InterestExp_Acct,Ch_Expense_Acct,UnEarnedRevenue_Acct,P_InvoicePriceVariance_Acct,P_TradeDiscountRec_Acct,P_TradeDiscountGrant_Acct,B_PaymentSelect_Acct,B_UnallocatedCash_Acct,P_InventoryClearing_Acct,P_CostAdjustment_Acct,P_RateVariance_Acct,P_AverageCostVariance_Acct,C_AcctSchema_Default_UU,P_LandedCostClearing_Acct) VALUES (200000,11,0,'Y',TO_TIMESTAMP('2020-10-03 16:14:01','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 16:14:01','YYYY-MM-DD HH24:MI:SS'),100,200051,200043,200039,200038,200042,200034,200036,200035,200037,200062,200029,'N',200044,200031,200033,200032,200025,200026,200027,200028,200063,200060,200058,200059,200053,200052,200057,200056,200061,200030,200045,200046,200047,200054,200055,200041,200040,200048,200049,'05255bb9-df82-47c1-82d5-6af8d5106bdf',200050)
+-- ;
 
 -- Oct 3, 2020, 4:18:29 PM CEST
 INSERT INTO M_Product_Category_Acct (M_Product_Category_ID, C_AcctSchema_ID, AD_Client_ID, AD_Org_ID, IsActive, Created, CreatedBy, Updated, UpdatedBy, P_Revenue_Acct, P_Expense_Acct, P_CostAdjustment_Acct, P_InventoryClearing_Acct, P_Asset_Acct, P_CoGs_Acct, P_PurchasePriceVariance_Acct, P_InvoicePriceVariance_Acct, P_AverageCostVariance_Acct, P_TradeDiscountRec_Acct, P_TradeDiscountGrant_Acct, P_RateVariance_Acct, P_LandedCostClearing_Acct) SELECT p.M_Product_Category_ID, acct.C_AcctSchema_ID, p.AD_Client_ID, p.AD_Org_ID, 'Y', statement_timestamp(), 0, statement_timestamp(), 0, acct.P_Revenue_Acct, acct.P_Expense_Acct, acct.P_CostAdjustment_Acct, acct.P_InventoryClearing_Acct, acct.P_Asset_Acct, acct.P_CoGs_Acct, acct.P_PurchasePriceVariance_Acct, acct.P_InvoicePriceVariance_Acct, acct.P_AverageCostVariance_Acct, acct.P_TradeDiscountRec_Acct, acct.P_TradeDiscountGrant_Acct, acct.P_RateVariance_Acct, acct.P_LandedCostClearing_Acct FROM M_Product_Category p INNER JOIN C_AcctSchema_Default acct ON (p.AD_Client_ID=acct.AD_Client_ID) WHERE acct.C_AcctSchema_ID=200000 AND NOT EXISTS (SELECT * FROM M_Product_Category_Acct pa WHERE pa.M_Product_Category_ID=p.M_Product_Category_ID AND pa.C_AcctSchema_ID=acct.C_AcctSchema_ID)
@@ -671,19 +671,19 @@ UPDATE M_Warehouse_Acct SET M_Warehouse_Acct_UU='f1216443-eac4-47e7-a7cf-cc69db6
 ;
 
 UPDATE C_Conversion_Rate SET validfrom = to_date('2000-01-01','yyyy-mm-dd') WHERE C_Conversion_Rate_ID IN (135,136)
-;
-
--- Oct 3, 2020, 5:01:30 PM CEST
-INSERT INTO AD_UserQuery (AD_UserQuery_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,Name,AD_Table_ID,AD_Tab_ID,AD_UserQuery_UU,AD_Window_ID) VALUES (200000,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:01:29','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:01:29','YYYY-MM-DD HH24:MI:SS'),100,'Not Draft',635,662,'92b2d5dd-d670-4414-92a1-c189a921a281',294)
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:01:30 PM CEST
+-- INSERT INTO AD_UserQuery (AD_UserQuery_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,Name,AD_Table_ID,AD_Tab_ID,AD_UserQuery_UU,AD_Window_ID) VALUES (200000,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:01:29','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:01:29','YYYY-MM-DD HH24:MI:SS'),100,'Not Draft',635,662,'92b2d5dd-d670-4414-92a1-c189a921a281',294)
+-- ;
 
 -- Oct 3, 2020, 5:32:18 PM CEST
 UPDATE AD_UserQuery SET Code='DocStatus<^>!=<^>DR<^><^><^><^><~>IsActive<^>=<^>Y<^><^>AND<^><^>' WHERE AD_UserQuery_ID=200000
-;
-
--- Oct 3, 2020, 5:13:50 PM CEST
-INSERT INTO C_Order (C_Order_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,DocumentNo,DocStatus,DocAction,C_DocType_ID,C_DocTypeTarget_ID,IsApproved,IsCreditApproved,IsDelivered,IsInvoiced,IsPrinted,IsTransferred,DateOrdered,DatePromised,DateAcct,SalesRep_ID,C_PaymentTerm_ID,C_Currency_ID,InvoiceRule,FreightAmt,DeliveryViaRule,PriorityRule,TotalLines,GrandTotal,M_Warehouse_ID,M_PriceList_ID,Processing,C_BPartner_ID,AD_User_ID,ChargeAmt,Processed,C_BPartner_Location_ID,IsSOTrx,DeliveryRule,FreightCostRule,PaymentRule,IsDiscountPrinted,Posted,IsTaxIncluded,IsSelected,SendEMail,Bill_User_ID,Bill_BPartner_ID,CopyFrom,Bill_Location_ID,IsSelfService,C_ConversionType_ID,IsDropShip,IsPayScheduleValid,C_Order_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:13:50','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:13:50','YYYY-MM-DD HH24:MI:SS'),100,'8000','DR','CO',0,126,'N','N','N','N','N','N',TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),101,106,100,'D',0,'P','5',0,0,103,101,'N',114,103,0,'N',109,'N','A','I','P','Y','N','N','N','N',103,114,'N',109,'N',114,'N','N','133084b2-38de-4076-864c-b193ad0cc225')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:13:50 PM CEST
+-- INSERT INTO C_Order (C_Order_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,DocumentNo,DocStatus,DocAction,C_DocType_ID,C_DocTypeTarget_ID,IsApproved,IsCreditApproved,IsDelivered,IsInvoiced,IsPrinted,IsTransferred,DateOrdered,DatePromised,DateAcct,SalesRep_ID,C_PaymentTerm_ID,C_Currency_ID,InvoiceRule,FreightAmt,DeliveryViaRule,PriorityRule,TotalLines,GrandTotal,M_Warehouse_ID,M_PriceList_ID,Processing,C_BPartner_ID,AD_User_ID,ChargeAmt,Processed,C_BPartner_Location_ID,IsSOTrx,DeliveryRule,FreightCostRule,PaymentRule,IsDiscountPrinted,Posted,IsTaxIncluded,IsSelected,SendEMail,Bill_User_ID,Bill_BPartner_ID,CopyFrom,Bill_Location_ID,IsSelfService,C_ConversionType_ID,IsDropShip,IsPayScheduleValid,C_Order_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:13:50','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:13:50','YYYY-MM-DD HH24:MI:SS'),100,'8000','DR','CO',0,126,'N','N','N','N','N','N',TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),101,106,100,'D',0,'P','5',0,0,103,101,'N',114,103,0,'N',109,'N','A','I','P','Y','N','N','N','N',103,114,'N',109,'N',114,'N','N','133084b2-38de-4076-864c-b193ad0cc225')
+-- ;
 
 -- Oct 3, 2020, 5:14:33 PM CEST
 UPDATE C_Order SET M_PriceList_ID=102,Updated=TO_TIMESTAMP('2020-10-03 17:14:33','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_Order_ID=200002
@@ -691,11 +691,11 @@ UPDATE C_Order SET M_PriceList_ID=102,Updated=TO_TIMESTAMP('2020-10-03 17:14:33'
 
 -- Oct 3, 2020, 5:16:04 PM CEST
 UPDATE M_PriceList_Version SET IsActive='Y',Updated=TO_TIMESTAMP('2020-10-03 17:16:04','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE M_PriceList_Version_ID=102
-;
-
--- Oct 3, 2020, 5:16:19 PM CEST
-INSERT INTO C_OrderLine (C_OrderLine_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,Line,DateOrdered,DatePromised,M_Product_ID,C_UOM_ID,M_Warehouse_ID,QtyOrdered,QtyReserved,QtyDelivered,QtyInvoiced,C_Currency_ID,PriceList,PriceActual,C_Tax_ID,C_BPartner_ID,FreightAmt,C_BPartner_Location_ID,LineNetAmt,PriceLimit,Discount,M_AttributeSetInstance_ID,IsDescription,Processed,PriceEntered,QtyEntered,PriceCost,QtyLostSales,RRAmt,C_OrderLine_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:16:19','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:16:19','YYYY-MM-DD HH24:MI:SS'),100,200002,10,TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),123,100,103,10,0,0,0,100,60,36,104,114,0,109,360,24,40.00,0,'N','N',36,10,0,0,0,'0d8196ae-d638-4865-b8e5-aa1c26ca0aae')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:16:19 PM CEST
+-- INSERT INTO C_OrderLine (C_OrderLine_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,Line,DateOrdered,DatePromised,M_Product_ID,C_UOM_ID,M_Warehouse_ID,QtyOrdered,QtyReserved,QtyDelivered,QtyInvoiced,C_Currency_ID,PriceList,PriceActual,C_Tax_ID,C_BPartner_ID,FreightAmt,C_BPartner_Location_ID,LineNetAmt,PriceLimit,Discount,M_AttributeSetInstance_ID,IsDescription,Processed,PriceEntered,QtyEntered,PriceCost,QtyLostSales,RRAmt,C_OrderLine_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:16:19','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:16:19','YYYY-MM-DD HH24:MI:SS'),100,200002,10,TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),123,100,103,10,0,0,0,100,60,36,104,114,0,109,360,24,40.00,0,'N','N',36,10,0,0,0,'0d8196ae-d638-4865-b8e5-aa1c26ca0aae')
+-- ;
 
 -- Oct 3, 2020, 5:16:19 PM CEST
 UPDATE C_Order SET TotalLines=(SELECT COALESCE(SUM(LineNetAmt),0) FROM C_OrderLine il WHERE C_Order.C_Order_ID=il.C_Order_ID) WHERE C_Order_ID=200002
@@ -703,11 +703,11 @@ UPDATE C_Order SET TotalLines=(SELECT COALESCE(SUM(LineNetAmt),0) FROM C_OrderLi
 
 -- Oct 3, 2020, 5:16:19 PM CEST
 UPDATE C_Order SET GrandTotal=TotalLines+(SELECT COALESCE(SUM(TaxAmt),0) FROM C_OrderTax it WHERE C_Order.C_Order_ID=it.C_Order_ID) WHERE C_Order_ID=200002
-;
-
--- Oct 3, 2020, 5:16:31 PM CEST
-INSERT INTO C_OrderLine (C_OrderLine_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,Line,DateOrdered,DatePromised,M_Product_ID,C_UOM_ID,M_Warehouse_ID,QtyOrdered,QtyReserved,QtyDelivered,QtyInvoiced,C_Currency_ID,PriceList,PriceActual,C_Tax_ID,C_BPartner_ID,FreightAmt,C_BPartner_Location_ID,LineNetAmt,PriceLimit,Discount,M_AttributeSetInstance_ID,IsDescription,Processed,PriceEntered,QtyEntered,PriceCost,QtyLostSales,RRAmt,C_OrderLine_UU) VALUES (200003,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:16:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:16:31','YYYY-MM-DD HH24:MI:SS'),100,200002,20,TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),130,100,103,10,0,0,0,100,50,30,104,114,0,109,300,20,40.00,0,'N','N',30,10,0,0,0,'66b7002c-feba-4def-8bd2-619e52a32409')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:16:31 PM CEST
+-- INSERT INTO C_OrderLine (C_OrderLine_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,Line,DateOrdered,DatePromised,M_Product_ID,C_UOM_ID,M_Warehouse_ID,QtyOrdered,QtyReserved,QtyDelivered,QtyInvoiced,C_Currency_ID,PriceList,PriceActual,C_Tax_ID,C_BPartner_ID,FreightAmt,C_BPartner_Location_ID,LineNetAmt,PriceLimit,Discount,M_AttributeSetInstance_ID,IsDescription,Processed,PriceEntered,QtyEntered,PriceCost,QtyLostSales,RRAmt,C_OrderLine_UU) VALUES (200003,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:16:31','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:16:31','YYYY-MM-DD HH24:MI:SS'),100,200002,20,TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),130,100,103,10,0,0,0,100,50,30,104,114,0,109,300,20,40.00,0,'N','N',30,10,0,0,0,'66b7002c-feba-4def-8bd2-619e52a32409')
+-- ;
 
 -- Oct 3, 2020, 5:16:31 PM CEST
 UPDATE C_Order SET TotalLines=(SELECT COALESCE(SUM(LineNetAmt),0) FROM C_OrderLine il WHERE C_Order.C_Order_ID=il.C_Order_ID) WHERE C_Order_ID=200002
@@ -723,15 +723,15 @@ INSERT INTO AD_WF_Process (Created,Processing,Updated,Processed,IsActive,AD_Work
 
 -- Oct 3, 2020, 5:20:22 PM CEST
 UPDATE AD_WF_Process SET WFState='OR',Updated=TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Process_ID=200004
-;
-
--- Oct 3, 2020, 5:20:22 PM CEST
-INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (183,101,11,100,101,200012,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'2680a35c-0f94-430b-85e7-2a4932850c58')
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),200012,'PC',200004,259,183,200002,0.0,'9c4656a4-d20b-438c-9eae-1c6cf4612862')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:22 PM CEST
+-- INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (183,101,11,100,101,200012,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'2680a35c-0f94-430b-85e7-2a4932850c58')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:22','YYYY-MM-DD HH24:MI:SS'),200012,'PC',200004,259,183,200002,0.0,'9c4656a4-d20b-438c-9eae-1c6cf4612862')
+-- ;
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE AD_WF_Activity SET WFState='OR',Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Activity_ID=200012
@@ -751,15 +751,15 @@ UPDATE AD_WF_EventAudit SET WFState='CC', EventType='PX', TextMsg=NULL, ElapsedT
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE AD_WF_Activity SET Processed='Y',Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Activity_ID=200012
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (185,101,11,100,101,200013,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'59634df8-04cc-4fe5-9b3b-2d19c132d887')
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),200013,'PC',200004,259,185,200002,0.0,'35c60f8f-e874-4889-96b0-f8caf6f1b99b')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (185,101,11,100,101,200013,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'59634df8-04cc-4fe5-9b3b-2d19c132d887')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),200013,'PC',200004,259,185,200002,0.0,'35c60f8f-e874-4889-96b0-f8caf6f1b99b')
+-- ;
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE AD_WF_Activity SET WFState='OR',Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Activity_ID=200013
@@ -767,19 +767,19 @@ UPDATE AD_WF_Activity SET WFState='OR',Updated=TO_TIMESTAMP('2020-10-03 17:20:23
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE AD_WF_EventAudit SET WFState='OR', EventType='SC', TextMsg=NULL,Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_EventAudit_ID=200013
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO M_StorageReservation (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,M_AttributeSetInstance_ID,M_Warehouse_ID,M_Product_ID,Qty,Updated,UpdatedBy,IsSOTrx,M_StorageReservation_UU) VALUES (11,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'Y',0,103,123,0.0,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'N','202ee7de-9839-41fa-ac05-caf4a740442b')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO M_StorageReservation (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,M_AttributeSetInstance_ID,M_Warehouse_ID,M_Product_ID,Qty,Updated,UpdatedBy,IsSOTrx,M_StorageReservation_UU) VALUES (11,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'Y',0,103,123,0.0,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'N','202ee7de-9839-41fa-ac05-caf4a740442b')
+-- ;
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE C_OrderLine SET QtyReserved=10, LineNetAmt=360, Discount=40.00,Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_OrderLine_ID=200002
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO M_StorageReservation (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,M_AttributeSetInstance_ID,M_Warehouse_ID,M_Product_ID,Qty,Updated,UpdatedBy,IsSOTrx,M_StorageReservation_UU) VALUES (11,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'Y',0,103,130,0.0,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'N','6fc62202-3ef5-4a18-b4c9-bc09f9198689')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO M_StorageReservation (AD_Client_ID,AD_Org_ID,Created,CreatedBy,IsActive,M_AttributeSetInstance_ID,M_Warehouse_ID,M_Product_ID,Qty,Updated,UpdatedBy,IsSOTrx,M_StorageReservation_UU) VALUES (11,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'Y',0,103,130,0.0,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,'N','6fc62202-3ef5-4a18-b4c9-bc09f9198689')
+-- ;
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE C_OrderLine SET QtyReserved=10, LineNetAmt=300, Discount=40.00,Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_OrderLine_ID=200003
@@ -787,11 +787,11 @@ UPDATE C_OrderLine SET QtyReserved=10, LineNetAmt=300, Discount=40.00,Updated=TO
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 DELETE FROM C_OrderTax WHERE C_Order_ID=200002
-;
-
--- Oct 3, 2020, 5:20:23 PM CEST
-INSERT INTO C_OrderTax (AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,C_Tax_ID,TaxBaseAmt,TaxAmt,Processed,IsTaxIncluded,C_OrderTax_UU) VALUES (11,11,'Y',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,200002,104,660.0,0.0,'N','N','10464771-d9fa-4f4e-8ba2-a5ad1cd19751')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:23 PM CEST
+-- INSERT INTO C_OrderTax (AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_Order_ID,C_Tax_ID,TaxBaseAmt,TaxAmt,Processed,IsTaxIncluded,C_OrderTax_UU) VALUES (11,11,'Y',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,200002,104,660.0,0.0,'N','N','10464771-d9fa-4f4e-8ba2-a5ad1cd19751')
+-- ;
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE C_Order SET DocStatus='IP', C_DocType_ID=126, TotalLines=660.0, GrandTotal=660.0, Volume=0.0, Weight=0.0,Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_Order_ID=200002
@@ -807,15 +807,15 @@ UPDATE AD_WF_EventAudit SET WFState='CC', EventType='PX', TextMsg='8000: Grand T
 
 -- Oct 3, 2020, 5:20:23 PM CEST
 UPDATE AD_WF_Activity SET Processed='Y',Updated=TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Activity_ID=200013
-;
-
--- Oct 3, 2020, 5:20:24 PM CEST
-INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (186,101,11,100,101,200014,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'bb933a5d-dce5-4610-a12f-4041bca9b239')
-;
-
--- Oct 3, 2020, 5:20:24 PM CEST
-INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:24','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:24','YYYY-MM-DD HH24:MI:SS'),200014,'PC',200004,259,186,200002,0.0,'7afb7293-44f9-4efd-b225-8f6d3628efa9')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:24 PM CEST
+-- INSERT INTO AD_WF_Activity (AD_WF_Node_ID,AD_WF_Responsible_ID,AD_Org_ID,CreatedBy,AD_User_ID,AD_WF_Activity_ID,AD_WF_Process_ID,IsActive,Processed,Processing,WFState,Created,UpdatedBy,AD_Client_ID,Updated,AD_Workflow_ID,Priority,Record_ID,AD_Table_ID,AD_WF_Activity_UU) VALUES (186,101,11,100,101,200014,200004,'Y','N','N','ON',TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),100,11,TO_TIMESTAMP('2020-10-03 17:20:23','YYYY-MM-DD HH24:MI:SS'),116,0,200002,259,'bb933a5d-dce5-4610-a12f-4041bca9b239')
+-- ;-- 
+-- 
+-- -- Oct 3, 2020, 5:20:24 PM CEST
+-- INSERT INTO AD_WF_EventAudit (AD_User_ID,AD_WF_Responsible_ID,AD_Client_ID,IsActive,UpdatedBy,AD_Org_ID,Updated,CreatedBy,WFState,Created,AD_WF_EventAudit_ID,EventType,AD_WF_Process_ID,AD_Table_ID,AD_WF_Node_ID,Record_ID,ElapsedTimeMS,AD_WF_EventAudit_UU) VALUES (101,101,11,'Y',100,11,TO_TIMESTAMP('2020-10-03 17:20:24','YYYY-MM-DD HH24:MI:SS'),100,'ON',TO_TIMESTAMP('2020-10-03 17:20:24','YYYY-MM-DD HH24:MI:SS'),200014,'PC',200004,259,186,200002,0.0,'7afb7293-44f9-4efd-b225-8f6d3628efa9')
+-- ;
 
 -- Oct 3, 2020, 5:20:24 PM CEST
 UPDATE AD_WF_Activity SET WFState='OR',Updated=TO_TIMESTAMP('2020-10-03 17:20:24','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE AD_WF_Activity_ID=200014
@@ -891,11 +891,11 @@ UPDATE C_OrderLine SET QtyReserved=0.0, LineNetAmt=360, Discount=40.00,Updated=T
 
 -- Oct 3, 2020, 5:21:30 PM CEST
 UPDATE M_InOutLine SET C_OrderLine_ID=200002,Updated=TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE M_InOutLine_ID=106
-;
-
--- Oct 3, 2020, 5:21:30 PM CEST
-INSERT INTO M_MatchPO (M_MatchPO_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,M_InOutLine_ID,C_OrderLine_ID,M_Product_ID,DateTrx,Processing,Processed,Posted,Qty,C_InvoiceLine_ID,DocumentNo,DateAcct,M_AttributeSetInstance_ID,PriceMatchDifference,IsApproved,ProcessedOn,M_MatchPO_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),100,106,200002,123,TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'),'N','Y','N',10.0,106,'10000000',TO_TIMESTAMP('2002-09-07','YYYY-MM-DD'),0,0,'Y',1601738490317.3174,'45ee5d8a-c62d-44ce-bf2c-79b5c00d629e')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:21:30 PM CEST
+-- INSERT INTO M_MatchPO (M_MatchPO_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,M_InOutLine_ID,C_OrderLine_ID,M_Product_ID,DateTrx,Processing,Processed,Posted,Qty,C_InvoiceLine_ID,DocumentNo,DateAcct,M_AttributeSetInstance_ID,PriceMatchDifference,IsApproved,ProcessedOn,M_MatchPO_UU) VALUES (200002,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),100,106,200002,123,TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'),'N','Y','N',10.0,106,'10000000',TO_TIMESTAMP('2002-09-07','YYYY-MM-DD'),0,0,'Y',1601738490317.3174,'45ee5d8a-c62d-44ce-bf2c-79b5c00d629e')
+-- ;
 
 -- Oct 3, 2020, 5:21:30 PM CEST
 UPDATE C_OrderLine SET DateDelivered=TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'), DateInvoiced=TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'), QtyDelivered=10.0, QtyInvoiced=10.0, LineNetAmt=360, Discount=40.00, M_AttributeSetInstance_ID=0,Updated=TO_TIMESTAMP('2020-10-03 17:21:30','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_OrderLine_ID=200002
@@ -907,11 +907,11 @@ UPDATE C_OrderLine SET QtyReserved=0.0, LineNetAmt=300, Discount=40.00,Updated=T
 
 -- Oct 3, 2020, 5:21:35 PM CEST
 UPDATE M_InOutLine SET C_OrderLine_ID=200003,Updated=TO_TIMESTAMP('2020-10-03 17:21:35','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE M_InOutLine_ID=102
-;
-
--- Oct 3, 2020, 5:21:35 PM CEST
-INSERT INTO M_MatchPO (M_MatchPO_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,M_InOutLine_ID,C_OrderLine_ID,M_Product_ID,DateTrx,Processing,Processed,Posted,Qty,C_InvoiceLine_ID,DocumentNo,DateAcct,M_AttributeSetInstance_ID,PriceMatchDifference,ProcessedOn,M_MatchPO_UU) VALUES (200003,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:21:35','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:21:35','YYYY-MM-DD HH24:MI:SS'),100,102,200003,130,TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'),'N','Y','N',10.0,102,'10000001',TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),0,100.0,1601738495620.62,'561fc311-1055-4464-b988-27201e37486d')
-;
+;-- 
+-- 
+-- -- Oct 3, 2020, 5:21:35 PM CEST
+-- INSERT INTO M_MatchPO (M_MatchPO_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,M_InOutLine_ID,C_OrderLine_ID,M_Product_ID,DateTrx,Processing,Processed,Posted,Qty,C_InvoiceLine_ID,DocumentNo,DateAcct,M_AttributeSetInstance_ID,PriceMatchDifference,ProcessedOn,M_MatchPO_UU) VALUES (200003,11,11,'Y',TO_TIMESTAMP('2020-10-03 17:21:35','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2020-10-03 17:21:35','YYYY-MM-DD HH24:MI:SS'),100,102,200003,130,TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'),'N','Y','N',10.0,102,'10000001',TO_TIMESTAMP('2002-02-22','YYYY-MM-DD'),0,100.0,1601738495620.62,'561fc311-1055-4464-b988-27201e37486d')
+-- ;
 
 -- Oct 3, 2020, 5:21:36 PM CEST
 UPDATE C_OrderLine SET DateDelivered=TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'), DateInvoiced=TO_TIMESTAMP('2020-10-03','YYYY-MM-DD'), QtyDelivered=10.0, QtyInvoiced=10.0, LineNetAmt=300, Discount=40.00, M_AttributeSetInstance_ID=0,Updated=TO_TIMESTAMP('2020-10-03 17:21:36','YYYY-MM-DD HH24:MI:SS'),UpdatedBy=100 WHERE C_OrderLine_ID=200003

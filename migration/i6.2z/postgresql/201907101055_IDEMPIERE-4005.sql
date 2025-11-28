@@ -33,11 +33,11 @@ INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnN
 
 -- Jul 10, 2019, 10:32:09 AM CEST
 ALTER TABLE AD_UserPreference ADD COLUMN ViewFindResult CHAR(1) DEFAULT '0' NOT NULL
-;
-
--- Jul 10, 2019, 10:32:30 AM CEST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,MandatoryLogic,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (213966,0,'Threshold','Force grid view when Find panel closes if number of records exceed threshold',200174,'GridAfterFindThreshold',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2019-07-10 10:32:30','YYYY-MM-DD HH24:MI:SS'),0,TO_TIMESTAMP('2019-07-10 10:32:30','YYYY-MM-DD HH24:MI:SS'),0,203346,'Y','N','U','N','N','@ViewFindResult@ = 2','N','Y','ebc023d1-3d96-4761-ba09-39db3da385c0','N',0,'N','N','N','N')
-;
+;-- 
+-- 
+-- -- Jul 10, 2019, 10:32:30 AM CEST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,Description,AD_Table_ID,ColumnName,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,MandatoryLogic,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,FKConstraintType,IsHtml) VALUES (213966,0,'Threshold','Force grid view when Find panel closes if number of records exceed threshold',200174,'GridAfterFindThreshold',10,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2019-07-10 10:32:30','YYYY-MM-DD HH24:MI:SS'),0,TO_TIMESTAMP('2019-07-10 10:32:30','YYYY-MM-DD HH24:MI:SS'),0,203346,'Y','N','U','N','N','@ViewFindResult@ = 2','N','Y','ebc023d1-3d96-4761-ba09-39db3da385c0','N',0,'N','N','N','N')
+-- ;
 
 -- Jul 10, 2019, 10:32:31 AM CEST
 ALTER TABLE AD_UserPreference ADD COLUMN GridAfterFindThreshold NUMERIC(10) DEFAULT NULL 

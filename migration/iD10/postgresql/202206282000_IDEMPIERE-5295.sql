@@ -15,12 +15,12 @@ DROP CONSTRAINT t_trialbalance_pkey
 
 ALTER TABLE t_trialbalance
 ADD CONSTRAINT t_trialbalance_pkey PRIMARY KEY (AD_PInstance_ID, Fact_Acct_ID, Account_ID, AD_Org_ID)
-;
-
-
--- Jun 30, 2022, 2:08:29 PM IST
-INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214972,0,'Level no',753,'LevelNo','0',22,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-06-30 14:08:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-06-30 14:08:22','YYYY-MM-DD HH24:MI:SS'),100,1982,'Y','N','D','N','N','N','Y','f31683a0-bf6f-4294-ac14-23e77c01d2a0','Y',0,'N','N','N')
-;
+;-- 
+-- 
+-- 
+-- -- Jun 30, 2022, 2:08:29 PM IST
+-- INSERT INTO AD_Column (AD_Column_ID,Version,Name,AD_Table_ID,ColumnName,DefaultValue,FieldLength,IsKey,IsParent,IsMandatory,IsTranslated,IsIdentifier,SeqNo,IsEncrypted,AD_Reference_ID,AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,AD_Element_ID,IsUpdateable,IsSelectionColumn,EntityType,IsSyncDatabase,IsAlwaysUpdateable,IsAutocomplete,IsAllowLogging,AD_Column_UU,IsAllowCopy,SeqNoSelection,IsToolbarButton,IsSecure,IsHtml) VALUES (214972,0,'Level no',753,'LevelNo','0',22,'N','N','N','N','N',0,'N',11,0,0,'Y',TO_TIMESTAMP('2022-06-30 14:08:22','YYYY-MM-DD HH24:MI:SS'),100,TO_TIMESTAMP('2022-06-30 14:08:22','YYYY-MM-DD HH24:MI:SS'),100,1982,'Y','N','D','N','N','N','Y','f31683a0-bf6f-4294-ac14-23e77c01d2a0','Y',0,'N','N','N')
+-- ;
 
 
 -- Jun 30, 2022, 2:32:27 PM IST
