@@ -446,6 +446,7 @@ public class MLookupFactory
 					displayColumnSQL = Env.parseContext(Env.getCtx(), -1, displayColumnSQL, false, true);
 				overrideZoomWindow = rs.getInt(12);
 				infoWindowId = rs.getInt(13);
+				Z_ValueToDisplay_ID = rs.getInt(14);
 				loaded = true;
 			}
 		}
