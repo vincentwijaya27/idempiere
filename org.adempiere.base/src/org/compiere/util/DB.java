@@ -61,6 +61,7 @@ import org.compiere.model.SystemIDs;
 import org.compiere.print.MPrintFormat;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
+import org.idempiere.db.util.SQLFragment;
 
 /**
  *  Static methods for JDBC interface
@@ -339,7 +340,7 @@ public final class DB
 
 	/**
 	 *  Replace by {@link #isConnected()}
-	 * 
+	 *
 	 *  Is there a connection to the database ?
 	 *  @param createNew ignore
 	 *  @return true, if connected to database
@@ -355,26 +356,26 @@ public final class DB
 	 * Get auto commit connection from connection pool.
 	 * @return {@link Connection}
 	 */
-	public static Connection getConnection() 
+	public static Connection getConnection()
 	{
 		return getConnection(true);
 	}
-	
+
 	/**
 	 * Get auto or not auto commit connection from connection pool.<br/>
-	 * Usually, developer should use @{@link #getConnection()} instead to get auto commit connection 
+	 * Usually, developer should use @{@link #getConnection()} instead to get auto commit connection
 	 * and use {@link Trx} to works with not autoCommit connection.
 	 * @param autoCommit
 	 * @return {@link Connection}
 	 */
-	public static Connection getConnection(boolean autoCommit) 
+	public static Connection getConnection(boolean autoCommit)
 	{
 		return createConnection(autoCommit, Connection.TRANSACTION_READ_COMMITTED);
 	}
-	
+
 	/**
-	 * Replace by @{@link #getConnection()} 
-	 * 
+	 * Replace by @{@link #getConnection()}
+	 *
 	 * @return Connection (r/w)
 	 * @deprecated
 	 */
@@ -386,7 +387,7 @@ public final class DB
 
 	/**
 	 *  Replace by @{@link #getConnection()}
-	 *  
+	 *
 	 *	Return (pooled) r/w AutoCommit, Serializable connection.
 	 *	For Transaction control use Trx.getConnection()
 	 *  @param createNew ignore
@@ -400,9 +401,9 @@ public final class DB
 	}   //  getConnectionRW
 
 	/**
-	 *  Replace by @{@link #getConnection(boolean)}. 
+	 *  Replace by @{@link #getConnection(boolean)}.
 	 *  Note that this is intended for internal use only from the beginning.
-	 *  
+	 *
 	 *	Return everytime a new r/w no AutoCommit, Serializable connection.
 	 *	To be used to ID
 	 *  @return Connection (r/w)
@@ -416,7 +417,7 @@ public final class DB
 
 	/**
 	 *  Replace by @{@link #getConnection()}. Use {@link Trx} instead for readonly transaction.
-	 *  
+	 *
 	 *	Return read committed, read/only from pool.
 	 *  @return Connection (r/o)
 	 *  @deprecated
@@ -456,7 +457,7 @@ public final class DB
         {
             throw new IllegalStateException("DB.createConnection - @NoDBConnection@");
         }
-		
+
 		//hengsin: failed to set autocommit can lead to severe lock up of the system
         try {
 	        if (conn != null && conn.getAutoCommit() != autoCommit)
@@ -471,7 +472,7 @@ public final class DB
     /**
      *  Replace by {@link #createConnection(boolean, int)}.
      *  Use {@link Trx} instead for readonly transaction.
-     *  
+     *
      *  Create new Connection.
      *  The connection must be closed explicitly by the application.
      *
@@ -641,7 +642,7 @@ public final class DB
         	log.warning(msg);
         	return true;
         }
-        
+
         log.log(Level.SEVERE, msg);
         return false;
 	}   //  isDatabaseOK
@@ -723,7 +724,7 @@ public final class DB
 	{
 		return prepareStatement(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 	}	//	prepareStatement
-	
+
 	/**
 	 *	Prepare Statement.
 	 *  @param sql
@@ -772,7 +773,7 @@ public final class DB
 		//
 		return ProxyFactory.newCPreparedStatement(resultSetType, resultSetConcurrency, sql, connection);
 	}	//	prepareStatement
-	
+
 	/**
 	 *	Create Statement proxy
 	 *  @return Statement
@@ -859,8 +860,8 @@ public final class DB
 			pstmt.setClob(index, (Clob) param);
 		else if (param.getClass().getName().equals("oracle.sql.BLOB"))
 			pstmt.setObject(index, param);
-		else
-			throw new DBException("Unknown parameter type "+index+" - "+param);
+		else //let jdbc driver handle the rest of types
+			pstmt.setObject(index, param);
 	}
 
 	/**
@@ -1231,13 +1232,13 @@ public final class DB
         {
             return true;
         }
-        
+
 		try
 		{
 			Trx trx = Trx.get(trxName, false);
 			if (trx != null)
 				return trx.rollback(true);
-			
+
 			if (throwException)
             {
                 throw new IllegalStateException("Could not load transation with identifier: " + trxName);
@@ -1271,7 +1272,7 @@ public final class DB
 			stmt = ProxyFactory.newCPreparedStatement(info);
 			retValue = stmt.getRowSet();
 		} finally {
-			close(stmt);			
+			close(stmt);
 		}
 		return retValue;
 	}	//	getRowSet
@@ -1289,7 +1290,7 @@ public final class DB
     	int retValue = -1;
     	PreparedStatement pstmt = null;
     	ResultSet rs = null;
-    	Connection conn = null; 
+    	Connection conn = null;
     	if (trxName == null)
     		conn = DB.createConnection(true, Connection.TRANSACTION_READ_COMMITTED);
     	try
@@ -1299,7 +1300,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -1349,7 +1350,7 @@ public final class DB
 			conn.setReadOnly(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}		
+		}
 		try {
 			conn.close();
 		} catch (SQLException e) {
@@ -1428,7 +1429,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -1534,7 +1535,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -1640,7 +1641,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -1748,7 +1749,7 @@ public final class DB
 	{
 		return getKeyNamePairsEx(sql, optional, (Object[])null);
 	}
-	
+
 	/**
 	 * Get Array of Key Name Pairs
 	 * @param sql select with id / name as first / second column
@@ -1770,7 +1771,7 @@ public final class DB
 	{
 		return getKeyNamePairsEx(null, sql, optional, params);
 	}
-	
+
 	/**
 	 * Get Array of Key Name Pairs
 	 * @param trxName
@@ -1781,17 +1782,17 @@ public final class DB
 	 */
 	public static KeyNamePair[] getKeyNamePairs(String trxName, String sql, boolean optional, Object ... params)
 	{
-		try 
+		try
 		{
-			return getKeyNamePairsEx(trxName, sql, optional, params);		
-		} 
+			return getKeyNamePairsEx(trxName, sql, optional, params);
+		}
 		catch (Exception e)
         {
             log.log(Level.SEVERE, sql, getSQLException(e));
         }
 		return new KeyNamePair[0];
 	}
-	
+
 	/**
 	 * Get Array of Key Name Pairs
 	 * @param trxName
@@ -1804,7 +1805,7 @@ public final class DB
 	{
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        Connection conn = null; 
+        Connection conn = null;
     	if (trxName == null)
     		conn = DB.createConnection(true, Connection.TRANSACTION_READ_COMMITTED);
         ArrayList<KeyNamePair> list = new ArrayList<KeyNamePair>();
@@ -1897,7 +1898,7 @@ public final class DB
 		}
         return retValue;
 	}	//	getIDsEx
-	
+
 	/**
 	 * 	Is Sales Order Trx.<br/>
 	 * 	Assumes Sales Order. Query IsSOTrx value of table with where clause
@@ -1907,6 +1908,20 @@ public final class DB
 	 *	@return true (default) or false if tested that not SO
 	 */
 	public static boolean isSOTrx (String TableName, String whereClause, int windowNo)
+	{
+		return isSOTrx (TableName, whereClause, windowNo, List.of());
+	}
+
+	/**
+	 * 	Is Sales Order Trx.<br/>
+	 * 	Assumes Sales Order. Query IsSOTrx value of table with where clause
+	 *	@param TableName table
+	 *	@param whereClause where clause
+	 *  @param windowNo
+	 *  @param params list of parameters
+	 *	@return true (default) or false if tested that not SO
+	 */
+	public static boolean isSOTrx (String TableName, String whereClause, int windowNo, List<Object> params)
 	{
         if (TableName == null || TableName.length() == 0)
         {
@@ -1931,6 +1946,9 @@ public final class DB
         	try
         	{
         		pstmt = DB.prepareStatement (sql, null);
+        		if (params != null && !params.isEmpty()) {
+					setParameters(pstmt, params);
+				}
         		rs = pstmt.executeQuery ();
         		if (rs.next ())
         			isSOTrx = Boolean.valueOf("Y".equals(rs.getString(1)));
@@ -1996,8 +2014,20 @@ public final class DB
 	 * @param whereClause
 	 * @return true (default) or false if tested that not SO
 	 */
-	public static boolean isSOTrx (String TableName, String whereClause) {
-		return isSOTrx (TableName, whereClause, -1);
+	public static boolean isSOTrx (String TableName, String whereClause)
+	{
+		return isSOTrx (TableName, whereClause, List.of());
+	}
+
+	/**
+	 * Delegate to {@link #isSOTrx(String, String, int)} with -1 for windowNo parameter.
+	 * @param TableName
+	 * @param whereClause
+	 * @param params list of parameters
+	 * @return true (default) or false if tested that not SO
+	 */
+	public static boolean isSOTrx (String TableName, String whereClause, List<Object> params) {
+		return isSOTrx (TableName, whereClause, -1, params);
 	}
 
 	/**
@@ -2284,7 +2314,7 @@ public final class DB
 		//
 		return out.toString();
 	}	//	TO_STRING
-	
+
 	/**
 	 * 	Return string as JSON object for INSERT statements with correct precision
 	 *	@param value
@@ -2294,7 +2324,7 @@ public final class DB
 	{
 		return s_cc.getDatabase().TO_JSON(value);
 	}
-	
+
 	/**
 	 *	@return string with right casting for JSON inserts
 	 */
@@ -2528,7 +2558,7 @@ public final class DB
 
 	/**
 	 * Insert selection into T_Selection table.<br/>
-	 * saveKeys is map with rowID as key and list of viewID as value. 
+	 * saveKeys is map with rowID as key and list of viewID as value.
 	 * @param AD_PInstance_ID
 	 * @param saveKeys - Collection of KeyNamePair
 	 * @param trxName
@@ -2542,7 +2572,7 @@ public final class DB
 
 	/**
 	 * Insert selection into T_Selection table.<br/>
-	 * saveKeys is map with rowID as key and list of viewID as value. 
+	 * saveKeys is map with rowID as key and list of viewID as value.
 	 * @param AD_PInstance_ID
 	 * @param saveKeys can receive a Collection of KeyNamePair (IDs) or ValueNamePair (UUIDs)
 	 * @param trxName
@@ -2575,7 +2605,7 @@ public final class DB
 				insert.append(DB.TO_STRING(selectedId.toString()));
 			}
 			insert.append(", ");
-			
+
 			String viewIDValue = saveKey.getName();
 			// when no process have viewID or this process have no viewID or value of viewID is null
 			if (viewIDValue == null){
@@ -2583,7 +2613,7 @@ public final class DB
 			}else{
 				insert.append(DB.TO_STRING(viewIDValue));
 			}
-			
+
 			insert.append(" FROM DUAL ");
 
 			if (counter >= 1000)
@@ -2602,7 +2632,7 @@ public final class DB
 
 	private static boolean m_isUUIDVerified = false;
 	private static boolean m_isUUIDSupported = false;
-	
+
 	/**
 	 * Is DB support generate_uuid function
 	 * @return true if current db have working generate_uuid function. generate_uuid doesn't work on 64 bit postgresql
@@ -2688,7 +2718,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -2733,7 +2763,7 @@ public final class DB
 	}
 
     /**
-     * Get a list of object list from sql (one object list per each row, and in the object list, one object per each column in the select clause), 
+     * Get a list of object list from sql (one object list per each row, and in the object list, one object per each column in the select clause),
      * column indexing starts with 0.<br/>
      * WARNING: This method must be used just for queries returning few records, using it for many records implies heavy memory consumption
      * @param trxName optional transaction name
@@ -2756,7 +2786,7 @@ public final class DB
     			conn.setAutoCommit(false);
     			conn.setReadOnly(true);
     		}
-    		
+
     		if (conn != null)
     			pstmt = prepareStatement(conn, sql);
     		else
@@ -2865,33 +2895,48 @@ public final class DB
 		//
 		return ProxyFactory.newCPreparedStatement(resultSetType, resultSetConcurrency, sql, trxName);
 	}
-	
+
+	/**
+	 * Create IN clause for csv value
+	 * @param columnName
+	 * @param csv comma separated value
+	 * @return IN clause
+	 * @deprecated use inFilterForCSV instead
+	 */
+	@Deprecated(since="13", forRemoval=true)
+	public static String inClauseForCSV(String columnName, String csv)
+	{
+		return inClauseForCSV(columnName, csv, false);
+	}
+
 	/**
 	 * Create IN clause for csv value
 	 * @param columnName
 	 * @param csv comma separated value
 	 * @return IN clause
 	 */
-	public static String inClauseForCSV(String columnName, String csv) 
+	public static SQLFragment inFilterForCSV(String columnName, String csv)
 	{
-		return inClauseForCSV(columnName, csv, false);
+		return inFilterForCSV(columnName, csv, false);
 	}
-	
+
 	/**
 	 * Create IN clause for csv value
 	 * @param columnName
 	 * @param csv comma separated value
 	 * @param isNotClause true to append NOT before IN
 	 * @return IN clause
+	 * @deprecated use inFilterForCSV instead
 	 */
-	public static String inClauseForCSV(String columnName, String csv, boolean isNotClause) 
+	@Deprecated(since="13", forRemoval=true)
+	public static String inClauseForCSV(String columnName, String csv, boolean isNotClause)
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append(columnName);
-		
+
 		if(isNotClause)
 			builder.append(" NOT ");
-		
+
 		builder.append(" IN (");
 		String[] values = csv.split("[,]");
 		for(int i = 0; i < values.length; i++)
@@ -2899,13 +2944,13 @@ public final class DB
 			if (i > 0)
 				builder.append(",");
 			String key = values[i];
-			if (columnName.endsWith("_ID")) 
+			if (columnName.endsWith("_ID"))
 			{
 				builder.append(key);
 			}
 			else
 			{
-				if (key.startsWith("\"") && key.endsWith("\"")) 
+				if (key.startsWith("\"") && key.endsWith("\""))
 				{
 					key = key.substring(1, key.length()-1);
 				}
@@ -2915,41 +2960,124 @@ public final class DB
 		builder.append(")");
 		return builder.toString();
 	}
-	
+
+	/**
+	 * Create IN clause for csv value
+	 * @param columnName
+	 * @param csv
+	 * @param isNotClause
+	 * @return sql filter with IN clause
+	 */
+	public static SQLFragment inFilterForCSV(String columnName, String csv, boolean isNotClause)
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append(columnName);
+		List<Object> params = new ArrayList<>();
+
+		if(isNotClause)
+			builder.append(" NOT");
+
+		builder.append(" IN (");
+		String[] values = csv.split("[,]");
+		for(int i = 0; i < values.length; i++)
+		{
+			String key = values[i];
+			if (i > 0)
+				builder.append(",");
+			if ("null".equalsIgnoreCase(key.trim())) {
+				builder.append("NULL");
+				continue;
+			}
+			if (columnName.endsWith("_ID"))
+			{
+				params.add(Integer.valueOf(key.trim()));
+			}
+			else
+			{
+				if (key.startsWith("\"") && key.endsWith("\""))
+				{
+					key = key.substring(1, key.length()-1);
+				}
+				//empty string means NULL in this context
+				if (Util.isEmpty(key)) {
+					builder.append("NULL");
+					continue;
+				} else {
+					params.add(key);
+				}
+			}
+			builder.append("?");
+		}
+		builder.append(")");
+		return new SQLFragment(builder.toString(), params);
+	}
+
+
 	/**
 	 * Create subset clause for csv value (i.e columnName is a subset of the csv value set)
 	 * @param columnName
 	 * @param csv
 	 * @return subset sql clause
+	 * @deprecated use subsetFilterForCSV instead
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since="13", forRemoval=true)
 	public static String subsetClauseForCSV(String columnName, String csv)
 	{
 		return getDatabase().subsetClauseForCSV(columnName, csv);
 	}
-	
+
+	/**
+	 * Create intersect clause for csv value (i.e columnName is an intersect with the csv value set)
+	 * @param columnName
+	 * @param csv
+	 * @return intersect sql clause
+	 * @deprecated use intersectFilterForCSV instead
+	 */
+	@Deprecated(since="13", forRemoval=true)
+	public static String intersectClauseForCSV(String columnName, String csv)
+	{
+		return intersectClauseForCSV(columnName, csv, false);
+	}
+
 	/**
 	 * Create intersect clause for csv value (i.e columnName is an intersect with the csv value set)
 	 * @param columnName
 	 * @param csv
 	 * @return intersect sql clause
 	 */
-	public static String intersectClauseForCSV(String columnName, String csv)
+	public static SQLFragment intersectFilterForCSV(String columnName, String csv)
 	{
-		return intersectClauseForCSV(columnName, csv, false);
+		return intersectFilterForCSV(columnName, csv, false);
 	}
-	
+
 	/**
 	 * Create intersect clause for csv value (i.e columnName is an intersect with the csv value set)
 	 * @param columnName
 	 * @param csv
 	 * @param isNotClause true to append NOT before the intersect clause
 	 * @return intersect sql clause
+	 * @deprecated use intersectFilterForCSV instead
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since="13", forRemoval=true)
 	public static String intersectClauseForCSV(String columnName, String csv, boolean isNotClause)
 	{
 		return getDatabase().intersectClauseForCSV(columnName, csv, isNotClause);
 	}
-	
+
+	/**
+	 * Create intersect clause for csv value (i.e columnName is an intersect with the csv value set)
+	 * @param columnName
+	 * @param csv
+	 * @param isNotClause
+	 * @return intersect sql clause
+	 */
+	public static SQLFragment intersectFilterForCSV(String columnName, String csv, boolean isNotClause)
+	{
+		return getDatabase().intersectFilterForCSV(columnName, csv, isNotClause);
+	}
+
 	/**
 	 * Is sql a SELECT statement
 	 * @param sql

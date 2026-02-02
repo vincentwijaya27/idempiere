@@ -71,6 +71,7 @@ import org.compiere.model.MMatchInv;
 import org.compiere.model.MOrder;
 import org.compiere.model.MOrderLandedCost;
 import org.compiere.model.MOrderLine;
+import org.compiere.model.MOrgInfo;
 import org.compiere.model.MPriceList;
 import org.compiere.model.MPriceListVersion;
 import org.compiere.model.MProduct;
@@ -4944,34 +4945,12 @@ public class BackDateAveragePOCostingTest extends AbstractTestCase {
 			assertNotNull(cd, "MCostDetail not found for shipment line");
 			validateCostDetail(cd, shipmentLine1.getParent().getDateAcct(), false, new BigDecimal("6.00"));
 			
-			// Physical Inventory (Back-Date)			
-			MInventory inventory = new MInventory(Env.getCtx(), 0, getTrxName());
-			inventory.setC_DocType_ID(DictionaryIDs.C_DocType.MATERIAL_PHYSICAL_INVENTORY.id);
-			inventory.setMovementDate(backDate2);
-			inventory.saveEx();
-			
-			MInventoryLine inventoryLine = new MInventoryLine(Env.getCtx(), 0, getTrxName());
-			inventoryLine.setM_Inventory_ID(inventory.get_ID());
-			inventoryLine.setM_Product_ID(product.getM_Product_ID());
-			inventoryLine.setM_Locator_ID(DictionaryIDs.M_Locator.HQ.id);
+			// Physical Inventory (Back-Date)
 			BigDecimal QtyOnHand = MStorageOnHand.getQtyOnHandForLocatorWithASIMovementDate(
-					inventoryLine.getM_Product_ID(), inventoryLine.getM_Locator_ID(), 
-					inventoryLine.getM_AttributeSetInstance_ID(), inventory.getMovementDate(), getTrxName());
-			inventoryLine.setQtyBook(QtyOnHand);
+					product.getM_Product_ID(), DictionaryIDs.M_Locator.HQ.id, 
+					0, backDate2, getTrxName());
+			MInventoryLine inventoryLine = createPhysicalInventory(backDate2, product.getM_Product_ID(), QtyOnHand, new BigDecimal("6.00"));
 			assertEquals(new BigDecimal("10.00").setScale(2), inventoryLine.getQtyBook().setScale(2), "Unexpected Quantity Book");
-			inventoryLine.setQtyCount(new BigDecimal("6.00"));
-			inventoryLine.saveEx();
-			
-			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(inventory, DocAction.ACTION_Complete);
-			inventory.load(getTrxName());
-			assertFalse(info.isError(), info.getSummary());
-			assertEquals(DocAction.STATUS_Completed, inventory.getDocStatus(), "Unexpected Document Status");
-			if (!inventory.isPosted()) {
-				String error = DocumentEngine.postImmediate(Env.getCtx(), inventory.getAD_Client_ID(), inventory.get_Table_ID(), inventory.get_ID(), false, getTrxName());
-				assertTrue(error == null, error);
-			}
-			inventory.load(getTrxName());
-			assertTrue(inventory.isPosted());
 			
 			cd = MCostDetail.get(Env.getCtx(), "M_InventoryLine_ID=?", inventoryLine.getM_InventoryLine_ID(), 0, as.get_ID(), getTrxName());
 			assertNotNull(cd, "MCostDetail not found for inventory line");
@@ -7987,6 +7966,1775 @@ public class BackDateAveragePOCostingTest extends AbstractTestCase {
 		}
 	}
 	
+	/**
+	 * IDEMPIERE-6702
+	 * PO1 Qty=10
+	 * MR1 Qty=10
+	 * SO1 Qty=10
+	 * SH1 Qty=10
+	 * SO2 Qty=10
+	 * PO2 Qty=10 (Generate PO from Sales Order) - Drop Shipment
+	 * MR2 Qty=10
+	 * MR2 (Reverse-Correct)
+	 */
+	@Test
+	public void testDropShipment() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testDropShipment", new BigDecimal(5));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate = new Timestamp(cal.getTimeInMillis());
+			
+			// PO1 & MR1
+			createPOAndMRForProduct(backDate, product.get_ID(), new BigDecimal(10), new BigDecimal(5));
+			
+			// SO1 & SH1
+			createSOAndSHForProduct(backDate, product.get_ID(), new BigDecimal(10), new BigDecimal(5));
+			
+			// SO2
+			MOrder salesOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			salesOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.JOE_BLOCK.id));
+			salesOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.STANDARD_ORDER.id);
+			salesOrder.setIsSOTrx(true);
+			salesOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			salesOrder.setDocStatus(DocAction.STATUS_Drafted);
+			salesOrder.setDocAction(DocAction.ACTION_Complete);
+			salesOrder.setDateAcct(backDate);
+			salesOrder.setDateOrdered(backDate);
+			salesOrder.setDatePromised(backDate);		
+			salesOrder.saveEx();
+
+			MOrderLine salesOrderLine = new MOrderLine(salesOrder);
+			salesOrderLine.setLine(10);
+			salesOrderLine.setProduct(new MProduct(Env.getCtx(), product.get_ID(), getTrxName()));
+			salesOrderLine.setQty(new BigDecimal(10));
+			salesOrderLine.setDatePromised(backDate);
+			salesOrderLine.setPrice(new BigDecimal(5));
+			salesOrderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(salesOrder, DocAction.ACTION_Complete);
+			salesOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, salesOrder.getDocStatus());
+			
+			// PO2
+			MOrder purchaseOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			purchaseOrder.setClientOrg(salesOrder.getAD_Client_ID(), salesOrder.getAD_Org_ID());
+			purchaseOrder.setLink_Order_ID(salesOrder.getC_Order_ID());
+			purchaseOrder.setIsSOTrx(false);
+			purchaseOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			purchaseOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			purchaseOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			purchaseOrder.setDocStatus(DocAction.STATUS_Drafted);
+			purchaseOrder.setDocAction(DocAction.ACTION_Complete);
+			purchaseOrder.setDateAcct(today);
+			purchaseOrder.setDateOrdered(today);
+			purchaseOrder.setDatePromised(today);
+			purchaseOrder.setIsDropShip(true);
+			purchaseOrder.setDropShip_BPartner_ID(salesOrder.getC_BPartner_ID());
+			purchaseOrder.setDropShip_Location_ID(salesOrder.getC_BPartner_Location_ID());
+			purchaseOrder.setDropShip_User_ID(salesOrder.getAD_User_ID());
+			MOrgInfo orginfo = MOrgInfo.get(Env.getCtx(), purchaseOrder.getAD_Org_ID(), getTrxName());
+			if (orginfo != null && orginfo.getDropShip_Warehouse_ID() > 0) {
+				purchaseOrder.setM_Warehouse_ID(orginfo.getDropShip_Warehouse_ID());
+			}
+			purchaseOrder.saveEx();
+			
+			salesOrder.setLink_Order_ID(purchaseOrder.getC_Order_ID());
+			salesOrder.saveEx();
+
+			MOrderLine purchaseOrderLine = new MOrderLine(purchaseOrder);
+			purchaseOrderLine.setLink_OrderLine_ID(salesOrderLine.getC_OrderLine_ID());
+			purchaseOrderLine.setLine(10);
+			purchaseOrderLine.setProduct(new MProduct(Env.getCtx(), product.get_ID(), getTrxName()));
+			purchaseOrderLine.setQty(new BigDecimal(10));
+			purchaseOrderLine.setDatePromised(today);
+			purchaseOrderLine.setPrice(new BigDecimal(5));
+			purchaseOrderLine.saveEx();
+			
+			salesOrderLine.setLink_OrderLine_ID(purchaseOrderLine.getC_OrderLine_ID());
+			salesOrderLine.saveEx();			
+			
+			info = MWorkflow.runDocumentActionWorkflow(purchaseOrder, DocAction.ACTION_Complete);
+			purchaseOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, purchaseOrder.getDocStatus());
+
+			// MR2
+			MInOutLine rceiptLine = createMRForPO(purchaseOrderLine, today, new BigDecimal(10));
+			
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("0").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// MR2 (Reverse-Correct)
+			reverseInOut(rceiptLine, false);
+			
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6751
+	 * MR Qty=1, Date1
+	 * Physical Inventory 1 Qty=0, Date2
+	 * Physical Inventory 1 Reverse-Correct
+	 * Physical Inventory 2, Date1
+	 */
+	@Test
+	public void testReverseCorrectInventory() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testReverseCorrectInventory", new BigDecimal(5));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate  = new Timestamp(cal.getTimeInMillis());
+			
+			// MR
+			MInOutLine receiptLine = createPOAndMRForProduct(backDate, product.getM_Product_ID(), new BigDecimal(1), new BigDecimal(5));
+			MCostDetail cd = MCostDetail.get(Env.getCtx(), "C_OrderLine_ID=?", receiptLine.getC_OrderLine_ID(), 0, as.get_ID(), getTrxName());
+			assertNotNull(cd, "MCostDetail not found for receipt line");
+			validateCostDetail(cd, receiptLine.getParent().getDateAcct(), true, new BigDecimal("5.00"));
+			
+			// Physical Inventory 1
+			MInventoryLine inventoryLine = createPhysicalInventory(today, product.getM_Product_ID(), new BigDecimal(1), BigDecimal.ZERO);
+			
+			// Physical Inventory 1 Reversal
+			MInventoryLine reversalInventoryLine = reverseInventory(inventoryLine, false);
+					
+			// Physical Inventory 2
+			createPhysicalInventory(backDate, product.getM_Product_ID(), new BigDecimal(1), BigDecimal.ZERO);
+			
+			// Physical Inventory 1
+			MInventory inventory = inventoryLine.getParent();
+			inventory.load(getTrxName());
+			if (!inventory.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), inventory.getAD_Client_ID(), inventory.get_Table_ID(), inventory.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			inventory.load(getTrxName());
+			assertTrue(inventory.isPosted());
+			
+			// Physical Inventory 1 Reversal
+			MInventory reversalInventory = reversalInventoryLine.getParent();
+			reversalInventory.load(getTrxName());
+			if (!reversalInventory.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), reversalInventory.getAD_Client_ID(), reversalInventory.get_Table_ID(), reversalInventory.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			reversalInventory.load(getTrxName());
+			assertTrue(reversalInventory.isPosted());
+			
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock = 7 (Date1)
+	 * PO Qty=20, Price=3.15 (Date2)
+	 * MR Qty=19, Stock/Costing Qty=26 (Date2)
+	 * SH Qty=2, Stock/Costing Qty=24 (Date2)
+	 * PI Qty=20, Stock/Costing Qty=24 (Date2)
+	 */
+	@Test
+	public void testPartialMRShipment() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testPartialMRShipment", new BigDecimal(3.15));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase Order
+			MOrder order = new MOrder(Env.getCtx(), 0, getTrxName());
+			order.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			order.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			order.setIsSOTrx(false);
+			order.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			order.setDocStatus(DocAction.STATUS_Drafted);
+			order.setDocAction(DocAction.ACTION_Complete);
+			order.setDateAcct(backDate2);
+			order.setDateOrdered(backDate2);
+			order.setDatePromised(backDate2);		
+			order.saveEx();
+
+			MOrderLine orderLine = new MOrderLine(order);
+			orderLine.setLine(10);
+			orderLine.setProduct(product);
+			orderLine.setQty(new BigDecimal(20));
+			orderLine.setDatePromised(backDate2);
+			orderLine.setPrice(new BigDecimal(3.15));
+			orderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(order, DocAction.ACTION_Complete);
+			order.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, order.getDocStatus());
+
+			// Material Receipt
+			createMRForPO(orderLine, backDate2, new BigDecimal(19));
+			
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+
+			// Shipment
+			createSOAndSHForProduct(backDate2, product.get_ID(), new BigDecimal(2), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase invoice
+			createInvoiceForPO(orderLine, backDate2, orderLine.getQtyOrdered());
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock = 7 (Date1)
+	 * PO Qty=20, Price=3.15 (Date2)
+	 * MR1 Qty=19, Stock/Costing Qty=26 (Date2)
+	 * MR2 Qty=1, Stock/Costing Qty=27 (Date 2)
+	 * SH Qty=2, Stock/Costing Qty=25 (Date2)
+	 * PI Qty=20, Stock/Costing Qty=25 (Date2)
+	 */
+	@Test
+	public void testPartialMultiMRShipment() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testPartialMultiMRShipment", new BigDecimal(3.15));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase Order
+			MOrder order = new MOrder(Env.getCtx(), 0, getTrxName());
+			order.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			order.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			order.setIsSOTrx(false);
+			order.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			order.setDocStatus(DocAction.STATUS_Drafted);
+			order.setDocAction(DocAction.ACTION_Complete);
+			order.setDateAcct(backDate2);
+			order.setDateOrdered(backDate2);
+			order.setDatePromised(backDate2);		
+			order.saveEx();
+
+			MOrderLine orderLine = new MOrderLine(order);
+			orderLine.setLine(10);
+			orderLine.setProduct(product);
+			orderLine.setQty(new BigDecimal(20));
+			orderLine.setDatePromised(backDate2);
+			orderLine.setPrice(new BigDecimal(3.15));
+			orderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(order, DocAction.ACTION_Complete);
+			order.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, order.getDocStatus());
+
+			// Material Receipt 1
+			createMRForPO(orderLine, backDate2, new BigDecimal(19));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Material Receipt 2
+			createMRForPO(orderLine, backDate2, new BigDecimal(1));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("27").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+
+			// Shipment
+			createSOAndSHForProduct(backDate2, product.get_ID(), new BigDecimal(2), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase invoice
+			createInvoiceForPO(orderLine, backDate2, orderLine.getQtyOrdered());
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock Product1=7, Product2=5 (Date1)
+	 * PO Product1 Qty=20, Product2 Qty=10 (Date2)
+	 * MR Product1 Qty=19, Stock/Costing Qty=26, Product2 Qty=5, Stock/Costing Qty=10 (Date2)
+	 * SH Product1 Qty=2, Stock/Costing Qty=24, Product2 Qty=2, Stock/Costing Qty=8 (Date2)
+	 * PI Product1 Qty=20, Stock/Costing Qty=24, Product2 Qty=10, Stock/Costing Qty=8 (Date2)
+	 */
+	@Test
+	public void testPartialMRShipmentWithMultiProductLine() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product1 = createProduct("testPartialMRShipmentWithMultiProductLine1", new BigDecimal(3.15));
+			mockProductGet(productMock, product1);
+			MProduct product2 = createProduct("testPartialMRShipmentWithMultiProductLine2", new BigDecimal(3));
+			mockProductGet(productMock, product2);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product1.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product1.set_TrxName(getTrxName());
+			MCost cost1 = product1.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			createPOAndMRForProduct(backDate1, product2.getM_Product_ID(), new BigDecimal(5), new BigDecimal(3));
+			product2.set_TrxName(getTrxName());
+			MCost cost2 = product2.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("5").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase Order
+			MOrder purchaseOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			purchaseOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			purchaseOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			purchaseOrder.setIsSOTrx(false);
+			purchaseOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			purchaseOrder.setDocStatus(DocAction.STATUS_Drafted);
+			purchaseOrder.setDocAction(DocAction.ACTION_Complete);
+			purchaseOrder.setDateAcct(backDate2);
+			purchaseOrder.setDateOrdered(backDate2);
+			purchaseOrder.setDatePromised(backDate2);		
+			purchaseOrder.saveEx();
+
+			MOrderLine purchaseOrderLine1 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine1.setLine(10);
+			purchaseOrderLine1.setProduct(product1);
+			purchaseOrderLine1.setQty(new BigDecimal(20));
+			purchaseOrderLine1.setDatePromised(backDate2);
+			purchaseOrderLine1.setPrice(new BigDecimal(3.15));
+			purchaseOrderLine1.saveEx();
+			
+			MOrderLine purchaseOrderLine2 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine2.setLine(20);
+			purchaseOrderLine2.setProduct(product2);
+			purchaseOrderLine2.setQty(new BigDecimal(10));
+			purchaseOrderLine2.setDatePromised(backDate2);
+			purchaseOrderLine2.setPrice(new BigDecimal(3));
+			purchaseOrderLine2.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(purchaseOrder, DocAction.ACTION_Complete);
+			purchaseOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, purchaseOrder.getDocStatus());
+
+			// Material Receipt
+			MInOut receipt = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt.setDocStatus(DocAction.STATUS_Drafted);
+			receipt.setDocAction(DocAction.ACTION_Complete);
+			receipt.saveEx();
+
+			MInOutLine receiptLine1 = new MInOutLine(receipt);
+			receiptLine1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(19));
+			receiptLine1.setQty(new BigDecimal(19));
+			receiptLine1.saveEx();
+			
+			MInOutLine receiptLine2 = new MInOutLine(receipt);
+			receiptLine2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receiptLine2.setQty(new BigDecimal(5));
+			receiptLine2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt, DocAction.ACTION_Complete);
+			receipt.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt.getDocStatus());
+			if (!receipt.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt.getAD_Client_ID(), receipt.get_Table_ID(), receipt.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt.load(getTrxName());
+			assertTrue(receipt.isPosted());
+			
+			MMatchInv[] miList = MMatchInv.getInOut(Env.getCtx(), receipt.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("10").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+
+			// Shipment
+			MOrder salesOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			salesOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.JOE_BLOCK.id));
+			salesOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.STANDARD_ORDER.id);
+			salesOrder.setIsSOTrx(true);
+			salesOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			salesOrder.setDocStatus(DocAction.STATUS_Drafted);
+			salesOrder.setDocAction(DocAction.ACTION_Complete);
+			salesOrder.setDateAcct(backDate2);
+			salesOrder.setDateOrdered(backDate2);
+			salesOrder.setDatePromised(backDate2);		
+			salesOrder.saveEx();
+
+			MOrderLine salesOrderLine1 = new MOrderLine(salesOrder);
+			salesOrderLine1.setLine(10);
+			salesOrderLine1.setProduct(product1);
+			salesOrderLine1.setQty(new BigDecimal(2));
+			salesOrderLine1.setDatePromised(backDate2);
+			salesOrderLine1.setPrice(new BigDecimal(3.15));
+			salesOrderLine1.saveEx();
+			
+			MOrderLine salesOrderLine2 = new MOrderLine(salesOrder);
+			salesOrderLine2.setLine(20);
+			salesOrderLine2.setProduct(product2);
+			salesOrderLine2.setQty(new BigDecimal(2));
+			salesOrderLine2.setDatePromised(backDate2);
+			salesOrderLine2.setPrice(new BigDecimal(3));
+			salesOrderLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(salesOrder, DocAction.ACTION_Complete);
+			salesOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, salesOrder.getDocStatus());		
+			
+			MInOut shipment = new MInOut(salesOrder, DictionaryIDs.C_DocType.MM_SHIPMENT.id, salesOrder.getDateOrdered());
+			shipment.setDocStatus(DocAction.STATUS_Drafted);
+			shipment.setDocAction(DocAction.ACTION_Complete);
+			shipment.saveEx();
+
+			MInOutLine shipmentLine1 = new MInOutLine(shipment);
+			shipmentLine1.setOrderLine(salesOrderLine1, 0, new BigDecimal(2));
+			shipmentLine1.setQty(new BigDecimal(2));
+			shipmentLine1.saveEx();
+			
+			MInOutLine shipmentLine2 = new MInOutLine(shipment);
+			shipmentLine2.setOrderLine(salesOrderLine2, 0, new BigDecimal(2));
+			shipmentLine2.setQty(new BigDecimal(2));
+			shipmentLine2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(shipment, DocAction.ACTION_Complete);
+			shipment.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, shipment.getDocStatus());
+			if (!shipment.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), shipment.getAD_Client_ID(), shipment.get_Table_ID(), shipment.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			shipment.load(getTrxName());
+			assertTrue(shipment.isPosted());
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("8").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase invoice
+			MInvoice invoice = new MInvoice(purchaseOrder, DictionaryIDs.C_DocType.AP_INVOICE.id, backDate2);
+			invoice.setC_DocTypeTarget_ID(MDocType.DOCBASETYPE_APInvoice);
+			invoice.setDocStatus(DocAction.STATUS_Drafted);
+			invoice.setDocAction(DocAction.ACTION_Complete);
+			invoice.saveEx();
+			
+			MInvoiceLine invoiceLine1 = new MInvoiceLine(invoice);
+			invoiceLine1.setOrderLine(purchaseOrderLine1);
+			invoiceLine1.setLine(10);
+			invoiceLine1.setProduct(purchaseOrderLine1.getProduct());
+			invoiceLine1.setQty(purchaseOrderLine1.getQtyOrdered());
+			invoiceLine1.saveEx();
+			
+			MInvoiceLine invoiceLine2 = new MInvoiceLine(invoice);
+			invoiceLine2.setOrderLine(purchaseOrderLine2);
+			invoiceLine2.setLine(20);
+			invoiceLine2.setProduct(purchaseOrderLine2.getProduct());
+			invoiceLine2.setQty(purchaseOrderLine2.getQtyOrdered());
+			invoiceLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(invoice, DocAction.ACTION_Complete);
+			invoice.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, invoice.getDocStatus());
+			if (!invoice.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), invoice.getAD_Client_ID(), MInvoice.Table_ID, invoice.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			invoice.load(getTrxName());
+			assertTrue(invoice.isPosted());
+			
+			miList = MMatchInv.getInvoice(Env.getCtx(), invoice.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("8").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock Product1=7, Product2=5 (Date1)
+	 * PO Product1 Qty=20, Product2 Qty=10 (Date2)
+	 * MR1 Product1 Qty=19, Stock/Costing Qty=26, Product2 Qty=5, Stock/Costing Qty=10 (Date2)
+	 * MR2 Product1 Qty=1, Stock/Costing Qty=27, Product2 Qty=5, Stock/Costing Qty=15 (Date 2)
+	 * SH Product1 Qty=2, Stock/Costing Qty=25, Product2 Qty=2, Stock/Costing Qty=13 (Date2)
+	 * PI Product1 Qty=20, Stock/Costing Qty=25, Product2 Qty=10, Stock/Costing Qty=13 (Date2)
+	 */
+	@Test
+	public void testPartialMultiMRShipmentWithMultiProductLine() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product1 = createProduct("testPartialMultiMRShipmentWithMultiProductLine1", new BigDecimal(3.15));
+			mockProductGet(productMock, product1);
+			MProduct product2 = createProduct("testPartialMultiMRShipmentWithMultiProductLine2", new BigDecimal(3));
+			mockProductGet(productMock, product2);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product1.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product1.set_TrxName(getTrxName());
+			MCost cost1 = product1.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			createPOAndMRForProduct(backDate1, product2.getM_Product_ID(), new BigDecimal(5), new BigDecimal(3));
+			product2.set_TrxName(getTrxName());
+			MCost cost2 = product2.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("5").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase Order
+			MOrder purchaseOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			purchaseOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			purchaseOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			purchaseOrder.setIsSOTrx(false);
+			purchaseOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			purchaseOrder.setDocStatus(DocAction.STATUS_Drafted);
+			purchaseOrder.setDocAction(DocAction.ACTION_Complete);
+			purchaseOrder.setDateAcct(backDate2);
+			purchaseOrder.setDateOrdered(backDate2);
+			purchaseOrder.setDatePromised(backDate2);		
+			purchaseOrder.saveEx();
+
+			MOrderLine purchaseOrderLine1 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine1.setLine(10);
+			purchaseOrderLine1.setProduct(product1);
+			purchaseOrderLine1.setQty(new BigDecimal(20));
+			purchaseOrderLine1.setDatePromised(backDate2);
+			purchaseOrderLine1.setPrice(new BigDecimal(3.15));
+			purchaseOrderLine1.saveEx();
+			
+			MOrderLine purchaseOrderLine2 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine2.setLine(20);
+			purchaseOrderLine2.setProduct(product2);
+			purchaseOrderLine2.setQty(new BigDecimal(10));
+			purchaseOrderLine2.setDatePromised(backDate2);
+			purchaseOrderLine2.setPrice(new BigDecimal(3));
+			purchaseOrderLine2.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(purchaseOrder, DocAction.ACTION_Complete);
+			purchaseOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, purchaseOrder.getDocStatus());
+
+			// Material Receipt 1
+			MInOut receipt1 = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt1.setDocStatus(DocAction.STATUS_Drafted);
+			receipt1.setDocAction(DocAction.ACTION_Complete);
+			receipt1.saveEx();
+
+			MInOutLine receipt1Line1 = new MInOutLine(receipt1);
+			receipt1Line1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(19));
+			receipt1Line1.setQty(new BigDecimal(19));
+			receipt1Line1.saveEx();
+			
+			MInOutLine receipt1Line2 = new MInOutLine(receipt1);
+			receipt1Line2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receipt1Line2.setQty(new BigDecimal(5));
+			receipt1Line2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt1, DocAction.ACTION_Complete);
+			receipt1.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt1.getDocStatus());
+			if (!receipt1.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt1.getAD_Client_ID(), receipt1.get_Table_ID(), receipt1.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt1.load(getTrxName());
+			assertTrue(receipt1.isPosted());
+			
+			MMatchInv[] miList = MMatchInv.getInOut(Env.getCtx(), receipt1.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("10").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Material Receipt 2
+			MInOut receipt2 = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt2.setDocStatus(DocAction.STATUS_Drafted);
+			receipt2.setDocAction(DocAction.ACTION_Complete);
+			receipt2.saveEx();
+
+			MInOutLine receipt2Line1 = new MInOutLine(receipt2);
+			receipt2Line1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(1));
+			receipt2Line1.setQty(new BigDecimal(1));
+			receipt2Line1.saveEx();
+			
+			MInOutLine receipt2Line2 = new MInOutLine(receipt2);
+			receipt2Line2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receipt2Line2.setQty(new BigDecimal(5));
+			receipt2Line2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt2, DocAction.ACTION_Complete);
+			receipt2.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt2.getDocStatus());
+			if (!receipt2.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt2.getAD_Client_ID(), receipt2.get_Table_ID(), receipt2.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt2.load(getTrxName());
+			assertTrue(receipt2.isPosted());
+			
+			miList = MMatchInv.getInOut(Env.getCtx(), receipt2.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("27").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("15").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+
+			// Shipment
+			MOrder salesOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			salesOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.JOE_BLOCK.id));
+			salesOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.STANDARD_ORDER.id);
+			salesOrder.setIsSOTrx(true);
+			salesOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			salesOrder.setDocStatus(DocAction.STATUS_Drafted);
+			salesOrder.setDocAction(DocAction.ACTION_Complete);
+			salesOrder.setDateAcct(backDate2);
+			salesOrder.setDateOrdered(backDate2);
+			salesOrder.setDatePromised(backDate2);		
+			salesOrder.saveEx();
+
+			MOrderLine salesOrderLine1 = new MOrderLine(salesOrder);
+			salesOrderLine1.setLine(10);
+			salesOrderLine1.setProduct(product1);
+			salesOrderLine1.setQty(new BigDecimal(2));
+			salesOrderLine1.setDatePromised(backDate2);
+			salesOrderLine1.setPrice(new BigDecimal(3.15));
+			salesOrderLine1.saveEx();
+			
+			MOrderLine salesOrderLine2 = new MOrderLine(salesOrder);
+			salesOrderLine2.setLine(20);
+			salesOrderLine2.setProduct(product2);
+			salesOrderLine2.setQty(new BigDecimal(2));
+			salesOrderLine2.setDatePromised(backDate2);
+			salesOrderLine2.setPrice(new BigDecimal(3));
+			salesOrderLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(salesOrder, DocAction.ACTION_Complete);
+			salesOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, salesOrder.getDocStatus());		
+			
+			MInOut shipment = new MInOut(salesOrder, DictionaryIDs.C_DocType.MM_SHIPMENT.id, salesOrder.getDateOrdered());
+			shipment.setDocStatus(DocAction.STATUS_Drafted);
+			shipment.setDocAction(DocAction.ACTION_Complete);
+			shipment.saveEx();
+
+			MInOutLine shipmentLine1 = new MInOutLine(shipment);
+			shipmentLine1.setOrderLine(salesOrderLine1, 0, new BigDecimal(2));
+			shipmentLine1.setQty(new BigDecimal(2));
+			shipmentLine1.saveEx();
+			
+			MInOutLine shipmentLine2 = new MInOutLine(shipment);
+			shipmentLine2.setOrderLine(salesOrderLine2, 0, new BigDecimal(2));
+			shipmentLine2.setQty(new BigDecimal(2));
+			shipmentLine2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(shipment, DocAction.ACTION_Complete);
+			shipment.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, shipment.getDocStatus());
+			if (!shipment.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), shipment.getAD_Client_ID(), shipment.get_Table_ID(), shipment.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			shipment.load(getTrxName());
+			assertTrue(shipment.isPosted());
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("13").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase invoice
+			MInvoice invoice = new MInvoice(purchaseOrder, DictionaryIDs.C_DocType.AP_INVOICE.id, backDate2);
+			invoice.setC_DocTypeTarget_ID(MDocType.DOCBASETYPE_APInvoice);
+			invoice.setDocStatus(DocAction.STATUS_Drafted);
+			invoice.setDocAction(DocAction.ACTION_Complete);
+			invoice.saveEx();
+			
+			MInvoiceLine invoiceLine1 = new MInvoiceLine(invoice);
+			invoiceLine1.setOrderLine(purchaseOrderLine1);
+			invoiceLine1.setLine(10);
+			invoiceLine1.setProduct(purchaseOrderLine1.getProduct());
+			invoiceLine1.setQty(purchaseOrderLine1.getQtyOrdered());
+			invoiceLine1.saveEx();
+			
+			MInvoiceLine invoiceLine2 = new MInvoiceLine(invoice);
+			invoiceLine2.setOrderLine(purchaseOrderLine2);
+			invoiceLine2.setLine(20);
+			invoiceLine2.setProduct(purchaseOrderLine2.getProduct());
+			invoiceLine2.setQty(purchaseOrderLine2.getQtyOrdered());
+			invoiceLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(invoice, DocAction.ACTION_Complete);
+			invoice.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, invoice.getDocStatus());
+			if (!invoice.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), invoice.getAD_Client_ID(), MInvoice.Table_ID, invoice.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			invoice.load(getTrxName());
+			assertTrue(invoice.isPosted());
+			
+			miList = MMatchInv.getInvoice(Env.getCtx(), invoice.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("13").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock = 7 (Date1)
+	 * PO Qty=20, Price=3.15 (Date2)
+	 * MR Qty=19, Stock/Costing Qty=26 (Date2)
+	 * Physical Inventory QtyCount=24, Stock/Costing Qty=24
+	 * PI Qty=20, Stock/Costing Qty=24 (Date2)
+	 */
+	@Test
+	public void testPartialMRInventory() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testPartialMRInventory", new BigDecimal(3.15));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase Order
+			MOrder order = new MOrder(Env.getCtx(), 0, getTrxName());
+			order.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			order.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			order.setIsSOTrx(false);
+			order.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			order.setDocStatus(DocAction.STATUS_Drafted);
+			order.setDocAction(DocAction.ACTION_Complete);
+			order.setDateAcct(backDate2);
+			order.setDateOrdered(backDate2);
+			order.setDatePromised(backDate2);		
+			order.saveEx();
+
+			MOrderLine orderLine = new MOrderLine(order);
+			orderLine.setLine(10);
+			orderLine.setProduct(product);
+			orderLine.setQty(new BigDecimal(20));
+			orderLine.setDatePromised(backDate2);
+			orderLine.setPrice(new BigDecimal(3.15));
+			orderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(order, DocAction.ACTION_Complete);
+			order.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, order.getDocStatus());
+
+			// Material Receipt
+			createMRForPO(orderLine, backDate2, new BigDecimal(19));
+			
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+
+			// Physical Inventory
+			createPhysicalInventory(backDate2, product.get_ID(), new BigDecimal(26), new BigDecimal(24));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase invoice
+			createInvoiceForPO(orderLine, backDate2, orderLine.getQtyOrdered());
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock = 7 (Date1)
+	 * PO Qty=20, Price=3.15 (Date2)
+	 * MR1 Qty=19, Stock/Costing Qty=26 (Date2)
+	 * MR2 Qty=1, Stock/Costing Qty=27 (Date 2)
+	 * Physical Inventory QtyCount=25, Stock/Costing Qty=25
+	 * PI Qty=20, Stock/Costing Qty=25 (Date2)
+	 */
+	@Test
+	public void testPartialMultiMRInventory() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testPartialMultiMRShipment", new BigDecimal(3.15));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase Order
+			MOrder order = new MOrder(Env.getCtx(), 0, getTrxName());
+			order.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			order.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			order.setIsSOTrx(false);
+			order.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			order.setDocStatus(DocAction.STATUS_Drafted);
+			order.setDocAction(DocAction.ACTION_Complete);
+			order.setDateAcct(backDate2);
+			order.setDateOrdered(backDate2);
+			order.setDatePromised(backDate2);		
+			order.saveEx();
+
+			MOrderLine orderLine = new MOrderLine(order);
+			orderLine.setLine(10);
+			orderLine.setProduct(product);
+			orderLine.setQty(new BigDecimal(20));
+			orderLine.setDatePromised(backDate2);
+			orderLine.setPrice(new BigDecimal(3.15));
+			orderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(order, DocAction.ACTION_Complete);
+			order.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, order.getDocStatus());
+
+			// Material Receipt 1
+			createMRForPO(orderLine, backDate2, new BigDecimal(19));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Material Receipt 2
+			createMRForPO(orderLine, backDate2, new BigDecimal(1));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("27").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+
+			// Physical Inventory
+			createPhysicalInventory(backDate2, product.get_ID(), new BigDecimal(27), new BigDecimal(25));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase invoice
+			createInvoiceForPO(orderLine, backDate2, orderLine.getQtyOrdered());
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock Product1=7, Product2=5 (Date1)
+	 * PO Product1 Qty=20, Product2 Qty=10 (Date2)
+	 * MR Product1 Qty=19, Stock/Costing Qty=26, Product2 Qty=5, Stock/Costing Qty=10 (Date2)
+	 * Physical Inventory Product1 QtyCount=24, Stock/Costing Qty=24, Product 2 QtyCount=8, Stock/Costing Qty=8
+	 * PI Product1 Qty=20, Stock/Costing Qty=24, Product2 Qty=10, Stock/Costing Qty=8 (Date2)
+	 */
+	@Test
+	public void testPartialMRInventoryWithMultiProductLine() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product1 = createProduct("testPartialMRInventoryWithMultiProductLine1", new BigDecimal(3.15));
+			mockProductGet(productMock, product1);
+			MProduct product2 = createProduct("testPartialMRInventoryWithMultiProductLine2", new BigDecimal(3));
+			mockProductGet(productMock, product2);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product1.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product1.set_TrxName(getTrxName());
+			MCost cost1 = product1.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			createPOAndMRForProduct(backDate1, product2.getM_Product_ID(), new BigDecimal(5), new BigDecimal(3));
+			product2.set_TrxName(getTrxName());
+			MCost cost2 = product2.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("5").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase Order
+			MOrder purchaseOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			purchaseOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			purchaseOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			purchaseOrder.setIsSOTrx(false);
+			purchaseOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			purchaseOrder.setDocStatus(DocAction.STATUS_Drafted);
+			purchaseOrder.setDocAction(DocAction.ACTION_Complete);
+			purchaseOrder.setDateAcct(backDate2);
+			purchaseOrder.setDateOrdered(backDate2);
+			purchaseOrder.setDatePromised(backDate2);		
+			purchaseOrder.saveEx();
+
+			MOrderLine purchaseOrderLine1 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine1.setLine(10);
+			purchaseOrderLine1.setProduct(product1);
+			purchaseOrderLine1.setQty(new BigDecimal(20));
+			purchaseOrderLine1.setDatePromised(backDate2);
+			purchaseOrderLine1.setPrice(new BigDecimal(3.15));
+			purchaseOrderLine1.saveEx();
+			
+			MOrderLine purchaseOrderLine2 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine2.setLine(20);
+			purchaseOrderLine2.setProduct(product2);
+			purchaseOrderLine2.setQty(new BigDecimal(10));
+			purchaseOrderLine2.setDatePromised(backDate2);
+			purchaseOrderLine2.setPrice(new BigDecimal(3));
+			purchaseOrderLine2.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(purchaseOrder, DocAction.ACTION_Complete);
+			purchaseOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, purchaseOrder.getDocStatus());
+
+			// Material Receipt
+			MInOut receipt = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt.setDocStatus(DocAction.STATUS_Drafted);
+			receipt.setDocAction(DocAction.ACTION_Complete);
+			receipt.saveEx();
+
+			MInOutLine receiptLine1 = new MInOutLine(receipt);
+			receiptLine1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(19));
+			receiptLine1.setQty(new BigDecimal(19));
+			receiptLine1.saveEx();
+			
+			MInOutLine receiptLine2 = new MInOutLine(receipt);
+			receiptLine2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receiptLine2.setQty(new BigDecimal(5));
+			receiptLine2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt, DocAction.ACTION_Complete);
+			receipt.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt.getDocStatus());
+			if (!receipt.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt.getAD_Client_ID(), receipt.get_Table_ID(), receipt.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt.load(getTrxName());
+			assertTrue(receipt.isPosted());
+			
+			MMatchInv[] miList = MMatchInv.getInOut(Env.getCtx(), receipt.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("10").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+
+			// Physical Inventory
+			MInventory inventory = new MInventory(Env.getCtx(), 0, getTrxName());
+			inventory.setC_DocType_ID(DictionaryIDs.C_DocType.MATERIAL_PHYSICAL_INVENTORY.id);
+			inventory.setMovementDate(backDate2);
+			inventory.saveEx();
+			
+			MInventoryLine inventoryLine1 = new MInventoryLine(Env.getCtx(), 0, getTrxName());
+			inventoryLine1.setM_Inventory_ID(inventory.get_ID());
+			inventoryLine1.setM_Product_ID(product1.get_ID());
+			inventoryLine1.setM_Locator_ID(DictionaryIDs.M_Locator.HQ.id);
+			inventoryLine1.setQtyBook(new BigDecimal(26));
+			inventoryLine1.setQtyCount(new BigDecimal(24));
+			inventoryLine1.saveEx();
+			
+			MInventoryLine inventoryLine2 = new MInventoryLine(Env.getCtx(), 0, getTrxName());
+			inventoryLine2.setM_Inventory_ID(inventory.get_ID());
+			inventoryLine2.setM_Product_ID(product2.get_ID());
+			inventoryLine2.setM_Locator_ID(DictionaryIDs.M_Locator.HQ.id);
+			inventoryLine2.setQtyBook(new BigDecimal(10));
+			inventoryLine2.setQtyCount(new BigDecimal(8));
+			inventoryLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(inventory, DocAction.ACTION_Complete);
+			inventory.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, inventory.getDocStatus(), "Unexpected Document Status");
+			if (!inventory.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), inventory.getAD_Client_ID(), inventory.get_Table_ID(), inventory.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			inventory.load(getTrxName());
+			assertTrue(inventory.isPosted());
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("8").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase invoice
+			MInvoice invoice = new MInvoice(purchaseOrder, DictionaryIDs.C_DocType.AP_INVOICE.id, backDate2);
+			invoice.setC_DocTypeTarget_ID(MDocType.DOCBASETYPE_APInvoice);
+			invoice.setDocStatus(DocAction.STATUS_Drafted);
+			invoice.setDocAction(DocAction.ACTION_Complete);
+			invoice.saveEx();
+			
+			MInvoiceLine invoiceLine1 = new MInvoiceLine(invoice);
+			invoiceLine1.setOrderLine(purchaseOrderLine1);
+			invoiceLine1.setLine(10);
+			invoiceLine1.setProduct(purchaseOrderLine1.getProduct());
+			invoiceLine1.setQty(purchaseOrderLine1.getQtyOrdered());
+			invoiceLine1.saveEx();
+			
+			MInvoiceLine invoiceLine2 = new MInvoiceLine(invoice);
+			invoiceLine2.setOrderLine(purchaseOrderLine2);
+			invoiceLine2.setLine(20);
+			invoiceLine2.setProduct(purchaseOrderLine2.getProduct());
+			invoiceLine2.setQty(purchaseOrderLine2.getQtyOrdered());
+			invoiceLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(invoice, DocAction.ACTION_Complete);
+			invoice.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, invoice.getDocStatus());
+			if (!invoice.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), invoice.getAD_Client_ID(), MInvoice.Table_ID, invoice.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			invoice.load(getTrxName());
+			assertTrue(invoice.isPosted());
+			
+			miList = MMatchInv.getInvoice(Env.getCtx(), invoice.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("8").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock Product1=7, Product2=5 (Date1)
+	 * PO Product1 Qty=20, Product2 Qty=10 (Date2)
+	 * MR1 Product1 Qty=19, Stock/Costing Qty=26, Product2 Qty=5, Stock/Costing Qty=10 (Date2)
+	 * MR2 Product1 Qty=1, Stock/Costing Qty=27, Product2 Qty=5, Stock/Costing Qty=15 (Date 2)
+	 * Physical Inventory Product1 QtyCount=25, Stock/Costing Qty=25, Product 2 QtyCount=13, Stock/Costing Qty=13
+	 * PI Product1 Qty=20, Stock/Costing Qty=25, Product2 Qty=10, Stock/Costing Qty=13 (Date2)
+	 */
+	@Test
+	public void testPartialMultiMRInventoryWithMultiProductLine() {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product1 = createProduct("testPartialMultiMRInventoryWithMultiProductLine1", new BigDecimal(3.15));
+			mockProductGet(productMock, product1);
+			MProduct product2 = createProduct("testPartialMultiMRInventoryWithMultiProductLine2", new BigDecimal(3));
+			mockProductGet(productMock, product2);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product1.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product1.set_TrxName(getTrxName());
+			MCost cost1 = product1.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			createPOAndMRForProduct(backDate1, product2.getM_Product_ID(), new BigDecimal(5), new BigDecimal(3));
+			product2.set_TrxName(getTrxName());
+			MCost cost2 = product2.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("5").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase Order
+			MOrder purchaseOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			purchaseOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			purchaseOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			purchaseOrder.setIsSOTrx(false);
+			purchaseOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			purchaseOrder.setDocStatus(DocAction.STATUS_Drafted);
+			purchaseOrder.setDocAction(DocAction.ACTION_Complete);
+			purchaseOrder.setDateAcct(backDate2);
+			purchaseOrder.setDateOrdered(backDate2);
+			purchaseOrder.setDatePromised(backDate2);		
+			purchaseOrder.saveEx();
+
+			MOrderLine purchaseOrderLine1 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine1.setLine(10);
+			purchaseOrderLine1.setProduct(product1);
+			purchaseOrderLine1.setQty(new BigDecimal(20));
+			purchaseOrderLine1.setDatePromised(backDate2);
+			purchaseOrderLine1.setPrice(new BigDecimal(3.15));
+			purchaseOrderLine1.saveEx();
+			
+			MOrderLine purchaseOrderLine2 = new MOrderLine(purchaseOrder);
+			purchaseOrderLine2.setLine(20);
+			purchaseOrderLine2.setProduct(product2);
+			purchaseOrderLine2.setQty(new BigDecimal(10));
+			purchaseOrderLine2.setDatePromised(backDate2);
+			purchaseOrderLine2.setPrice(new BigDecimal(3));
+			purchaseOrderLine2.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(purchaseOrder, DocAction.ACTION_Complete);
+			purchaseOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, purchaseOrder.getDocStatus());
+
+			// Material Receipt 1
+			MInOut receipt1 = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt1.setDocStatus(DocAction.STATUS_Drafted);
+			receipt1.setDocAction(DocAction.ACTION_Complete);
+			receipt1.saveEx();
+
+			MInOutLine receipt1Line1 = new MInOutLine(receipt1);
+			receipt1Line1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(19));
+			receipt1Line1.setQty(new BigDecimal(19));
+			receipt1Line1.saveEx();
+			
+			MInOutLine receipt1Line2 = new MInOutLine(receipt1);
+			receipt1Line2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receipt1Line2.setQty(new BigDecimal(5));
+			receipt1Line2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt1, DocAction.ACTION_Complete);
+			receipt1.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt1.getDocStatus());
+			if (!receipt1.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt1.getAD_Client_ID(), receipt1.get_Table_ID(), receipt1.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt1.load(getTrxName());
+			assertTrue(receipt1.isPosted());
+			
+			MMatchInv[] miList = MMatchInv.getInOut(Env.getCtx(), receipt1.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("10").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Material Receipt 2
+			MInOut receipt2 = new MInOut(purchaseOrder, DictionaryIDs.C_DocType.MM_RECEIPT.id, backDate2);
+			receipt2.setDocStatus(DocAction.STATUS_Drafted);
+			receipt2.setDocAction(DocAction.ACTION_Complete);
+			receipt2.saveEx();
+
+			MInOutLine receipt2Line1 = new MInOutLine(receipt2);
+			receipt2Line1.setOrderLine(purchaseOrderLine1, 0, new BigDecimal(1));
+			receipt2Line1.setQty(new BigDecimal(1));
+			receipt2Line1.saveEx();
+			
+			MInOutLine receipt2Line2 = new MInOutLine(receipt2);
+			receipt2Line2.setOrderLine(purchaseOrderLine2, 0, new BigDecimal(5));
+			receipt2Line2.setQty(new BigDecimal(5));
+			receipt2Line2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(receipt2, DocAction.ACTION_Complete);
+			receipt2.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, receipt2.getDocStatus());
+			if (!receipt2.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), receipt2.getAD_Client_ID(), receipt2.get_Table_ID(), receipt2.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			receipt2.load(getTrxName());
+			assertTrue(receipt2.isPosted());
+			
+			miList = MMatchInv.getInOut(Env.getCtx(), receipt2.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+			assertNotNull(cost1, "No MCost record found");			
+ 			assertEquals(new BigDecimal("27").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+			assertNotNull(cost2, "No MCost record found");			
+ 			assertEquals(new BigDecimal("15").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+
+			// Shipment
+			MOrder salesOrder = new MOrder(Env.getCtx(), 0, getTrxName());
+			salesOrder.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.JOE_BLOCK.id));
+			salesOrder.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.STANDARD_ORDER.id);
+			salesOrder.setIsSOTrx(true);
+			salesOrder.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			salesOrder.setDocStatus(DocAction.STATUS_Drafted);
+			salesOrder.setDocAction(DocAction.ACTION_Complete);
+			salesOrder.setDateAcct(backDate2);
+			salesOrder.setDateOrdered(backDate2);
+			salesOrder.setDatePromised(backDate2);		
+			salesOrder.saveEx();
+
+			MOrderLine salesOrderLine1 = new MOrderLine(salesOrder);
+			salesOrderLine1.setLine(10);
+			salesOrderLine1.setProduct(product1);
+			salesOrderLine1.setQty(new BigDecimal(2));
+			salesOrderLine1.setDatePromised(backDate2);
+			salesOrderLine1.setPrice(new BigDecimal(3.15));
+			salesOrderLine1.saveEx();
+			
+			MOrderLine salesOrderLine2 = new MOrderLine(salesOrder);
+			salesOrderLine2.setLine(20);
+			salesOrderLine2.setProduct(product2);
+			salesOrderLine2.setQty(new BigDecimal(2));
+			salesOrderLine2.setDatePromised(backDate2);
+			salesOrderLine2.setPrice(new BigDecimal(3));
+			salesOrderLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(salesOrder, DocAction.ACTION_Complete);
+			salesOrder.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, salesOrder.getDocStatus());		
+			
+			MInOut shipment = new MInOut(salesOrder, DictionaryIDs.C_DocType.MM_SHIPMENT.id, salesOrder.getDateOrdered());
+			shipment.setDocStatus(DocAction.STATUS_Drafted);
+			shipment.setDocAction(DocAction.ACTION_Complete);
+			shipment.saveEx();
+
+			MInOutLine shipmentLine1 = new MInOutLine(shipment);
+			shipmentLine1.setOrderLine(salesOrderLine1, 0, new BigDecimal(2));
+			shipmentLine1.setQty(new BigDecimal(2));
+			shipmentLine1.saveEx();
+			
+			MInOutLine shipmentLine2 = new MInOutLine(shipment);
+			shipmentLine2.setOrderLine(salesOrderLine2, 0, new BigDecimal(2));
+			shipmentLine2.setQty(new BigDecimal(2));
+			shipmentLine2.saveEx();
+
+			info = MWorkflow.runDocumentActionWorkflow(shipment, DocAction.ACTION_Complete);
+			shipment.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, shipment.getDocStatus());
+			if (!shipment.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), shipment.getAD_Client_ID(), shipment.get_Table_ID(), shipment.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			shipment.load(getTrxName());
+			assertTrue(shipment.isPosted());
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("13").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+			
+			// Purchase invoice
+			MInvoice invoice = new MInvoice(purchaseOrder, DictionaryIDs.C_DocType.AP_INVOICE.id, backDate2);
+			invoice.setC_DocTypeTarget_ID(MDocType.DOCBASETYPE_APInvoice);
+			invoice.setDocStatus(DocAction.STATUS_Drafted);
+			invoice.setDocAction(DocAction.ACTION_Complete);
+			invoice.saveEx();
+			
+			MInvoiceLine invoiceLine1 = new MInvoiceLine(invoice);
+			invoiceLine1.setOrderLine(purchaseOrderLine1);
+			invoiceLine1.setLine(10);
+			invoiceLine1.setProduct(purchaseOrderLine1.getProduct());
+			invoiceLine1.setQty(purchaseOrderLine1.getQtyOrdered());
+			invoiceLine1.saveEx();
+			
+			MInvoiceLine invoiceLine2 = new MInvoiceLine(invoice);
+			invoiceLine2.setOrderLine(purchaseOrderLine2);
+			invoiceLine2.setLine(20);
+			invoiceLine2.setProduct(purchaseOrderLine2.getProduct());
+			invoiceLine2.setQty(purchaseOrderLine2.getQtyOrdered());
+			invoiceLine2.saveEx();
+			
+			info = MWorkflow.runDocumentActionWorkflow(invoice, DocAction.ACTION_Complete);
+			invoice.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, invoice.getDocStatus());
+			if (!invoice.isPosted()) {
+				String error = DocumentEngine.postImmediate(Env.getCtx(), invoice.getAD_Client_ID(), MInvoice.Table_ID, invoice.get_ID(), false, getTrxName());
+				assertTrue(error == null, error);
+			}
+			invoice.load(getTrxName());
+			assertTrue(invoice.isPosted());
+			
+			miList = MMatchInv.getInvoice(Env.getCtx(), invoice.get_ID(), getTrxName());
+			for (MMatchInv mi : miList) {
+				if (!mi.isPosted()) {
+					String error = DocumentEngine.postImmediate(Env.getCtx(), mi.getAD_Client_ID(), MMatchInv.Table_ID, mi.get_ID(), false, getTrxName());
+					assertTrue(error == null, error);
+				}
+				mi.load(getTrxName());
+				assertTrue(mi.isPosted());
+			}
+			
+			product1.set_TrxName(getTrxName());
+			cost1.load(getTrxName());
+ 			assertEquals(new BigDecimal("25").setScale(2, RoundingMode.HALF_UP), cost1.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product1);
+			
+			product2.set_TrxName(getTrxName());
+			cost2.load(getTrxName());
+ 			assertEquals(new BigDecimal("13").setScale(2, RoundingMode.HALF_UP), cost2.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product2);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
+	/**
+	 * IDEMPIERE-6800
+	 * Opening stock = 7 (Date1)
+	 * PO Qty=20, Price=3.15 (Date2)
+	 * MR Qty=19, Stock/Costing Qty=26 (Date2)
+	 * SH Qty=2, Stock/Costing Qty=24 (Date2)
+	 * Landed Cost
+	 * PI Qty=20, Stock/Costing Qty=24 (Date2)
+	 */
+	@Test
+	public void testPartialMRShipmentLandedCost() {
+		testPartialMRShipmentLandedCost(true);
+		testPartialMRShipmentLandedCost(false);
+	}
+	public void testPartialMRShipmentLandedCost(boolean forProduct) {
+		MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(Env.getCtx(), getAD_Client_ID());
+		MClientInfo ci = MClientInfo.get(Env.getCtx(), getAD_Client_ID(), null); 
+		MAcctSchema as = ci.getMAcctSchema1();
+
+		int[] backDateDays = new int[ass.length];
+		try (MockedStatic<MProduct> productMock = mockStatic(MProduct.class)) {
+			backDateDays = configureAcctSchema(ass);
+			MProduct product = createProduct("testPartialMRShipment", new BigDecimal(3.15));
+			mockProductGet(productMock, product);
+
+			Timestamp today = TimeUtil.getDay(System.currentTimeMillis());
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -2);
+			Timestamp backDate1 = new Timestamp(cal.getTimeInMillis());
+			cal.setTimeInMillis(today.getTime());
+			cal.add(Calendar.DAY_OF_MONTH, -1);
+			Timestamp backDate2  = new Timestamp(cal.getTimeInMillis());
+			
+			// Opening stock
+			createPOAndMRForProduct(backDate1, product.getM_Product_ID(), new BigDecimal(7), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			MCost cost = product.getCostingRecord(as, getAD_Org_ID(), 0, as.getCostingMethod());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("7").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase Order
+			MOrder order = new MOrder(Env.getCtx(), 0, getTrxName());
+			order.setBPartner(MBPartner.get(Env.getCtx(), DictionaryIDs.C_BPartner.PATIO.id));
+			order.setC_DocTypeTarget_ID(DictionaryIDs.C_DocType.PURCHASE_ORDER.id);
+			order.setIsSOTrx(false);
+			order.setSalesRep_ID(DictionaryIDs.AD_User.GARDEN_ADMIN.id);
+			order.setDocStatus(DocAction.STATUS_Drafted);
+			order.setDocAction(DocAction.ACTION_Complete);
+			order.setDateAcct(backDate2);
+			order.setDateOrdered(backDate2);
+			order.setDatePromised(backDate2);		
+			order.saveEx();
+
+			MOrderLine orderLine = new MOrderLine(order);
+			orderLine.setLine(10);
+			orderLine.setProduct(product);
+			orderLine.setQty(new BigDecimal(20));
+			orderLine.setDatePromised(backDate2);
+			orderLine.setPrice(new BigDecimal(3.15));
+			orderLine.saveEx();
+			
+			ProcessInfo info = MWorkflow.runDocumentActionWorkflow(order, DocAction.ACTION_Complete);
+			order.load(getTrxName());
+			assertFalse(info.isError(), info.getSummary());
+			assertEquals(DocAction.STATUS_Completed, order.getDocStatus());
+
+			// Material Receipt
+			MInOutLine receiptLine = createMRForPO(orderLine, backDate2, new BigDecimal(19));
+			
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+			assertNotNull(cost, "No MCost record found");			
+ 			assertEquals(new BigDecimal("26").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+
+			// Shipment
+			createSOAndSHForProduct(backDate2, product.get_ID(), new BigDecimal(2), new BigDecimal(3.15));
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Landed Cost
+			createLandedCost(receiptLine, backDate2, new BigDecimal(10), forProduct);
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+			
+			// Purchase invoice
+			createInvoiceForPO(orderLine, backDate2, orderLine.getQtyOrdered());
+			product.set_TrxName(getTrxName());
+			cost.load(getTrxName());
+ 			assertEquals(new BigDecimal("24").setScale(2, RoundingMode.HALF_UP), cost.getCurrentQty().setScale(2, RoundingMode.HALF_UP), "Unexpected current quantity");
+			validateProductCostQty(ass, product);
+		} finally {
+			rollback();
+			resetAcctSchema(ass, backDateDays);
+		}
+	}
+	
 	private MProduct createProduct(String name, BigDecimal price) {
 		return createProduct(name, price, DictionaryIDs.M_Product_Category.STANDARD.id);
 	}
@@ -8202,6 +9950,34 @@ public class BackDateAveragePOCostingTest extends AbstractTestCase {
 		return inventoryLine;
 	}
 	
+	private MInventoryLine createPhysicalInventory(Timestamp acctDate, int productId, BigDecimal qtyBook, BigDecimal qtyCount) {
+		MInventory inventory = new MInventory(Env.getCtx(), 0, getTrxName());
+		inventory.setC_DocType_ID(DictionaryIDs.C_DocType.MATERIAL_PHYSICAL_INVENTORY.id);
+		inventory.setMovementDate(acctDate);
+		inventory.saveEx();
+		
+		MInventoryLine inventoryLine = new MInventoryLine(Env.getCtx(), 0, getTrxName());
+		inventoryLine.setM_Inventory_ID(inventory.get_ID());
+		inventoryLine.setM_Product_ID(productId);
+		inventoryLine.setM_Locator_ID(DictionaryIDs.M_Locator.HQ.id);
+		inventoryLine.setQtyBook(qtyBook);
+		inventoryLine.setQtyCount(qtyCount);
+		inventoryLine.saveEx();		
+		
+		ProcessInfo info = MWorkflow.runDocumentActionWorkflow(inventory, DocAction.ACTION_Complete);
+		inventory.load(getTrxName());
+		assertFalse(info.isError(), info.getSummary());
+		assertEquals(DocAction.STATUS_Completed, inventory.getDocStatus(), "Unexpected Document Status");
+		if (!inventory.isPosted()) {
+			String error = DocumentEngine.postImmediate(Env.getCtx(), inventory.getAD_Client_ID(), inventory.get_Table_ID(), inventory.get_ID(), false, getTrxName());
+			assertTrue(error == null, error);
+		}
+		inventory.load(getTrxName());
+		assertTrue(inventory.isPosted());
+		
+		return inventoryLine;
+	}
+	
 	private MInOutLine reverseInOut(MInOutLine iol, boolean accrual) {
 		MInOut io = new MInOut(Env.getCtx(), iol.getM_InOut_ID(), getTrxName());
 		ProcessInfo info = MWorkflow.runDocumentActionWorkflow(io, accrual ? DocAction.ACTION_Reverse_Accrual : DocAction.ACTION_Reverse_Correct);
@@ -8346,7 +10122,7 @@ public class BackDateAveragePOCostingTest extends AbstractTestCase {
 	private MInOutLine createMRForPO(MOrderLine orderLine, Timestamp movementDate, BigDecimal qty) {
 		MOrder order = orderLine.getParent();
 		
-		MInOut receipt = new MInOut(order, DictionaryIDs.C_DocType.MM_RECEIPT.id, order.getDateOrdered());
+		MInOut receipt = new MInOut(order, DictionaryIDs.C_DocType.MM_RECEIPT.id, movementDate);
 		receipt.setDocStatus(DocAction.STATUS_Drafted);
 		receipt.setDocAction(DocAction.ACTION_Complete);
 		receipt.saveEx();
