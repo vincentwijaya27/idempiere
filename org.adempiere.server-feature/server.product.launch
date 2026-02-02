@@ -44,7 +44,7 @@
     <booleanAttribute key="append.args" value="true"/>
     <stringAttribute key="application" value="org.adempiere.server.application"/>
     <booleanAttribute key="askclear" value="false"/>
-    <booleanAttribute key="automaticAdd" value="false"/>
+    <booleanAttribute key="automaticAdd" value="true"/>
     <booleanAttribute key="automaticIncludeRequirements" value="false"/>
     <booleanAttribute key="automaticValidate" value="true"/>
     <stringAttribute key="bootstrap" value=""/>
@@ -54,7 +54,10 @@
     <booleanAttribute key="clearwslog" value="false"/>
     <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/server.product"/>
     <booleanAttribute key="default" value="false"/>
-    <setAttribute key="deselected_workspace_bundles"/>
+    <setAttribute key="deselected_workspace_bundles">
+        <setEntry value="org.idempiere.javadoc"/>
+        <setEntry value="org.idempiere.test"/>
+    </setAttribute>
     <stringAttribute key="featureDefaultLocation" value="workspace"/>
     <stringAttribute key="featurePluginResolution" value="workspace"/>
     <booleanAttribute key="includeOptional" value="false"/>
@@ -450,6 +453,43 @@
         <setEntry value="zweb@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="cp.cperp.CalloutCOrder@default:default"/>
+        <setEntry value="cp.cperp.CalloutCOrderLine@default:default"/>
+        <setEntry value="cp.cperp.CalloutCProject@default:default"/>
+        <setEntry value="cp.cperp.CalloutInvoiceCustom@default:default"/>
+        <setEntry value="cp.cperp.CalloutRequisitionCustom@default:default"/>
+        <setEntry value="cp.cperp.CalloutRequisitionLineCustom@default:default"/>
+        <setEntry value="cp.cperp.CreateFromOrder@default:default"/>
+        <setEntry value="cp.cperp.CreateFromRfQ@default:default"/>
+        <setEntry value="cp.cperp.MAlokasiStockTransfer@default:default"/>
+        <setEntry value="cp.cperp.ProcessNextWF@default:default"/>
+        <setEntry value="cp.cperp.WCreateFromInvoiceUICustom@default:default"/>
+        <setEntry value="cp.cperp.calloutinoutcustom@default:default"/>
+        <setEntry value="cp.cperp.calloutinoutlinecustom@default:default"/>
+        <setEntry value="cp.cperp.calloutinvoicelinecustom@default:default"/>
+        <setEntry value="cp.cperp.external@default:default"/>
+        <setEntry value="cp.cperp.fmsgrgiduck@default:default"/>
+        <setEntry value="cp.cperp.formlog@default:default"/>
+        <setEntry value="cp.cperp.general@default:default"/>
+        <setEntry value="cp.cperp.integration@default:default"/>
+        <setEntry value="cp.cperp.kafkaProducer@default:default"/>
+        <setEntry value="cp.cperp.mwfactivitycustom@default:default"/>
+        <setEntry value="cp.cperp.mzsdemail_breeder@default:default"/>
+        <setEntry value="cp.cperp.pdvsoic@default:default"/>
+        <setEntry value="cp.cperp.proccreateplv@default:default"/>
+        <setEntry value="cp.cperp.procescompletesppbk@default:default"/>
+        <setEntry value="cp.cperp.processDataVendor@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSBk@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSBkAfkir@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSFeedTrading@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSODOCFS@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSOPE@default:default"/>
+        <setEntry value="cp.cperp.processInsertPSPPA@default:default"/>
+        <setEntry value="cp.cperp.processprintdriverpdf@default:default"/>
+        <setEntry value="cp.cperp.processsotosap@default:default"/>
+        <setEntry value="cp.cperp.sppbk@default:default"/>
+        <setEntry value="cp.cperp.wprocesscreateinvoice@default:default"/>
+        <setEntry value="cp.cperp.wwfactivitycustom@default:default"/>
         <setEntry value="org.adempiere.base.callout@default:default"/>
         <setEntry value="org.adempiere.base.process@default:default"/>
         <setEntry value="org.adempiere.base@default:default"/>
