@@ -355,8 +355,9 @@ public class DefaultEvaluatee implements Evaluatee {
 					value = MRefList.getListDescription(Env.getCtx(), DB.getSQLValueStringEx(null, "SELECT Name FROM AD_Reference WHERE AD_Reference_ID = ?", refID), value);
 			} else if (dataValue != null && dataValue instanceof Date dateValue) {
 				
+				// BEGIN CODE Andi - 20200409 : Added format RM to Roman Month, requester Pak Sugi
 				if(format.equalsIgnoreCase("RM")) {
-					// BEGIN CODE Andi - 20200409 : Added format RM to Roman Month, requester Pak Sugi
+					format = "MM";
 					
 					Map<String, String> mapRomawiMonth = new HashMap<String, String>();
 					mapRomawiMonth.put("01", "I");
@@ -372,20 +373,12 @@ public class DefaultEvaluatee implements Evaluatee {
 					mapRomawiMonth.put("11", "XI");
 					mapRomawiMonth.put("12", "XII");
 				
-					String format_temp = "";
-					if(format.equalsIgnoreCase("RM")) {
-						System.out.println("\n\n >>> Env.java : identified Format RM (Roman Month)");
-						format_temp = format;
-						format = "MM";
-					}
 					SimpleDateFormat df = new SimpleDateFormat(format);
 					String MM = df.format((Date)dataValue);
-					
-					
 					value = mapRomawiMonth.get(MM);
-				
+				}
 				// END CODE Andi - 20200409 : Added format RM to Roman Month, requester Pak Sugi
-				}else {					
+				else {					
 					SimpleDateFormat df = new SimpleDateFormat(format);
 					value = df.format(dateValue);
 				}
