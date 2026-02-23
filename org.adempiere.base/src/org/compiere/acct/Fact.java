@@ -1239,7 +1239,7 @@ public final class Fact
 		/* Kalau Credit Now > Debit Before maka di letakkan di posisi Credit */
 						else if(fln.getAmtSourceCr().compareTo(flnBefore.getAmtSourceDr()) > 0) {
 								BigDecimal AmtSourceCr = fln.getAmtSourceCr();
-								BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+								BigDecimal AmtAcctCr = fln.getAmtAcctCr();
 								m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(flnBefore.getAmtSourceDr()));
 								m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(flnBefore.getAmtAcctDr()));
 								m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
@@ -1271,7 +1271,7 @@ public final class Fact
 		/* Kalau di posisi Debit*/
 						if(fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0) {
 							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
-							BigDecimal AmtAcctDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtAcctDr();
 							m_lines.get(index).setAmtSourceDr(AmtSourceDr.add(flnBefore.getAmtSourceDr()));
 							m_lines.get(index).setAmtAcctDr(AmtAcctDr.add(flnBefore.getAmtAcctDr()));
 							flag = true;
@@ -1279,7 +1279,7 @@ public final class Fact
 		/* Kalau di posisi Debit*/
 						else if (fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) {
 							BigDecimal AmtSourceCr = fln.getAmtSourceCr();
-							BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+							BigDecimal AmtAcctCr = fln.getAmtAcctCr();
 							m_lines.get(index).setAmtSourceCr(AmtSourceCr.add(flnBefore.getAmtSourceCr()));
 							m_lines.get(index).setAmtAcctCr(AmtAcctCr.add(flnBefore.getAmtAcctCr()));
 							flag = true;
@@ -1314,7 +1314,7 @@ public final class Fact
 		/* Kalau Credit Now > Debit Before maka di letakkan di posisi Credit */
 						else if(fln.getAmtSourceCr().compareTo(flnBefore.getAmtSourceDr()) > 0) {
 								BigDecimal AmtSourceCr = fln.getAmtSourceCr();
-								BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+								BigDecimal AmtAcctCr = fln.getAmtAcctCr();
 								m_lines.get(index).setAmtSourceCr(AmtSourceCr.subtract(flnBefore.getAmtSourceDr()));
 								m_lines.get(index).setAmtAcctCr(AmtAcctCr.subtract(flnBefore.getAmtAcctDr()));
 								m_lines.get(index).setAmtSourceDr(BigDecimal.ZERO);
@@ -1346,7 +1346,7 @@ public final class Fact
 		/* Kalau di posisi Debit*/
 						if(fln.getAmtSourceDr().compareTo(BigDecimal.ZERO) > 0) {
 							BigDecimal AmtSourceDr = fln.getAmtSourceDr();
-							BigDecimal AmtAcctDr = fln.getAmtSourceDr();
+							BigDecimal AmtAcctDr = fln.getAmtAcctDr();
 							m_lines.get(index).setAmtSourceDr(AmtSourceDr.add(flnBefore.getAmtSourceDr()));
 							m_lines.get(index).setAmtAcctDr(AmtAcctDr.add(flnBefore.getAmtAcctDr()));
 							flag = true;
@@ -1354,7 +1354,7 @@ public final class Fact
 		/* Kalau di posisi Debit*/
 						else if (fln.getAmtSourceCr().compareTo(BigDecimal.ZERO) > 0) {
 							BigDecimal AmtSourceCr = fln.getAmtSourceCr();
-							BigDecimal AmtAcctCr = fln.getAmtSourceCr();
+							BigDecimal AmtAcctCr = fln.getAmtAcctCr();
 							m_lines.get(index).setAmtSourceCr(AmtSourceCr.add(flnBefore.getAmtSourceCr()));
 							m_lines.get(index).setAmtAcctCr(AmtAcctCr.add(flnBefore.getAmtAcctCr()));
 							flag = true;
