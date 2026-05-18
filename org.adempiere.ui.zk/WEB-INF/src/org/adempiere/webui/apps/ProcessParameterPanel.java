@@ -906,9 +906,21 @@ public class ProcessParameterPanel extends Panel implements
 			Object result2 = null;
 			if (editor2 != null)
 				result2 = editor2.getValue();
-			//Save only parameters which are set
-			if((result == null) && (result2 == null))
-				continue;
+			String skipNullResult = DB.getSQLValueString(null, ""
+					+ "SELECT Value FROM AD_Sysconfig "
+					+ "WHERE "
+					+ "		Name ILIKE 'Skip Null Result Parameter Process' "
+					+ "		AND IsActive='Y' ");
+			if(skipNullResult == null || skipNullResult.equalsIgnoreCase("N")) { //kalau gak ada atau N, jalan seperti biasa
+				//Save only parameters which are set
+				if((result == null) && (result2 == null))
+					continue;				
+			}
+//			COMMENTED BY VINCENT WIJAYA 18/05/2026 - CASE UNTUK PRINT DRIVER, URUTAN PARAMETER JADI SALAH KARENA ADA FIELD/PARAMETER PROCESS YANG DI SKIP KARENA NULL / TIDAK DI ISI
+//			//Save only parameters which are set
+//			if((result == null) && (result2 == null))
+//				continue;
+				
 			if(result instanceof String) { 
 				if (Util.isEmpty((String)result) && (result2 == null || Util.isEmpty((String)result2))) 
 					continue;
@@ -1052,6 +1064,8 @@ public class ProcessParameterPanel extends Panel implements
 			else {
 				if (result != null)
 					para.setP_String(result.toString());
+				if(result == null)
+					para.setP_String(null);
 				if (editor2 != null && result2 != null)
 					para.setP_String_To(result2.toString());
 			}
@@ -1063,7 +1077,7 @@ public class ProcessParameterPanel extends Panel implements
 			//
 			paras.add(para);
 		} // for every parameter
-
+		
 		return paras.toArray(new MPInstancePara[0]);
 	} // saveParameters
 
